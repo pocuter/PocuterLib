@@ -37,6 +37,8 @@ Summary
 
 ### <a name="setStatusLED"></a>**<< setStatusLED >>**
 
+**ToDO**
+
 <br/><br/><br/>
 
 # <a name="PocuterButtons"></a>PocuterButtons
@@ -46,11 +48,13 @@ Summary
 **ToDO**
 
 <br/>
+
 ### <a name="unregisterEventHandler"></a>**<< unregisterEventHandler >>**
 
 **ToDO**
 
 <br/>
+
 ### <a name="getButtonState"></a>**<< getButtonState >>**
 
 **ToDO**
@@ -60,26 +64,32 @@ Summary
 # <a name="PocuterDisplay"></a>PocuterDisplay
 
 <br/>
+
 ### <a name="getDisplaySize"></a>**<< getDisplaySize >>**
 
 **ToDO**
 <br/>
+
 ### <a name="setPixel"></a>**<< setPixel >>**
 
 **ToDO**
 <br/>
+
 ### <a name="drawLine"></a>**<< drawLine >>**
 
 **ToDO**
 <br/>
+
 ### <a name="drawRectangle"></a>**<< drawRectangle >>**
 
 **ToDO**
 <br/>
+
 ### <a name="clearWindow"></a>**<< clearWindow >>**
 
 **ToDO**
 <br/>
+
 ### <a name="clearScreen"></a>**<< clearScreen >>**
 
 **ToDO**
