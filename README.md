@@ -1,4 +1,3 @@
-**Base URL: /json/plugin/LocksManagementPlugin**
 
 Summary
 ----------
