@@ -6,6 +6,7 @@
 #include "include/hal/PocuterDisplay.h"
 #include "include/ugui/UGUI.h"
 #include "include/hal/PocuterButtons.h"
+#include "include/hal/PocuterHMAC.h"
 class Pocuter {
 public:
     enum POCUTER_RESULT {
@@ -21,6 +22,8 @@ public:
     static PocuterDisplay* Display;
     static UGUI* ugui;
     static PocuterButtons* Buttons;
+    static PocuterHMAC* HMAC;
+    
 private:
     
    

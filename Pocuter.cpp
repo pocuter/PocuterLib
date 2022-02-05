@@ -7,3 +7,4 @@
 #include "src/hal/esp32-c3/esp32_c3_SPI.cpp"
 #include "src/hal/esp32-c3/SSD1131_Display.cpp"
 #include "src/hal/esp32-c3/esp32_c3_Buttons.cpp"
+#include "src/hal/esp32-c3/esp32_c3_hmac.cpp"

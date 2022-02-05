@@ -4,6 +4,7 @@
 #include "include/hal/esp32-c3/esp32_c3_RGBled.h"
 #include "include/hal/esp32-c3/SSD1131_Display.h"
 #include "include/hal/esp32-c3/esp32_c3_Buttons.h"
+#include "include/hal/esp32-c3/esp32_c3_hmac.h"
 #include <string.h>
 
 
@@ -13,7 +14,8 @@ RGBled* Pocuter::RGBLed = NULL;
 PocuterDisplay* Pocuter::Display = NULL; 
 UGUI* Pocuter::ugui = NULL; 
 UG_GUI Pocuter::uGUI;
-PocuterButtons* Pocuter::Buttons;
+PocuterButtons* Pocuter::Buttons = NULL;
+PocuterHMAC* Pocuter::HMAC = NULL;
 
 Pocuter::Pocuter() {
     vTaskDelay(configTICK_RATE_HZ /100);
@@ -25,6 +27,7 @@ void Pocuter::begin() {
    Display = new SSD1131_Display();
    RGBLed = new esp32_c3_RGBled();
    Buttons = new esp32_c3_Buttons();
+   HMAC = new esp32_c3_hmac();
    
    uint16_t sizeX;
    uint16_t sizeY;
