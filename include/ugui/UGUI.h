@@ -118,7 +118,7 @@ typedef struct
 /* -------------------------------------------------------------------------------- */
 typedef struct
 {
-   void* p;
+   const void* p;
    UG_U16 width;
    UG_U16 height;
    UG_U8 bpp;
@@ -535,7 +535,7 @@ typedef struct
 #define DRIVER_ENABLED                                (1<<1)
 
 /* Supported drivers */
-#define NUMBER_OF_DRIVERS                             13
+#define NUMBER_OF_DRIVERS                             14
 #define DRIVER_DRAW_LINE                              0
 #define DRIVER_FILL_FRAME                             1
 #define DRIVER_FILL_AREA                              2
@@ -548,7 +548,7 @@ typedef struct
 #define DRIVER_DRAW_ARC                               10
 #define DRIVER_PUT_CHAR                               11
 #define DRIVER_PUT_STRING                             12
-
+#define DRIVER_DRAW_SCANLINE                          13
 /* -------------------------------------------------------------------------------- */
 /* -- µGUI CORE STRUCTURE                                                        -- */
 /* -------------------------------------------------------------------------------- */

@@ -3630,6 +3630,7 @@ UG_U8 UGUI::UG_ProgressbarGetStyle( UG_WINDOW* wnd, UG_U8 id )
 void UGUI::UG_DrawBMP( UG_S16 xp, UG_S16 yp, UG_BMP* bmp )
 {
    UG_S16 x,y,xs;
+   UG_GUI* gui = _gui;
 #if USE_COLOR_RGB888
    UG_U8 r,g,b;
 #endif
@@ -3655,25 +3656,41 @@ void UGUI::UG_DrawBMP( UG_S16 xp, UG_S16 yp, UG_BMP* bmp )
    for(y=0;y<bmp->height;y++)
    {
       xp = xs;
-      for(x=0;x<bmp->width;x++)
-      {
-         tmp = *p++;
-         tmp = tmp << 8;
-         tmp |= (UG_U16)*p++;
+      
+    UG_COLOR* buffer = NULL;
+    if ( gui->driver[DRIVER_DRAW_SCANLINE].state & DRIVER_ENABLED ) 
+    {
+        buffer = (UG_COLOR*)malloc(sizeof(UG_COLOR)*bmp->width);
+    } 
+    for(x=0;x<bmp->width;x++)
+    {
+       tmp = *p++;
+       tmp = tmp << 8;
+       tmp |= (UG_U16)*p++;
 #if USE_COLOR_RGB888
-         /* Convert RGB565 to RGB888 */
-         r = (tmp>>11)&0x1F;
-         r<<=3;
-         g = (tmp>>5)&0x3F;
-         g<<=2;
-         b = (tmp)&0x1F;
-         b<<=3;
-         c = ((UG_COLOR)r<<16) | ((UG_COLOR)g<<8) | (UG_COLOR)b;
+       /* Convert RGB565 to RGB888 */
+       r = (tmp>>11)&0x1F;
+       r<<=3;
+       g = (tmp>>5)&0x3F;
+       g<<=2;
+       b = (tmp)&0x1F;
+       b<<=3;
+       c = ((UG_COLOR)r<<16) | ((UG_COLOR)g<<8) | (UG_COLOR)b;
 #else
-        c = tmp;
+      c = tmp;
 #endif
-         UG_DrawPixel( xp++ , yp , c );
+      if ( buffer != NULL ) {
+          buffer[x] = c;
+      } else {
+          UG_DrawPixel( xp++ , yp , c );
       }
+
+      
+    }
+    if (buffer != NULL) {
+        ((UG_RESULT(*)(UG_S16 x, UG_S16 y, UG_S16 width, UG_COLOR* c))gui->driver[DRIVER_DRAW_SCANLINE].driver)(xs,yp , bmp->width, buffer);
+        free(buffer);
+    }
       yp++;
    }
 }

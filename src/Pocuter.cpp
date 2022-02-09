@@ -18,7 +18,7 @@ PocuterButtons* Pocuter::Buttons = NULL;
 PocuterHMAC* Pocuter::HMAC = NULL;
 
 Pocuter::Pocuter() {
-    vTaskDelay(configTICK_RATE_HZ /100);
+  
     
 }
 void Pocuter::begin() {
@@ -37,6 +37,7 @@ void Pocuter::begin() {
    ugui->UG_DriverRegister(DRIVER_FILL_FRAME,  (void*)&Pocuter::driver_fillFrame);
    ugui->UG_DriverRegister(DRIVER_DRAW_LINE,  (void*)&Pocuter::driver_drawLine);
    ugui->UG_DriverRegister(DRIVER_FILL_AREA,  (void*)&Pocuter::driver_fillFrame);
+   ugui->UG_DriverRegister(DRIVER_DRAW_SCANLINE,  (void*)&Pocuter::driver_drawScanLine);
     
     
 }
@@ -59,5 +60,9 @@ int8_t Pocuter::driver_fillFrame(UG_S16 x1, UG_S16 y1, UG_S16 x2, UG_S16 y2, UG_
 }
 int8_t Pocuter::driver_drawLine(UG_S16 x1, UG_S16 y1, UG_S16 x2, UG_S16 y2, UG_COLOR c) {
     Display->drawLine(x1,y1,x2,y2,c);
+    return UG_RESULT_OK;
+}
+int8_t Pocuter::driver_drawScanLine(UG_S16 x, UG_S16 y, UG_S16 width, UG_COLOR* c) {
+    Display->drawScanLine(x,y,width,c);
     return UG_RESULT_OK;
 }

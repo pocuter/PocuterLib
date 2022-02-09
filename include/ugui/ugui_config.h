@@ -27,12 +27,12 @@
 
 
 #define USE_STATIC_MEMORY
-
+#define USE_IMAGE
 /* Enable color mode */
 //#define USE_COLOR_RGB565   // RGB = 0bRRRRRGGGGGGBBBBB
 
 #ifndef USE_COLOR_RGB565
-#define USE_COLOR_RGB888   // RGB = 0xFF,0xFF,0xFF
+#define USE_COLOR_RGB888  1 // RGB = 0xFF,0xFF,0xFF
 #endif
 
 /* Feature enablers */

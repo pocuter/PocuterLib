@@ -7,7 +7,7 @@
 #include "driver/spi_master.h"
 
 
-#define SPI_TRANSACTION_COUNT (4)
+#define SPI_TRANSACTION_COUNT (3)
 
 
 namespace PocuterLib {
@@ -21,7 +21,9 @@ namespace PocuterLib {
             
             void sendCommand(const uint8_t cmd);
             void sendCommand(const uint8_t cmd, const uint8_t arg);
-            void sendCommand(const uint8_t* cmd, uint8_t size, bool doCopy = false);
+            void sendCommand(const uint8_t cmd, const uint8_t arg, const uint8_t arg2);
+            void sendCommand(const uint8_t* cmd, uint8_t size);
+            void sendScanLine(const uint8_t* line, uint8_t size);
             void sendCommandList(const uint8_t cmd, ...);
         private:
             

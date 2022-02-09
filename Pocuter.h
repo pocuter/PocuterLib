@@ -33,7 +33,7 @@ private:
     static void driver_pixelSet(UG_S16,UG_S16,UG_COLOR);
     static int8_t driver_drawLine(UG_S16 x1, UG_S16 y1, UG_S16 x2, UG_S16 y2, UG_COLOR c);
     static int8_t driver_fillFrame(UG_S16 x1, UG_S16 y1, UG_S16 x2, UG_S16 y2, UG_COLOR c);
-    
+    static int8_t driver_drawScanLine(UG_S16 x, UG_S16 y, UG_S16 width, UG_COLOR* c);
     
 };
 

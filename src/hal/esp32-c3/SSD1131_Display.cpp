@@ -39,7 +39,7 @@ SSD1131_Display::SSD1131_Display() {
    m_expander->setPin(OLED_CS_PORT, OLED_CS_PIN, 0);
    
    reset();
-   
+
    vTaskDelay(configTICK_RATE_HZ / 100);
    
     m_spi->sendCommand(COMMAND_DISPLAY_OFF);
@@ -47,7 +47,7 @@ SSD1131_Display::SSD1131_Display() {
     const uint8_t init[] = {
         0xA1, 0x00, // STARTLINE
         0xA2, 0x00, // DISPLAYOFFSET
-        0xA4, // NORMALDISPLAY
+        0xA4, 0xBC,// NORMALDISPLAY
         0xA8, 0x3F, // SETMULTIPLEX
         0xAD, 0x8E, // SETMASTER
         0xB0, 0x0B, // POWERMODE
@@ -59,22 +59,20 @@ SSD1131_Display::SSD1131_Display() {
         0x8C, 0x64, // PRECHARGE C
         0xBB, 0x3A, // PRECHARGELEVEL
         0xBE, 0x3E, // VCOMH
-        0x81, 0x91, // CONTRAST A
+        0x81, 0x50, // CONTRAST A
         0x82, 0x50, // CONTRAST B
-        0x83, 0x7D, // CONTRAST C
+        0x83, 0x50, // CONTRAST C
         
         0x26, 0x01, // enable fill rectangle
+        COMMAND_SET_REMAP, (1 << 6) | (1 << 5) | (1 << 4) | (1 << 1),
+        COMMAND_MASTER_CURRENT, 5,
+        0xBC,0xBC,0xBC
+        
     };
+    
     m_spi->sendCommand(init, sizeof(init));
-    m_spi->sendCommand(COMMAND_SET_REMAP);
-    m_spi->sendCommand((1 << 5) | (1 << 4) | (1 << 1));
-    setBrightness(5);
     clearScreen();
-    vTaskDelay(configTICK_RATE_HZ / 10);
-    m_spi->sendCommand(COMMAND_DISPLAY_ON);
-    vTaskDelay(configTICK_RATE_HZ / 100);
-    
-    
+    m_spi->sendCommand(COMMAND_DISPLAY_ON, 0xBC);
 }
 void SSD1131_Display::clearScreen() {
     clearWindow(0,0,DISPLAY_X, DISPLAY_Y);
@@ -110,13 +108,36 @@ void SSD1131_Display::setPixel(uint16_t x, uint16_t y, uint32_t color) {
 
 void SSD1131_Display::drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
     uint8_t data[3];
-    
     data[0] = (color >> 16);
     data[1] = (color >> 8);
     data[2] = (color);
     
     m_spi->sendCommandList(0x21, x1, y1, x2, y2, data[0], data[1], data[2], -1);
     
+}
+
+void SSD1131_Display::drawScanLine(uint16_t x, uint16_t y, uint16_t width, uint32_t* colors) {
+    if (x >= DISPLAY_X) return;
+    if (y >= DISPLAY_Y) return ;
+    if (x + width >= DISPLAY_X) width = DISPLAY_X - x;
+    uint8_t* buffer = (uint8_t*)heap_caps_malloc(width*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
+    for (int i = 0; i < width; i++) {
+        uint8_t red = colors[i] >> 16;
+        uint8_t green = colors[i] >> 8;
+        uint8_t blue = colors[i];
+        uint16_t b = (blue >> 3) & 0x1f;
+        uint16_t g = ((green >> 2) & 0x3f) << 5;
+        uint16_t r = ((red >> 3) & 0x1f) << 11;
+        uint16_t c = (r | g | b);
+        buffer[i*2] = c;
+        buffer[1 + (i*2)] = c >> 8; 
+        
+    }
+    
+    m_spi->sendCommand(0x15, x, (x + width) - 1);
+    m_spi->sendCommand(0x75, y, y);
+    m_spi->sendScanLine(buffer, width*2);
+    free(buffer);
 }
 
 void SSD1131_Display::drawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
@@ -137,9 +158,9 @@ void SSD1131_Display::getDisplaySize(uint16_t& sizeX, uint16_t& sizeY) {
 
 void SSD1131_Display::reset() {
    m_expander->setPin(OLED_RST_PORT, OLED_RST_PIN, 1);
-   vTaskDelay(configTICK_RATE_HZ / 1000);
+   vTaskDelay(configTICK_RATE_HZ / 10);
    m_expander->setPin(OLED_RST_PORT, OLED_RST_PIN, 0);
-   vTaskDelay(configTICK_RATE_HZ / 1000);
+   vTaskDelay(configTICK_RATE_HZ / 10);
    m_expander->setPin(OLED_RST_PORT, OLED_RST_PIN, 1);
 }
 SSD1131_Display::~SSD1131_Display() {

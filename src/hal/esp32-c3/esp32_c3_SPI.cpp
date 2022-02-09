@@ -76,7 +76,7 @@ void esp32_c3_SPI::init() {
     for (int x = 0; x < SPI_TRANSACTION_COUNT; x++)
     {
         void* param = &m_trans[x];
-        m_trasUserData[x].transBuffer = (uint8_t*)heap_caps_malloc(16, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
+        m_trasUserData[x].transBuffer = (uint8_t*)heap_caps_malloc(96*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
         m_trans[x].user = &m_trasUserData[x];
         xQueueSend(m_spiQueueFree, &param, portMAX_DELAY);
     }
@@ -87,7 +87,8 @@ void esp32_c3_SPI::init() {
 
 void esp32_c3_SPI::spiTask(void *arg)
 {
-    esp32_c3_Expander* i2c = NULL;  
+    esp32_c3_Expander* expander = NULL;  
+    uint8_t lastTranactionDC = 0;
     while(1)
       {
         spi_transaction_t* t;
@@ -95,10 +96,17 @@ void esp32_c3_SPI::spiTask(void *arg)
         if(xQueueReceive(m_spiQueueToDo, &t, portMAX_DELAY) == pdTRUE )
         {
             //TODO: I Really don't know why, but I have to create the first instance of the expander exactly here, have to invesigate, why
-            if (i2c == NULL) i2c = esp32_c3_Expander::Instance();  
-            i2c->setPin(0,7,0);
+            if (expander == NULL) expander = esp32_c3_Expander::Instance();  
+            
+            TRANS_USER* user = ( TRANS_USER*) t->user;
+            expander->setPin(0,7,0);
+            if (lastTranactionDC != user->dc) {
+                expander->setPin(1,5,user->dc);
+                lastTranactionDC = user->dc;
+            }
+            
             spi_device_transmit(m_spi, t);
-            i2c->setPin(0,7,1);
+            expander->setPin(0,7,1);
             if(xQueueSend(m_spiQueueFree, &t, portMAX_DELAY) != pdPASS)
             {
                 abort();
@@ -143,9 +151,17 @@ void esp32_c3_SPI::sendCommandList(const uint8_t cmd, ...)
         }
     } while(arg > -1);
     va_end ( arguments );
-    sendCommand(buf, i, true);
+    sendCommand(buf, i);
     
     
+}
+void esp32_c3_SPI::sendCommand(const uint8_t cmd, const uint8_t arg, const uint8_t arg2)
+{
+    uint8_t buf[3];
+    buf[0] = cmd;
+    buf[1] = arg;
+    buf[2] = arg2;
+    sendCommand(buf, 3);
 }
 void esp32_c3_SPI::sendCommand(const uint8_t cmd, const uint8_t arg)
 {
@@ -158,10 +174,24 @@ void esp32_c3_SPI::sendCommand(const uint8_t cmd)
 {
    sendCommand(&cmd, 1);
 }
-void esp32_c3_SPI::sendCommand(const uint8_t* cmd, uint8_t size, bool doCopy)
+void esp32_c3_SPI::sendScanLine(const uint8_t* line, uint8_t size)
 {
+    if (size > 96*2) return;
+    spi_transaction_t* t = spiGetTransaction();
+    TRANS_USER* user = ( TRANS_USER*) t->user;
+    t->addr = 0;    
+    t->length = size*8;                     //Command is 8 bits
     
-    if (size > 16 && doCopy) return;
+    memcpy(user->transBuffer, line, size);
+    t->tx_buffer = user->transBuffer;
+    t->flags = 0;
+   
+    user->dc = 1;
+      
+    spiPutTransaction(t);
+}
+void esp32_c3_SPI::sendCommand(const uint8_t* cmd, uint8_t size)
+{
     
     spi_transaction_t* t = spiGetTransaction();
     TRANS_USER* user = ( TRANS_USER*) t->user;
@@ -171,16 +201,13 @@ void esp32_c3_SPI::sendCommand(const uint8_t* cmd, uint8_t size, bool doCopy)
        for (int i = 0; i < size; i++) t->tx_data[i] = cmd[i];
        t->flags = SPI_TRANS_USE_TXDATA;
     } else {
-        if (doCopy) {
-            memcpy(user->transBuffer, cmd, size);
-            t->tx_buffer = user->transBuffer;
-        } else {
-            t->tx_buffer = cmd;
-        }
+        
+        memcpy(user->transBuffer, cmd, size);
+        t->tx_buffer = user->transBuffer;
         
         t->flags = 0;
     }
-    user->dc = 0;                //D/C needs to be set to 0
+    user->dc = 0;
       
     spiPutTransaction(t);
     
