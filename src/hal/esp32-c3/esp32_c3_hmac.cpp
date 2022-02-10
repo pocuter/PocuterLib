@@ -66,6 +66,17 @@ void esp32_c3_hmac::calculateChallengeReply(const uint8_t* challenge, uint8_t ch
     }
 }
 
+void esp32_c3_hmac::calculateAESKey(const uint8_t* challenge, uint8_t challengeLength, uint8_t* reply, uint8_t& replyLength) {
+    if (replyLength < 32) {replyLength = 0; return;}
+    if (esp_hmac_calculate(HMAC_KEY5, challenge, challengeLength, reply) == ESP_OK) {
+        replyLength = 32;
+    } else {
+        reply[0] = 0;
+        replyLength = 0;
+    }
+}
+
+
 void esp32_c3_hmac::calculateChallengeReplySW(const uint8_t* masterKey, uint8_t keyLength, const uint8_t* challenge, uint8_t challengeLength, uint8_t* reply, uint8_t& replyLength) {
     if (replyLength < 65){replyLength = 0; return;}
     uint8_t hmac[32];

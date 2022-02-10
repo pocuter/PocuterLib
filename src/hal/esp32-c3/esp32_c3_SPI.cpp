@@ -53,6 +53,7 @@ void esp32_c3_SPI::init() {
     buscfg.sclk_io_num = SPI_PIN_NUM_CLK;
     buscfg.quadwp_io_num=-1;
     buscfg.quadhd_io_num=-1;
+    buscfg.max_transfer_sz = 4000;
     
     devcfg.clock_speed_hz = LCD_SPI_CLOCK_RATE;
     devcfg.mode = 0;                                //SPI mode 0
@@ -99,6 +100,7 @@ void esp32_c3_SPI::spiTask(void *arg)
             if (expander == NULL) expander = esp32_c3_Expander::Instance();  
             
             TRANS_USER* user = ( TRANS_USER*) t->user;
+            spi_device_acquire_bus(m_spi, portMAX_DELAY);
             expander->setPin(0,7,0);
             if (lastTranactionDC != user->dc) {
                 expander->setPin(1,5,user->dc);
@@ -107,12 +109,13 @@ void esp32_c3_SPI::spiTask(void *arg)
             
             spi_device_transmit(m_spi, t);
             expander->setPin(0,7,1);
+            spi_device_release_bus(m_spi);
             if(xQueueSend(m_spiQueueFree, &t, portMAX_DELAY) != pdPASS)
             {
                 abort();
             }
         }
-      //  printf("loop %d\n", uxTaskGetStackHighWaterMark( NULL ));
+      
      
     }
 

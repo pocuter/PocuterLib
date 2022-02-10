@@ -5,6 +5,9 @@
 #include "include/hal/esp32-c3/SSD1131_Display.h"
 #include "include/hal/esp32-c3/esp32_c3_Buttons.h"
 #include "include/hal/esp32-c3/esp32_c3_hmac.h"
+#include "include/hal/esp32-c3/esp32_c3_SDCard.h"
+
+
 #include <string.h>
 
 
@@ -16,7 +19,7 @@ UGUI* Pocuter::ugui = NULL;
 UG_GUI Pocuter::uGUI;
 PocuterButtons* Pocuter::Buttons = NULL;
 PocuterHMAC* Pocuter::HMAC = NULL;
-
+PocuterSDCard* Pocuter::SDCard = NULL;
 Pocuter::Pocuter() {
   
     
@@ -28,6 +31,8 @@ void Pocuter::begin() {
    RGBLed = new esp32_c3_RGBled();
    Buttons = new esp32_c3_Buttons();
    HMAC = new esp32_c3_hmac();
+   SDCard = new esp32_c3_SDCard();
+   
    
    uint16_t sizeX;
    uint16_t sizeY;

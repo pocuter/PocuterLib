@@ -70,7 +70,7 @@ void esp32_c3_Expander::intTask(void *arg)
             }
             xSemaphoreGive(myself->m_eventHandlerSemaphore);
         }
-      //  printf("loop %d\n", uxTaskGetStackHighWaterMark( NULL ));
+      
      
     }
 

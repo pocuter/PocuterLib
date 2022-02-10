@@ -7,6 +7,8 @@
 #include "include/ugui/UGUI.h"
 #include "include/hal/PocuterButtons.h"
 #include "include/hal/PocuterHMAC.h"
+#include "include/hal/PocuterSDCard.h"
+#include "include/hal/PocuterConfig.h"
 class Pocuter {
 public:
     enum POCUTER_RESULT {
@@ -23,7 +25,7 @@ public:
     static UGUI* ugui;
     static PocuterButtons* Buttons;
     static PocuterHMAC* HMAC;
-    
+    static PocuterSDCard* SDCard;
 private:
     
    
