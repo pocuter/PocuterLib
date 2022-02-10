@@ -37,6 +37,7 @@ SSD1131_Display::SSD1131_Display() {
    
    m_expander->setPin(OLED_DC_PORT, OLED_DC_PIN, 0);
    m_expander->setPin(OLED_CS_PORT, OLED_CS_PIN, 0);
+   m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 1);
    
    reset();
 
@@ -66,7 +67,7 @@ SSD1131_Display::SSD1131_Display() {
         0x26, 0x01, // enable fill rectangle
         COMMAND_SET_REMAP, (1 << 6) | (1 << 5) | (1 << 4) | (1 << 1),
         COMMAND_MASTER_CURRENT, 5,
-        0xBC,0xBC,0xBC
+       
         
     };
     
@@ -157,6 +158,10 @@ void SSD1131_Display::getDisplaySize(uint16_t& sizeX, uint16_t& sizeY) {
 }
 
 void SSD1131_Display::reset() {
+   m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 0);
+   vTaskDelay(configTICK_RATE_HZ / 10);
+   m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 1);
+   vTaskDelay(configTICK_RATE_HZ / 10);
    m_expander->setPin(OLED_RST_PORT, OLED_RST_PIN, 1);
    vTaskDelay(configTICK_RATE_HZ / 10);
    m_expander->setPin(OLED_RST_PORT, OLED_RST_PIN, 0);
