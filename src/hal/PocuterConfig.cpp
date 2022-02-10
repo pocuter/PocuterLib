@@ -34,6 +34,7 @@ bool PocuterConfig::del(const uint8_t* section, const uint8_t* name) {
     ini_puts((const TCHAR*)section, (const TCHAR*)name, NULL, (const TCHAR*)m_configFile);
     return true;
 }
+#ifndef POCUTER_NO_CONFIG_ENCRYPTION
 bool PocuterConfig::getEncrypted(const uint8_t* section, const uint8_t* name, uint8_t* result, size_t maxLength) {
     if (maxLength < 64) return false;
     uint8_t input[64];
@@ -75,7 +76,7 @@ bool PocuterConfig::setEncrypted(const uint8_t* section, const uint8_t* name, co
     return setBinary(section, name, output, 64);
     
 }
-
+#endif
 uint32_t PocuterConfig::get(const uint8_t* section, const uint8_t* name) {
     return ini_getl((const TCHAR*)section, (const TCHAR*)name, 0, (const TCHAR*)m_configFile);
 }

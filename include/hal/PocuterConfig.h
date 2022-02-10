@@ -22,9 +22,10 @@ public:
     bool get(const uint8_t* section, const uint8_t* name, uint8_t* result, size_t maxLength);
     bool set(const uint8_t* section, const uint8_t* name, const uint8_t* value);
     bool del(const uint8_t* section, const uint8_t* name);
-    
+#ifndef POCUTER_NO_CONFIG_ENCRYPTION    
     bool getEncrypted(const uint8_t* section, const uint8_t* name, uint8_t* result, size_t maxLength);
     bool setEncrypted(const uint8_t* section, const uint8_t* name, const uint8_t* value);
+#endif
     
     
     uint32_t get(const uint8_t* section, const uint8_t* name);
