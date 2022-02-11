@@ -4025,7 +4025,7 @@ void UGUI::_UG_PutChar( char chr, UG_S16 x, UG_S16 y, UG_COLOR fc, UG_COLOR bc, 
 	  {
       index = (bt - font->start_char)* font->char_height * bn;
       if ( gui->driver[DRIVER_FILL_AREA].state & DRIVER_ENABLED ) {
-        ((void* (*)(UG_S16, UG_S16, UG_S16, UG_S16, UG_COLOR c))gui->driver[DRIVER_FILL_AREA].driver) (x,y,x+actual_char_width-1,y+font->char_height-1,bc);
+        //((void* (*)(UG_S16, UG_S16, UG_S16, UG_S16, UG_COLOR c))gui->driver[DRIVER_FILL_AREA].driver) (x,y,x+actual_char_width-1,y+font->char_height-1,bc);
       }
       for( j=0;j<font->char_height;j++ )
       {
@@ -4043,7 +4043,7 @@ void UGUI::_UG_PutChar( char chr, UG_S16 x, UG_S16 y, UG_COLOR fc, UG_COLOR bc, 
             else
             {
               if ( !(gui->driver[DRIVER_FILL_AREA].state & DRIVER_ENABLED) ) {
-                gui->pset(xo,yo,bc);
+                //gui->pset(xo,yo,bc);
               }
             }
             b >>= 1;

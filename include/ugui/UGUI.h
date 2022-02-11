@@ -20,6 +20,7 @@
 
 #include "ugui_config.h"
 #include "fonts.h"
+#include "fonts_extra.h"
 //#define TFT_Y_RESOLUTION    240
 
 
