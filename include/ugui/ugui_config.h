@@ -60,6 +60,10 @@
 //#define  USE_FONT_22X36
 //#define  USE_FONT_24X40
 //#define  USE_FONT_32X53
+#define USE_FONT_POCUTER_3X5
+#define USE_FONT_POCUTER_4X6
+#define USE_FONT_POCUTER_5X7
+#define USE_FONT_POCUTER_5X8
 
 typedef uint8_t      UG_U8;
 typedef int8_t       UG_S8;

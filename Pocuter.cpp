@@ -1,6 +1,7 @@
 #include "src/Pocuter.cpp"
 #include "src/ugui/UGUI.cpp"
 #include "src/ugui/fonts.c"
+#include "src/ugui/fonts_extra.c"
 #include "src/minIni/minIni.cpp"
 #include "src/hal/esp32-c3/esp32_c3_Expander.cpp"
 #include "src/hal/esp32-c3/esp32_c3_I2C.cpp"
