@@ -6,6 +6,7 @@
 #include "include/hal/esp32-c3/esp32_c3_Buttons.h"
 #include "include/hal/esp32-c3/esp32_c3_hmac.h"
 #include "include/hal/esp32-c3/esp32_c3_SDCard.h"
+#include "include/hal/esp32-c3/esp32_c3_OTA.h"
 
 
 #include <string.h>
@@ -20,6 +21,8 @@ UG_GUI Pocuter::uGUI;
 PocuterButtons* Pocuter::Buttons = NULL;
 PocuterHMAC* Pocuter::HMAC = NULL;
 PocuterSDCard* Pocuter::SDCard = NULL;
+PocuterOTA* Pocuter::OTA = NULL;
+
 Pocuter::Pocuter() {
   
     
@@ -32,8 +35,10 @@ void Pocuter::begin() {
    Buttons = new esp32_c3_Buttons();
    HMAC = new esp32_c3_hmac();
    SDCard = new esp32_c3_SDCard();
-   
-   
+   OTA = new esp32_c3_OTA(SDCard);
+   if (OTA->getCurrentPartition() != PocuterOTA::PART_MENUE) {
+       OTA->bootPartition(PocuterOTA::PART_MENUE);
+   }
    uint16_t sizeX;
    uint16_t sizeY;
    Display->getDisplaySize(sizeX, sizeY);

@@ -11,4 +11,5 @@
 #include "src/hal/esp32-c3/esp32_c3_Buttons.cpp"
 #include "src/hal/esp32-c3/esp32_c3_hmac.cpp"
 #include "src/hal/esp32-c3/esp32_c3_SDCard.cpp"
+#include "src/hal/esp32-c3/esp32_c3_OTA.cpp"
 #include "src/hal/PocuterConfig.cpp"

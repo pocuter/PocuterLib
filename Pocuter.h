@@ -9,6 +9,7 @@
 #include "include/hal/PocuterHMAC.h"
 #include "include/hal/PocuterSDCard.h"
 #include "include/hal/PocuterConfig.h"
+#include "include/hal/PocuterOTA.h"
 class Pocuter {
 public:
     enum POCUTER_RESULT {
@@ -26,6 +27,7 @@ public:
     static PocuterButtons* Buttons;
     static PocuterHMAC* HMAC;
     static PocuterSDCard* SDCard;
+    static PocuterOTA* OTA;
 private:
     
    
