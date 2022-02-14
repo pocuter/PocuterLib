@@ -6,7 +6,7 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_ota_ops.h"
-#define FILE_BUFFER_SIZE 64
+#define FILE_BUFFER_SIZE 1024*16
 
 using namespace PocuterLib::HAL;
 
@@ -20,7 +20,6 @@ esp32_c3_OTA::~esp32_c3_OTA() {
 
 PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTITION partition) {
     if (! m_SDCard->cardIsMounted()) return OTAERROR_NO_SD_CARD;
-    vTaskDelay(configTICK_RATE_HZ / 100); // why I have to do this? Problems with SPI bus?
     esp_err_t err;
     PocuterOTA::OTAERROR pError = OTAERROR_OK;
     esp_ota_handle_t update_handle = 0; // must be freed!
@@ -39,7 +38,7 @@ PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTI
     
     size_t s = 0;
     size_t overall = 0;
-    char buffer[FILE_BUFFER_SIZE];
+    char* buffer = (char*)malloc(FILE_BUFFER_SIZE);
     do {
         s = fread(buffer,1,FILE_BUFFER_SIZE,fp);
         if (s > 0) {
@@ -52,6 +51,7 @@ PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTI
             }
         }
     }while (s == FILE_BUFFER_SIZE);
+    free(buffer);
     fclose(fp);
     
     err = esp_ota_end(update_handle);
