@@ -13,7 +13,7 @@
 #ifndef POCUTEROTA_H
 #define POCUTEROTA_H
 #include <stdint.h>
-
+#include <stddef.h>
 class PocuterOTA {
     public:
         enum POCUTER_PARTITION {
@@ -29,13 +29,13 @@ class PocuterOTA {
             OTAERROR_FILE_NOT_FOUND,
             OTAERROR_NO_SD_CARD,
             OTAERROR_FLASHING_FAILED,
-            
+            OTAERROR_MORE_STEPS,
             
             
             OTAERROR_UNKNOWN
         };
         
-        virtual OTAERROR flashFromSDCard(uint64_t appID, POCUTER_PARTITION partition) = 0;
+        virtual OTAERROR flashFromSDCard(uint64_t appID, POCUTER_PARTITION partition, bool stepwise = false, uint8_t *percent = NULL) = 0;
         virtual OTAERROR bootPartition(POCUTER_PARTITION partition) = 0;
         virtual POCUTER_PARTITION getCurrentPartition() = 0;
         virtual OTAERROR restart() = 0;
