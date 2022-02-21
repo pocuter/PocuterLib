@@ -1,3 +1,4 @@
+#ifndef POCUTER_DISABLE_DISPLAY   
 /* -------------------------------------------------------------------------------- */
 /* -- µGUI - Generic GUI module (C)Achim Döbler, 2015                            -- */
 /* -------------------------------------------------------------------------------- */
@@ -5088,3 +5089,4 @@ void* UGUI::_UG_ProgressbarUpdate(UG_WINDOW* wnd, UG_OBJECT* obj)
   return NULL;
 }
 //UGUIClass	UGUI;
+#endif

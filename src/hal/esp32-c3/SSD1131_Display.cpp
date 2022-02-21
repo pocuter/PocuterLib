@@ -1,3 +1,4 @@
+#ifndef POCUTER_DISABLE_DISPLAY   
 #include "include/hal/esp32-c3/SSD1131_display.h"
 
 #define OLED_SHDN_PORT  0
@@ -170,4 +171,4 @@ void SSD1131_Display::reset() {
 }
 SSD1131_Display::~SSD1131_Display() {
 }
-
+#endif

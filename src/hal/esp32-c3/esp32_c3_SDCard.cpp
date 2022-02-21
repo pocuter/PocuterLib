@@ -1,4 +1,4 @@
-
+#ifndef POCUTER_DISABLE_SD_CARD  
 #include "include/hal/esp32-c3/esp32_c3_SDCard.h"
 
 #include "esp_vfs_fat.h"
@@ -56,3 +56,4 @@ bool esp32_c3_SDCard::cardIsMounted() {
 const char* esp32_c3_SDCard::getMountPoint() {
     return MOUNT_POUNT;
 }
+#endif

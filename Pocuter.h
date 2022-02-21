@@ -10,6 +10,7 @@
 #include "include/hal/PocuterSDCard.h"
 #include "include/hal/PocuterConfig.h"
 #include "include/hal/PocuterOTA.h"
+#include "include/hal/PocuterWIFI.h"
 class Pocuter {
 public:
     enum POCUTER_RESULT {
@@ -22,12 +23,17 @@ public:
     void begin();
     int setStatusLED(uint8_t r, uint8_t g, uint8_t b);
     static RGBled* RGBLed;
+#ifndef POCUTER_DISABLE_DISPLAY      
     static PocuterDisplay* Display;
+#endif    
     static UGUI* ugui;
     static PocuterButtons* Buttons;
     static PocuterHMAC* HMAC;
+#ifndef POCUTER_DISABLE_SD_CARD      
     static PocuterSDCard* SDCard;
     static PocuterOTA* OTA;
+#endif    
+    static PocuterWIFI* WIFI;
 private:
     
    

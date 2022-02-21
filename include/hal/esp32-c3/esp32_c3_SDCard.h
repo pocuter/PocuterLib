@@ -1,14 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/cppFiles/class.h to edit this template
- */
-
-/* 
- * File:   esp32_c3_SDCard.h
- * Author: Test
- *
- * Created on 9. Februar 2022, 12:02
- */
 
 #ifndef ESP32_C3_SDCARD_H
 #define ESP32_C3_SDCARD_H

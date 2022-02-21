@@ -7,7 +7,7 @@
 #include "include/hal/esp32-c3/esp32_c3_hmac.h"
 #include "include/hal/esp32-c3/esp32_c3_SDCard.h"
 #include "include/hal/esp32-c3/esp32_c3_OTA.h"
-
+#include "include/hal/esp32-c3/esp32_c3_WIFI.h"
 
 #include <string.h>
 
@@ -15,30 +15,58 @@
 #define VERSION "1.0"
 using namespace PocuterLib::HAL;
 RGBled* Pocuter::RGBLed = NULL; 
+
+#ifndef POCUTER_DISABLE_DISPLAY  
 PocuterDisplay* Pocuter::Display = NULL; 
+#endif
+
 UGUI* Pocuter::ugui = NULL; 
 UG_GUI Pocuter::uGUI;
 PocuterButtons* Pocuter::Buttons = NULL;
 PocuterHMAC* Pocuter::HMAC = NULL;
+
+#ifndef POCUTER_DISABLE_SD_CARD  
 PocuterSDCard* Pocuter::SDCard = NULL;
 PocuterOTA* Pocuter::OTA = NULL;
+#endif
+
+
+PocuterWIFI* Pocuter::WIFI = NULL;
 
 Pocuter::Pocuter() {
   
     
 }
 void Pocuter::begin() {
-   
-
+#ifndef POCUTER_DISABLE_DISPLAY   
+   printf("Display...\n");
    Display = new SSD1131_Display();
+#endif
+   
    RGBLed = new esp32_c3_RGBled();
+   RGBLed->setRGB(0,255,0,0);
+   printf("Buttons...\n");
    Buttons = new esp32_c3_Buttons();
+   printf("HMAC...\n");
    HMAC = new esp32_c3_hmac();
+   RGBLed->setRGB(0,0,255,0);
+#ifndef POCUTER_DISABLE_SD_CARD     
+   printf("SDCard...\n");
    SDCard = new esp32_c3_SDCard();
+   printf("OTA...\n");
+   RGBLed->setRGB(0,0,0,255);
    OTA = new esp32_c3_OTA(SDCard);
+#endif   
+   printf("WIFI...\n");
+   WIFI = new esp32_c3_WIFI();
+   RGBLed->setRGB(0,255,255,255);
+   
+#ifndef POCUTER_DISABLE_SD_CARD
    if (OTA->getCurrentPartition() != PocuterOTA::PART_MENUE) {
        OTA->bootPartition(PocuterOTA::PART_MENUE);
    }
+#endif   
+#ifndef POCUTER_DISABLE_DISPLAY       
    uint16_t sizeX;
    uint16_t sizeY;
    Display->getDisplaySize(sizeX, sizeY);
@@ -48,6 +76,7 @@ void Pocuter::begin() {
    ugui->UG_DriverRegister(DRIVER_DRAW_LINE,  (void*)&Pocuter::driver_drawLine);
    ugui->UG_DriverRegister(DRIVER_FILL_AREA,  (void*)&Pocuter::driver_fillFrame);
    ugui->UG_DriverRegister(DRIVER_DRAW_SCANLINE,  (void*)&Pocuter::driver_drawScanLine);
+#endif     
     
     
 }
@@ -60,6 +89,7 @@ int Pocuter::setStatusLED(uint8_t r, uint8_t g, uint8_t b) {
     return RGBLed->setRGB(0,r,g,b);
     
 }
+#ifndef POCUTER_DISABLE_DISPLAY  
 void Pocuter::driver_pixelSet(UG_S16 x,UG_S16 y,UG_COLOR c) {
    Display->setPixel(x,y,c);
   
@@ -76,3 +106,4 @@ int8_t Pocuter::driver_drawScanLine(UG_S16 x, UG_S16 y, UG_S16 width, UG_COLOR* 
     Display->drawScanLine(x,y,width,c);
     return UG_RESULT_OK;
 }
+#endif
