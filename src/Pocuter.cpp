@@ -39,25 +39,19 @@ Pocuter::Pocuter() {
 }
 void Pocuter::begin() {
 #ifndef POCUTER_DISABLE_DISPLAY   
-   printf("Display...\n");
    Display = new SSD1131_Display();
 #endif
    
    RGBLed = new esp32_c3_RGBled();
    RGBLed->setRGB(0,255,0,0);
-   printf("Buttons...\n");
    Buttons = new esp32_c3_Buttons();
-   printf("HMAC...\n");
    HMAC = new esp32_c3_hmac();
    RGBLed->setRGB(0,0,255,0);
 #ifndef POCUTER_DISABLE_SD_CARD     
-   printf("SDCard...\n");
    SDCard = new esp32_c3_SDCard();
-   printf("OTA...\n");
    RGBLed->setRGB(0,0,0,255);
    OTA = new esp32_c3_OTA(SDCard);
 #endif   
-   printf("WIFI...\n");
    WIFI = new esp32_c3_WIFI();
    RGBLed->setRGB(0,255,255,255);
    
