@@ -1,7 +1,7 @@
 
 #include "include/hal/esp32-c3/esp32_c3_Expander.h"
 #include "include/hal/esp32-c3/Pocuter_Pins.h"
-
+#include "driver/gpio.h"
 #include <unistd.h>
 
 
@@ -90,7 +90,7 @@ esp32_c3_Expander::esp32_c3_Expander() {
     xSemaphoreGive(m_eventHandlerSemaphore);
     
    
-    m_i2c = new esp32_c3_I2C(0);
+    m_i2c = NULL;
     m_P0_Dir = 0xFF;
     m_P1_Dir = 0xFF;
     
@@ -100,7 +100,13 @@ esp32_c3_Expander::esp32_c3_Expander() {
     m_P0_Led = 0xFF;
     m_P1_Led = 0xFF;
         
-    int id = m_i2c->read(EXPANDER_I2C_ADDRESS, EXPANDER_ID);
+   
+    
+}
+void esp32_c3_Expander::registerI2Cbus(PocuterI2C* bus) {
+    m_i2c = bus;
+    
+     int id = m_i2c->read(EXPANDER_I2C_ADDRESS, EXPANDER_ID);
     if (id == 0x23) {
         m_expanderOnline = true;
     }
@@ -128,13 +134,12 @@ esp32_c3_Expander::esp32_c3_Expander() {
     
 }
 
-
 esp32_c3_Expander::~esp32_c3_Expander() {
     delete m_i2c;
 }
 
 void esp32_c3_Expander::registerInterruptPin(uint8_t port, uint8_t pin) {
-    
+    if (! m_expanderOnline) return;
     if (port == 0) {
         m_P0_Int &= ~(1 << pin);
         m_i2c->write(EXPANDER_I2C_ADDRESS, EXP_REG_INT_CONFIG_P0, m_P0_Int);

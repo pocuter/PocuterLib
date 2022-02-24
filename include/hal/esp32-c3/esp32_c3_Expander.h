@@ -5,7 +5,11 @@
 #include <stdint.h>
 #include <vector>
 
-#include "esp32_c3_I2C.h"
+#include "include/hal/PocuterI2C.h"
+#include "FreeRTOS/FreeRTOS.h"
+#include "FreeRTOS/queue.h"
+#include "FreeRTOS/semphr.h"
+
 #define EXPANDER_OUT   0
 #define EXPANDER_IN    1
 
@@ -18,6 +22,8 @@ namespace PocuterLib {
             typedef void (expanderEventHandler)(uint8_t, uint8_t, void*);
             void registerEventHandler(expanderEventHandler*, void*);
             void unregisterEventHandler(expanderEventHandler* e);
+            
+            void registerI2Cbus(PocuterI2C*);
             
             static esp32_c3_Expander* Instance(void);
             uint8_t pinMode(uint8_t port, uint8_t pin, uint8_t pinDirection);
@@ -37,7 +43,7 @@ namespace PocuterLib {
             esp32_c3_Expander();
             virtual ~esp32_c3_Expander();
             
-            esp32_c3_I2C* m_i2c;
+            PocuterI2C* m_i2c;
 
             uint8_t m_P0_Dir; 
             uint8_t m_P1_Dir; 

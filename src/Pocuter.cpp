@@ -8,6 +8,7 @@
 #include "include/hal/esp32-c3/esp32_c3_SDCard.h"
 #include "include/hal/esp32-c3/esp32_c3_OTA.h"
 #include "include/hal/esp32-c3/esp32_c3_WIFI.h"
+#include "include/hal/esp32-c3/esp32_c3_I2C.h"
 
 #include <string.h>
 
@@ -15,6 +16,7 @@
 #define VERSION "1.0"
 using namespace PocuterLib::HAL;
 RGBled* Pocuter::RGBLed = NULL; 
+PocuterI2C* Pocuter::I2C = NULL;
 
 #ifndef POCUTER_DISABLE_DISPLAY  
 PocuterDisplay* Pocuter::Display = NULL; 
@@ -41,6 +43,9 @@ void Pocuter::begin() {
 #ifndef POCUTER_DISABLE_DISPLAY   
    Display = new SSD1131_Display();
 #endif
+   
+   I2C = new esp32_c3_I2C(0);
+   esp32_c3_Expander::Instance()->registerI2Cbus(I2C);
    
    RGBLed = new esp32_c3_RGBled();
    RGBLed->setRGB(0,255,0,0);

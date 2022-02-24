@@ -11,6 +11,9 @@
 #include "include/hal/PocuterConfig.h"
 #include "include/hal/PocuterOTA.h"
 #include "include/hal/PocuterWIFI.h"
+#include "include/hal/PocuterI2C.h"
+
+
 class Pocuter {
 public:
     enum POCUTER_RESULT {
@@ -23,6 +26,7 @@ public:
     void begin();
     int setStatusLED(uint8_t r, uint8_t g, uint8_t b);
     static RGBled* RGBLed;
+    static PocuterI2C* I2C;
 #ifndef POCUTER_DISABLE_DISPLAY      
     static PocuterDisplay* Display;
 #endif    
