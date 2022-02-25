@@ -25,7 +25,7 @@ esp32_c3_I2C::esp32_c3_I2C(int port) {
     
     i2c_config_t m_conf;
     m_conf.mode = I2C_MODE_MASTER;
-#ifndef POCUTER_REVERT_SDA_SCL
+#ifndef POCUTER_SWITCH_SDA_SCL
     m_conf.sda_io_num = PIN_I2C_SDA;
     m_conf.scl_io_num = PIN_I2C_SCL;
 #else

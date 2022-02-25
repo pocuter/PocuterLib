@@ -29,7 +29,7 @@
 // #define POCUTER_DISABLE_ACC
 
 /* Swap SDA and SCL at the I2C bus. This will deactivate the expander and with it RGBled, OTA, SD-Card, Buttons and Display */
-// #define POCUTER_REVERT_SDA_SCL
+// #define POCUTER_SWITCH_SDA_SCL
 
 
 
@@ -43,7 +43,7 @@
 /* Please do not change anything from this point */
 
 
-#ifndef POCUTER_REVERT_SDA_SCL
+#ifndef POCUTER_SWITCH_SDA_SCL
 
 #ifndef POCUTER_DISABLE_ACC
 #define POCUTER_DISABLE_ACC
@@ -51,13 +51,13 @@
 
 #endif
 
-#ifdef POCUTER_REVERT_SDA_SCL
+#ifdef POCUTER_SWITCH_SDA_SCL
 
 #ifndef POCUTER_DISABLE_EXPANDER
 #define POCUTER_DISABLE_EXPANDER
 #endif
 
-#endif /* POCUTER_REVERT_SDA_SCL */
+#endif /* POCUTER_SWITCH_SDA_SCL */
 
 
 
