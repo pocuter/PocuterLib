@@ -1,3 +1,6 @@
+#include "include/PocuterLibConfig.h"
+#ifndef POCUTER_DISABLE_BUTTONS
+
 #include "include/hal/esp32-c3/esp32_c3_Buttons.h"
 
 
@@ -67,4 +70,5 @@ void esp32_c3_Buttons::expEventHandler(uint8_t a, uint8_t b, void* dat) {
 }
 esp32_c3_Buttons::~esp32_c3_Buttons() {
 }
+#endif
 

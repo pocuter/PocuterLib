@@ -1,3 +1,4 @@
+#include "include/PocuterLibConfig.h"
 #include "include/hal/esp32-c3/esp32_c3_SPI.h"
 #include "include/hal/esp32-c3/esp32_c3_Expander.h"
 #include <freertos/task.h>

@@ -1,4 +1,5 @@
-
+#include "include/PocuterLibConfig.h"
+#ifndef POCUTER_DISABLE_WIFI
 
 #include "include/hal/esp32-c3/esp32_c3_WIFI.h"
 #define MAX_RETRY_ATTEMPTS     2
@@ -210,4 +211,4 @@ esp32_c3_WIFI::~esp32_c3_WIFI() {
     esp_wifi_stop();
     esp_wifi_deinit();
 }
-
+#endif

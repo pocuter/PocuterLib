@@ -1,3 +1,4 @@
+#include "include/PocuterLibConfig.h"
 #include "include/hal/esp32-c3/esp32_c3_hmac.h"
 #include <esp_err.h>
 #include <esp32c3/rom/efuse.h>

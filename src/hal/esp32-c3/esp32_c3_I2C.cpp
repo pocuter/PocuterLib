@@ -1,4 +1,5 @@
 
+#include "include/PocuterLibConfig.h"
 
 #include <stdio.h>
 #include "include/hal/esp32-c3/esp32_c3_I2C.h"
@@ -24,10 +25,18 @@ esp32_c3_I2C::esp32_c3_I2C(int port) {
     
     i2c_config_t m_conf;
     m_conf.mode = I2C_MODE_MASTER;
+#ifndef POCUTER_REVERT_SDA_SCL
     m_conf.sda_io_num = PIN_I2C_SDA;
-    m_conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
     m_conf.scl_io_num = PIN_I2C_SCL;
+#else
+    m_conf.sda_io_num = PIN_I2C_SCL;
+    m_conf.scl_io_num = PIN_I2C_SDA;
+#endif
+    m_conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
     m_conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
+    
+    
+   
     m_conf.master.clk_speed = I2C_SPEED;
     m_conf.clk_flags = 0;
     i2c_param_config(m_port, &m_conf);

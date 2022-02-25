@@ -1,15 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/cppFiles/class.h to edit this template
- */
-
-/* 
- * File:   PocuterConfig.h
- * Author: Test
- *
- * Created on 10. Februar 2022, 09:20
- */
-
 #ifndef POCUTERCONFIG_H
 #define POCUTERCONFIG_H
 #include <stdint.h>

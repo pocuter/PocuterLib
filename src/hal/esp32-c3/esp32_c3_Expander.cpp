@@ -1,4 +1,5 @@
-
+#include "include/PocuterLibConfig.h"
+#ifndef POCUTER_DISABLE_EXPANDER
 #include "include/hal/esp32-c3/esp32_c3_Expander.h"
 #include "include/hal/esp32-c3/Pocuter_Pins.h"
 #include "driver/gpio.h"
@@ -121,7 +122,7 @@ void esp32_c3_Expander::registerI2Cbus(PocuterI2C* bus) {
     m_i2c->write(EXPANDER_I2C_ADDRESS, EXP_REG_INT_CONFIG_P0, m_P0_Int);
     m_i2c->write(EXPANDER_I2C_ADDRESS, EXP_REG_INT_CONFIG_P1, m_P1_Int);
     
-    
+        
     xTaskCreate(&intTask, "intTask", 4000, this, 10, NULL);
     
     gpio_set_intr_type(EXPANDER_INT_PIN, GPIO_INTR_NEGEDGE);
@@ -296,3 +297,4 @@ uint8_t esp32_c3_Expander::ledMode(uint8_t port, uint8_t pin, uint8_t ledMode)
   m_i2c->write(EXPANDER_I2C_ADDRESS, portReg, portLed); // EXPANDER_I2C_ADDRESS
   return 1;
 }
+#endif

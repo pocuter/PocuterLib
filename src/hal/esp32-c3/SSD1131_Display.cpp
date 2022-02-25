@@ -1,3 +1,5 @@
+#include "include/PocuterLibConfig.h"
+
 #ifndef POCUTER_DISABLE_DISPLAY   
 #include "include/hal/esp32-c3/SSD1131_display.h"
 

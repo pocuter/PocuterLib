@@ -1,4 +1,5 @@
-
+#include "include/PocuterLibConfig.h"
+#ifndef POCUTER_DISABLE_SD_CARD
 #include "include/hal/esp32-c3/esp32_c3_OTA.h"
 
 #include <string.h>
@@ -107,3 +108,4 @@ PocuterOTA::OTAERROR esp32_c3_OTA::restart() {
     esp_restart();
     return OTAERROR_UNKNOWN;
 }
+#endif
