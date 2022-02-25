@@ -40,6 +40,7 @@
 #include "include/hal/PocuterWIFI.h"
 #include "include/hal/PocuterI2C.h"
 #include "include/hal/PocuterAccelerometer.h"
+#include "include/hal/PocuterLightSensor.h"
 
 class Pocuter {
 public:
@@ -62,7 +63,9 @@ public:
     static PocuterDisplay* Display;
     static UGUI* ugui;
 #endif
-    
+#ifndef POCUTER_DISABLE_LIGHTSENSOR 
+    static PocuterLightSensor* LightSensor;
+#endif
 #ifndef POCUTER_DISABLE_BUTTONS    
     static PocuterButtons* Buttons;
 #endif

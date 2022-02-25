@@ -59,7 +59,7 @@ MXC4005XC_Accelerometer::MXC4005XC_Accelerometer(PocuterI2C* bus) {
     m_InterruptQueue = xQueueCreate(16, sizeof(uint32_t));
     if(!m_InterruptQueue) abort();
     
-    xTaskCreate(&intTask, "intTask", 4000, this, 10, NULL);
+    xTaskCreate(&intTask, "intTaskACC", 4000, this, 10, NULL);
     
     gpio_set_intr_type(ACC_INT_PIN, GPIO_INTR_NEGEDGE);
     

@@ -123,7 +123,7 @@ void esp32_c3_Expander::registerI2Cbus(PocuterI2C* bus) {
     m_i2c->write(EXPANDER_I2C_ADDRESS, EXP_REG_INT_CONFIG_P1, m_P1_Int);
     
         
-    xTaskCreate(&intTask, "intTask", 4000, this, 10, NULL);
+    xTaskCreate(&intTask, "intTaskEXP", 4000, this, 10, NULL);
     
     gpio_set_intr_type(EXPANDER_INT_PIN, GPIO_INTR_NEGEDGE);
     

@@ -10,6 +10,7 @@
 #include "include/hal/esp32-c3/esp32_c3_WIFI.h"
 #include "include/hal/esp32-c3/esp32_c3_I2C.h"
 #include "include/hal/esp32-c3/MXC4005XC_Accelerometer.h"
+#include "include/hal/esp32-c3/esp32_c3_LightSensor.h"
 #include <string.h>
 
 
@@ -18,6 +19,10 @@ using namespace PocuterLib::HAL;
 
 #ifndef POCUTER_DISABLE_RGBled 
 RGBled* Pocuter::RGBLed = NULL;
+#endif
+
+#ifndef POCUTER_DISABLE_LIGHTSENSOR 
+PocuterLightSensor* Pocuter::LightSensor = NULL;
 #endif
 
 PocuterI2C* Pocuter::I2C = NULL;
@@ -93,7 +98,9 @@ void Pocuter::begin() {
 #ifndef POCUTER_DISABLE_ACC   
    Accelerometer = new MXC4005XC_Accelerometer(I2C);
 #endif
- 
+#ifndef POCUTER_DISABLE_LIGHTSENSOR 
+    LightSensor = new esp32_c3_LightSensor();
+#endif
    
 #ifndef POCUTER_DISABLE_DISPLAY       
    uint16_t sizeX;

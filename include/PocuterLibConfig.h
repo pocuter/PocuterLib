@@ -31,8 +31,8 @@
 /* Swap SDA and SCL at the I2C bus. This will deactivate the expander and with it RGBled, OTA, SD-Card, Buttons and Display */
 // #define POCUTER_SWITCH_SDA_SCL
 
-
-
+/* Disable Light Sensor */
+ // #define POCUTER_DISABLE_LIGHTSENSOR
 
 
 
