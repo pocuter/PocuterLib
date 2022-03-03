@@ -1,5 +1,6 @@
 #include "include/hal/PocuterMicrophone.h"
 #include <stddef.h>
+#include <stdint.h>
 
 
 #ifndef ESP32_C3_MIC_H
@@ -18,6 +19,10 @@ namespace PocuterLib {
             static void dataStream(void* data, size_t size, void* userData);
             micEventHandler* m_eventHandler;
             void* m_eventHandlerUserData;
+            uint8_t m_volume;
+            int64_t m_average;
+            uint32_t m_averageCount;
+            int16_t m_avg;
         };
     }
 }

@@ -31,6 +31,7 @@ namespace PocuterLib {
             adcEventHandlerDataEvailable* m_dataEventHandler;
             void* m_dataEventHandlerUserData;
             SemaphoreHandle_t m_eventHandlerSemaphore;
+            
         };
     }
 }

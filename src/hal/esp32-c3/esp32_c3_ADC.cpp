@@ -74,7 +74,7 @@ void esp32_c3_ADC::continuousAdcInit(uint16_t adc1_chan_mask, adc1_channel_t *ch
     adc_digi_config_t dig_cfg = {
         .conv_limit_en = 0,
         .conv_limit_num = 250,
-        .sample_freq_hz = 620,
+        .sample_freq_hz = 44100,
     };
 
     dig_cfg.adc_pattern_len = channel_num;
@@ -88,6 +88,9 @@ void esp32_c3_ADC::continuousAdcInit(uint16_t adc1_chan_mask, adc1_channel_t *ch
     dig_cfg.adc_pattern = adc_pattern;
     ret = adc_digi_controller_config(&dig_cfg);
     assert(ret == ESP_OK);
+    
+   
+            
 }
 bool esp32_c3_ADC::checkValidData(const adc_digi_output_data_t *data)
 {
@@ -105,8 +108,9 @@ void esp32_c3_ADC::eventTask(void *arg)
     esp_err_t ret;
     uint32_t ret_num = 0;
     uint8_t result[TIMES] = {0};
+    int16_t rawData[TIMES / 4] = {0};
     memset(result, 0xcc, TIMES);
-
+    memset(rawData, 0xcc, TIMES / 2);
     uint16_t adc1_chan_mask = BIT(0);
     adc1_channel_t channel[1] = {ADC1_CHANNEL_0};
 
@@ -118,14 +122,16 @@ void esp32_c3_ADC::eventTask(void *arg)
         for (int i = 0; i < ret_num; i+=4) {
             adc_digi_output_data_t *p = (adc_digi_output_data_t*)&result[i];
             if (checkValidData(p)) {
-              xSemaphoreTake(myself->m_eventHandlerSemaphore, portMAX_DELAY);
-              if (myself->m_dataEventHandler) myself->m_dataEventHandler(result, ret_num, myself->m_dataEventHandlerUserData);
-              xSemaphoreGive(myself->m_eventHandlerSemaphore);
-                
+                rawData[i / 4] = ((int16_t)(p->type2.data << 4));
             } else {
-              
+                rawData[i / 4] = 0xFFFF;
             }
         }
+            
+        xSemaphoreTake(myself->m_eventHandlerSemaphore, portMAX_DELAY);
+        if (myself->m_dataEventHandler) myself->m_dataEventHandler(rawData, ret_num / 2, myself->m_dataEventHandlerUserData);
+        xSemaphoreGive(myself->m_eventHandlerSemaphore);
+            
         
     }
 
