@@ -11,6 +11,8 @@
 #include "include/hal/esp32-c3/esp32_c3_I2C.h"
 #include "include/hal/esp32-c3/MXC4005XC_Accelerometer.h"
 #include "include/hal/esp32-c3/esp32_c3_LightSensor.h"
+#include "include/hal/esp32-c3/esp32_c3_Mic.h"
+#include "include/hal/esp32-c3/esp32_c3_ADC.h"
 #include <string.h>
 
 
@@ -53,6 +55,10 @@ PocuterWIFI* Pocuter::WIFI = NULL;
 PocuterAccelerometer* Pocuter::Accelerometer = NULL;
 #endif
 
+#ifndef POCUTER_DISABLE_MICROPHONE
+PocuterMicrophone* Pocuter::Microphone = NULL;
+#endif
+        
 Pocuter::Pocuter() {
   
     
@@ -101,7 +107,12 @@ void Pocuter::begin() {
 #ifndef POCUTER_DISABLE_LIGHTSENSOR 
     LightSensor = new esp32_c3_LightSensor();
 #endif
-   
+    
+#ifndef POCUTER_DISABLE_MICROPHONE
+    Microphone = new esp32_c3_Mic();
+#endif
+        
+
 #ifndef POCUTER_DISABLE_DISPLAY       
    uint16_t sizeX;
    uint16_t sizeY;

@@ -41,6 +41,8 @@
 #include "include/hal/PocuterI2C.h"
 #include "include/hal/PocuterAccelerometer.h"
 #include "include/hal/PocuterLightSensor.h"
+#include "include/hal/PocuterMicrophone.h"
+
 
 class Pocuter {
 public:
@@ -75,10 +77,15 @@ public:
 #ifndef POCUTER_DISABLE_SD_CARD      
     static PocuterSDCard* SDCard;
     static PocuterOTA* OTA;
-#endif    
+#endif  
+    
 #ifndef POCUTER_DISABLE_WIFI  
     static PocuterWIFI* WIFI;
 #endif  
+
+#ifndef POCUTER_DISABLE_MICROPHONE    
+    static PocuterMicrophone* Microphone;
+#endif
     
 #ifndef POCUTER_DISABLE_ACC       
     static PocuterAccelerometer* Accelerometer;

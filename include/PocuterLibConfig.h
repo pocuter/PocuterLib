@@ -32,10 +32,10 @@
 // #define POCUTER_SWITCH_SDA_SCL
 
 /* Disable Light Sensor */
- // #define POCUTER_DISABLE_LIGHTSENSOR
+// #define POCUTER_DISABLE_LIGHTSENSOR
 
-
-
+/* Disable the Microphone */
+// #define POCUTER_DISABLE_MICROPHONE
 
 
 

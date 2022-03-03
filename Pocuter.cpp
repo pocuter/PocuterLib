@@ -16,4 +16,5 @@
 #include "src/hal/esp32-c3/MXC4005XC_Accelerometer.cpp"
 #include "src/hal/esp32-c3/esp32_c3_LightSensor.cpp"
 #include "src/hal/esp32-c3/esp32_c3_ADC.cpp"
+#include "src/hal/esp32-c3/esp32_c3_Mic.cpp"
 #include "src/hal/PocuterConfig.cpp"
