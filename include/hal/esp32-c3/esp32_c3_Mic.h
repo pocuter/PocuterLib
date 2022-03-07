@@ -12,17 +12,25 @@ namespace PocuterLib {
             esp32_c3_Mic();
             MICERROR registerEventHandler(micEventHandler*, void*);
             void unregisterEventHandler();
-            MICERROR startRecording();
+            MICERROR startRecording(PocuterMicrophone::SAMLE_RATE_HZ, PocuterMicrophone::NOICE_REDUCTION_LEVEL);
             MICERROR stopRecording();
             virtual ~esp32_c3_Mic();
         private:
             static void dataStream(void* data, size_t size, void* userData);
+            void dataStreamWorker(void* data, size_t size);
             micEventHandler* m_eventHandler;
             void* m_eventHandlerUserData;
             uint8_t m_volume;
             int64_t m_average;
             uint32_t m_averageCount;
             int16_t m_avg;
+            uint16_t m_max;
+            uint32_t m_maxCounter;
+            uint32_t m_hz;
+            double m_noiceReduceSpeed;
+            PocuterMicrophone::NOICE_REDUCTION_LEVEL m_noiceLevel;
+            uint16_t m_noiceReductionMinValue;
+            uint16_t m_noiceReductionXThSec;
         };
     }
 }

@@ -1,6 +1,5 @@
 #ifndef POCUTERLIBCONFIG_H
 #define POCUTERLIBCONFIG_H
-
 /*
  * Pocuter Lib Configuration
  * 
@@ -43,13 +42,13 @@
 /* Please do not change anything from this point */
 
 
-#ifndef POCUTER_SWITCH_SDA_SCL
+/*#ifndef POCUTER_SWITCH_SDA_SCL
 
 #ifndef POCUTER_DISABLE_ACC
 #define POCUTER_DISABLE_ACC
 #endif
 
-#endif
+#endif*/
 
 #ifdef POCUTER_SWITCH_SDA_SCL
 

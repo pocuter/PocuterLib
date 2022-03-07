@@ -14,7 +14,7 @@ namespace PocuterLib {
             static esp32_c3_ADC* Instance(void);
             typedef void (adcEventHandlerDataEvailable)(void* data, size_t size, void* userData);
             
-            bool registerContinuousRead(adcEventHandlerDataEvailable* eventHandler, void*);
+            bool registerContinuousRead(adcEventHandlerDataEvailable* eventHandler, uint32_t sampleFreqHZ, void*);
             bool unregisterContinuousRead();
             
         private:
@@ -23,7 +23,7 @@ namespace PocuterLib {
             
             esp32_c3_ADC();
             virtual ~esp32_c3_ADC();
-            void continuousAdcInit(uint16_t adc1_chan_mask, adc1_channel_t *channel, uint8_t channel_num);
+            void continuousAdcInit(uint16_t adc1_chan_mask, adc1_channel_t *channel, uint8_t channel_num, uint32_t sampleFreqHZ);
             void continuousRead();
             static bool checkValidData(const adc_digi_output_data_t *data);
             static void eventTask(void *arg);
@@ -31,6 +31,7 @@ namespace PocuterLib {
             adcEventHandlerDataEvailable* m_dataEventHandler;
             void* m_dataEventHandlerUserData;
             SemaphoreHandle_t m_eventHandlerSemaphore;
+            uint32_t m_sampleFreqHZ;
             
         };
     }
