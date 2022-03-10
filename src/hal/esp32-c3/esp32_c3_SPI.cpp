@@ -178,16 +178,20 @@ void esp32_c3_SPI::sendCommand(const uint8_t cmd)
 {
    sendCommand(&cmd, 1);
 }
-void esp32_c3_SPI::sendScanLine(const uint8_t* line, uint8_t size)
+void esp32_c3_SPI::sendScanLine(const uint8_t* line, uint32_t size, bool noCopy)
 {
-    if (size > 96*2) return;
+    if (! noCopy && size > 96*2) return;
     spi_transaction_t* t = spiGetTransaction();
     TRANS_USER* user = ( TRANS_USER*) t->user;
     t->addr = 0;    
     t->length = size*8;                     //Command is 8 bits
+    if (! noCopy) {
+        memcpy(user->transBuffer, line, size);
+        t->tx_buffer = user->transBuffer;
+    } else {
+        t->tx_buffer = line;
+    }
     
-    memcpy(user->transBuffer, line, size);
-    t->tx_buffer = user->transBuffer;
     t->flags = 0;
    
     user->dc = 1;

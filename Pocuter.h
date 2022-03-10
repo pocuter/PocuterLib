@@ -53,7 +53,7 @@ public:
     
     Pocuter();
     virtual ~Pocuter();
-    void begin();
+    void begin(PocuterDisplay::BUFFER_MODE bm = PocuterDisplay::BUFFER_MODE_NO_BUFFER);
     
 #ifndef POCUTER_DISABLE_RGBled    
     int setStatusLED(uint8_t r, uint8_t g, uint8_t b);

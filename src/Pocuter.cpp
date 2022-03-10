@@ -63,7 +63,7 @@ Pocuter::Pocuter() {
   
     
 }
-void Pocuter::begin() {
+void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
    I2C = new esp32_c3_I2C(0);
 
 #ifndef POCUTER_DISABLE_EXPANDER    
@@ -71,7 +71,7 @@ void Pocuter::begin() {
 #endif   
    
 #ifndef POCUTER_DISABLE_DISPLAY   
-   Display = new SSD1131_Display(PocuterDisplay::BUFFER_MODE_NO_BUFFER);
+   Display = new SSD1131_Display(bm);
 #endif
    
 #ifndef POCUTER_DISABLE_RGBled  

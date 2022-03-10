@@ -16,6 +16,8 @@
 #define DISPLAY_X       96
 #define DISPLAY_Y       64
 
+#define UPDATE_LINES_AT_ONCE 16
+
 #define COMMAND_SET_COLOUMN     0x15
 #define COMMAND_DRAW_LINE       0x21
 #define COMMAND_DRAW_RECTANGLE  0x22
@@ -33,6 +35,9 @@
 #define swap16(val) ( (((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00) )
 
 using namespace PocuterLib::HAL;
+bool SSD1131_Display::g_runUpdateTask = false;
+SemaphoreHandle_t SSD1131_Display::g_displaySemaphore;
+bool SSD1131_Display::g_initializing = true;
 
 SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
    
@@ -40,22 +45,26 @@ SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
    m_expander = esp32_c3_Expander::Instance();
    m_bm = bm;
    
-   if (bm == BUFFER_MODE_SINGLE_BUFFER || bm == BUFFER_MODE_DOUBLE_BUFFER) {
-       m_buffer_A = (uint16_t*)heap_caps_malloc(DISPLAY_X*DISPLAY_Y*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
-       if (m_buffer_A) memset(m_buffer_A, 0, DISPLAY_X*DISPLAY_Y*2);
-       if (! m_buffer_A) m_bm = BUFFER_MODE_NO_BUFFER;
-       m_currentBackBuffer = m_buffer_A;
-   }
+    g_displaySemaphore = xSemaphoreCreateBinary();
+    if (!g_displaySemaphore) abort();
+    xSemaphoreGive(g_displaySemaphore);
+       
    if (bm == BUFFER_MODE_DOUBLE_BUFFER) {
-       m_buffer_B = (uint16_t*)heap_caps_malloc(DISPLAY_X*DISPLAY_Y*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
-       if (m_buffer_B) memset(m_buffer_A, 0, DISPLAY_X*DISPLAY_Y*2);
-       if (! m_buffer_B) m_bm = BUFFER_MODE_SINGLE_BUFFER;
+       m_currentBackBuffer = (uint16_t*)heap_caps_malloc(DISPLAY_X*DISPLAY_Y*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
+       if (m_currentBackBuffer) memset(m_currentBackBuffer, 0, DISPLAY_X*DISPLAY_Y*2);
+       if (! m_currentBackBuffer) m_bm = BUFFER_MODE_NO_BUFFER;
        
    }
-   if (m_bm == BUFFER_MODE_SINGLE_BUFFER) m_currentFrontBuffer = m_currentBackBuffer;
-   if (m_bm == BUFFER_MODE_DOUBLE_BUFFER) m_currentFrontBuffer = m_buffer_B;
-   
-   m_expander->pinMode(OLED_SHDN_PORT, OLED_SHDN_PIN, EXPANDER_OUT);
+   if (bm == BUFFER_MODE_DOUBLE_BUFFER) {
+       m_currentFrontBuffer = (uint16_t*)heap_caps_malloc(DISPLAY_X*DISPLAY_Y*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
+       if (m_currentFrontBuffer) memset(m_currentFrontBuffer, 0, DISPLAY_X*DISPLAY_Y*2);
+       if (! m_currentFrontBuffer){
+           m_bm = BUFFER_MODE_NO_BUFFER;
+           heap_caps_free(m_currentBackBuffer);
+       }
+   }
+
+    m_expander->pinMode(OLED_SHDN_PORT, OLED_SHDN_PIN, EXPANDER_OUT);
    m_expander->pinMode(OLED_DC_PORT, OLED_DC_PIN, EXPANDER_OUT);
    m_expander->pinMode(OLED_CS_PORT, OLED_CS_PIN, EXPANDER_OUT);
    m_expander->pinMode(OLED_RST_PORT, OLED_RST_PIN, EXPANDER_OUT);
@@ -99,6 +108,22 @@ SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
     m_spi->sendCommand(init, sizeof(init));
     clearScreen();
     m_spi->sendCommand(COMMAND_DISPLAY_ON, 0xBC);
+    
+    if (bm == BUFFER_MODE_DOUBLE_BUFFER) {
+       continuousScreenUpdate(true);
+   }
+    
+}
+void SSD1131_Display::continuousScreenUpdate(bool on) {
+    if (m_bm != BUFFER_MODE_DOUBLE_BUFFER) return;
+   
+    if (! on && g_runUpdateTask) {
+        g_runUpdateTask = false;
+    }
+    if (on && ! g_runUpdateTask) {
+        g_runUpdateTask = true;
+        xTaskCreate(&updateTask, "updateTask", 4000, this, 10, NULL);
+    }
 }
 PocuterDisplay::BUFFER_MODE SSD1131_Display::getBufferMode() {
     return m_bm;
@@ -134,12 +159,12 @@ void SSD1131_Display::setBrightness(uint8_t brightness) {
 }
 void SSD1131_Display::set16BitPixel(uint16_t x, uint16_t y, uint16_t color) {
     if (x >= DISPLAY_X || y >= DISPLAY_Y) return;
-    if (m_bm == BUFFER_MODE_NO_BUFFER) {
-        drawLine(x,y,x,y,color);
-        return;
-    } else {
-        m_currentBackBuffer[x + (DISPLAY_X * y)] = swap16(color);
-    }
+    if (m_bm == BUFFER_MODE_NO_BUFFER) return;
+   
+    xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
+    m_currentBackBuffer[x + (DISPLAY_X * y)] = swap16(color);
+    xSemaphoreGive(g_displaySemaphore);
+    
 }
 void SSD1131_Display::setPixel(uint16_t x, uint16_t y, uint32_t color) {
     
@@ -148,18 +173,14 @@ void SSD1131_Display::setPixel(uint16_t x, uint16_t y, uint32_t color) {
         drawLine(x,y,x,y,color);
         return;
     } else {
+        xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
         m_currentBackBuffer[x + (DISPLAY_X * y)] = swap16(color24to16(color));
+        xSemaphoreGive(g_displaySemaphore);
     }
     
     
 }
-void SSD1131_Display::updateScreen() {
-    if (m_bm == BUFFER_MODE_NO_BUFFER) return;
-    for (int i = 0; i < DISPLAY_Y; i++) {
-        draw16BitScanLine(0, i, DISPLAY_X, &m_currentFrontBuffer[i*DISPLAY_X]);
-    }
-    
-}
+
 void SSD1131_Display::drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
     if (m_bm == BUFFER_MODE_NO_BUFFER) {
         uint8_t data[3];
@@ -225,33 +246,33 @@ uint16_t SSD1131_Display::color24to16(uint32_t color) {
     uint16_t r = ((red >> 3) & 0x1f) << 11;
     return (r | g | b);
 }
-void SSD1131_Display::draw16BitScanLine(uint16_t x, uint16_t y, uint16_t width, uint16_t* colors) {
-    if (x >= DISPLAY_X) return;
-    if (y >= DISPLAY_Y) return ;
-    if (x + width >= DISPLAY_X) width = DISPLAY_X - x;
-    
-    m_spi->sendCommand(0x15, x, (x + width) - 1);
-    m_spi->sendCommand(0x75, y, y);
-    m_spi->sendScanLine((uint8_t*)colors, width*2);
-    
-}
+
 
 void SSD1131_Display::drawScanLine(uint16_t x, uint16_t y, uint16_t width, uint32_t* colors) {
     if (x >= DISPLAY_X) return;
     if (y >= DISPLAY_Y) return ;
     if (x + width >= DISPLAY_X) width = DISPLAY_X - x;
-    uint8_t* buffer = (uint8_t*)heap_caps_malloc(width*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
-    for (int i = 0; i < width; i++) {
-        uint16_t c = color24to16(colors[i]);
-        buffer[i*2] = c;
-        buffer[1 + (i*2)] = c >> 8; 
-        
-    }
+    if (m_bm == BUFFER_MODE_NO_BUFFER) { 
+        uint8_t* buffer = (uint8_t*)heap_caps_malloc(width*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
+        for (int i = 0; i < width; i++) {
+            uint16_t c = color24to16(colors[i]);
+            buffer[i*2] = c;
+            buffer[1 + (i*2)] = c >> 8; 
+
+        }
     
-    m_spi->sendCommand(0x15, x, (x + width) - 1);
-    m_spi->sendCommand(0x75, y, y);
-    m_spi->sendScanLine(buffer, width*2);
-    free(buffer);
+        m_spi->sendCommand(0x15, x, (x + width) - 1);
+        m_spi->sendCommand(0x75, y, y);
+        m_spi->sendScanLine(buffer, width*2);
+        free(buffer);
+    } else {
+        xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
+        for (int i = 0; i < width; i++) {
+            uint16_t c = color24to16(colors[i]);
+            m_currentBackBuffer[(x+i) + (DISPLAY_X * y)] = c;
+        }
+        xSemaphoreGive(g_displaySemaphore);
+    }
 }
 
 void SSD1131_Display::drawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
@@ -266,11 +287,13 @@ void SSD1131_Display::drawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint1
         m_spi->sendCommandList(0x22, x1, y1, x2, y2, data[0], data[1], data[2], data[0], data[1], data[2], -1);
     } else {
         uint16_t c = swap16(color24to16(color));
+        xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
         for (int ix = x1; ix <= x2; ix++) {
             for (int iy = y1; iy <= y2; iy++) {
-                 m_currentBackBuffer[ix + (DISPLAY_X * iy)] = c;
+                m_currentBackBuffer[ix + (DISPLAY_X * iy)] = c;
             }
         }
+        xSemaphoreGive(g_displaySemaphore);
     }
 }
 
@@ -290,6 +313,37 @@ void SSD1131_Display::reset() {
    vTaskDelay(configTICK_RATE_HZ / 10);
    m_expander->setPin(OLED_RST_PORT, OLED_RST_PIN, 1);
 }
-SSD1131_Display::~SSD1131_Display() {
+
+void SSD1131_Display::updateTask(void *arg) {
+    SSD1131_Display* myself = (SSD1131_Display*) arg;
+    int i = 0;
+    if (g_initializing) vTaskDelay(configTICK_RATE_HZ);
+    g_initializing = false;
+    myself->m_spi->sendCommand(0x15, 0, DISPLAY_X - 1);
+    myself->m_spi->sendCommand(0x75, 0, DISPLAY_Y - 1);
+            
+    while(g_runUpdateTask) {
+        myself->m_spi->sendScanLine((uint8_t*)&(myself->m_currentFrontBuffer[i*DISPLAY_X]), DISPLAY_X*UPDATE_LINES_AT_ONCE*2, true);
+        i+=UPDATE_LINES_AT_ONCE;
+        if (i == DISPLAY_Y) {
+            myself->m_spi->sendCommand(0x15, 0, DISPLAY_X - 1);
+            myself->m_spi->sendCommand(0x75, 0, DISPLAY_Y - 1);
+            i = 0;
+            xSemaphoreTake(myself->g_displaySemaphore, portMAX_DELAY);
+            memcpy(myself->m_currentFrontBuffer, myself->m_currentBackBuffer, DISPLAY_X*DISPLAY_Y*2);
+            xSemaphoreGive(myself->g_displaySemaphore);
+        }
+        vTaskDelay(0);
+    }
+    vTaskDelete(NULL);
 }
+
+
+SSD1131_Display::~SSD1131_Display() {
+    g_runUpdateTask = false;
+}
+
+
+
+
 #endif

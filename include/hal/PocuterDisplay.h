@@ -6,7 +6,6 @@ class PocuterDisplay {
     public:
         enum BUFFER_MODE {
             BUFFER_MODE_NO_BUFFER,
-            BUFFER_MODE_SINGLE_BUFFER,
             BUFFER_MODE_DOUBLE_BUFFER
 
         };
@@ -19,7 +18,7 @@ class PocuterDisplay {
         virtual void setBrightness(uint8_t brightness) = 0;
         virtual void clearWindow(uint8_t x, uint8_t y, uint8_t width, uint8_t height) = 0;
         virtual void clearScreen() = 0;
-        virtual void updateScreen() = 0;
+        virtual void continuousScreenUpdate(bool on) = 0;
         virtual BUFFER_MODE getBufferMode() = 0;
     private:
 
