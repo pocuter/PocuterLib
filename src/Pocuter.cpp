@@ -71,7 +71,7 @@ void Pocuter::begin() {
 #endif   
    
 #ifndef POCUTER_DISABLE_DISPLAY   
-   Display = new SSD1131_Display();
+   Display = new SSD1131_Display(PocuterDisplay::BUFFER_MODE_NO_BUFFER);
 #endif
    
 #ifndef POCUTER_DISABLE_RGBled  

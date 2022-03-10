@@ -2,6 +2,7 @@
 
 #ifndef POCUTER_DISABLE_DISPLAY   
 #include "include/hal/esp32-c3/SSD1131_display.h"
+#include <string.h>
 
 #define OLED_SHDN_PORT  0
 #define OLED_SHDN_PIN   2
@@ -26,12 +27,33 @@
 #define COMMAND_DISPLAY_OFF     0xAE
 #define COMMAND_DISPLAY_ON      0xAF
 
+#define sgn(x) ((x<0)?-1:((x>0)?1:0)) /* macro to return the sign of a
+                                         number */
+
+#define swap16(val) ( (((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00) )
+
 using namespace PocuterLib::HAL;
 
-SSD1131_Display::SSD1131_Display() {
+SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
    
    m_spi = new esp32_c3_SPI();
    m_expander = esp32_c3_Expander::Instance();
+   m_bm = bm;
+   
+   if (bm == BUFFER_MODE_SINGLE_BUFFER || bm == BUFFER_MODE_DOUBLE_BUFFER) {
+       m_buffer_A = (uint16_t*)heap_caps_malloc(DISPLAY_X*DISPLAY_Y*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
+       if (m_buffer_A) memset(m_buffer_A, 0, DISPLAY_X*DISPLAY_Y*2);
+       if (! m_buffer_A) m_bm = BUFFER_MODE_NO_BUFFER;
+       m_currentBackBuffer = m_buffer_A;
+   }
+   if (bm == BUFFER_MODE_DOUBLE_BUFFER) {
+       m_buffer_B = (uint16_t*)heap_caps_malloc(DISPLAY_X*DISPLAY_Y*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
+       if (m_buffer_B) memset(m_buffer_A, 0, DISPLAY_X*DISPLAY_Y*2);
+       if (! m_buffer_B) m_bm = BUFFER_MODE_SINGLE_BUFFER;
+       
+   }
+   if (m_bm == BUFFER_MODE_SINGLE_BUFFER) m_currentFrontBuffer = m_currentBackBuffer;
+   if (m_bm == BUFFER_MODE_DOUBLE_BUFFER) m_currentFrontBuffer = m_buffer_B;
    
    m_expander->pinMode(OLED_SHDN_PORT, OLED_SHDN_PIN, EXPANDER_OUT);
    m_expander->pinMode(OLED_DC_PORT, OLED_DC_PIN, EXPANDER_OUT);
@@ -78,6 +100,9 @@ SSD1131_Display::SSD1131_Display() {
     clearScreen();
     m_spi->sendCommand(COMMAND_DISPLAY_ON, 0xBC);
 }
+PocuterDisplay::BUFFER_MODE SSD1131_Display::getBufferMode() {
+    return m_bm;
+}
 void SSD1131_Display::clearScreen() {
     clearWindow(0,0,DISPLAY_X, DISPLAY_Y);
     
@@ -91,8 +116,12 @@ void SSD1131_Display::clearWindow(uint8_t x, uint8_t y, uint8_t width, uint8_t h
         x2 = DISPLAY_X;
     if (y2 > DISPLAY_Y)
         y2 = DISPLAY_Y;
+    if (m_bm == BUFFER_MODE_NO_BUFFER) {
+        m_spi->sendCommandList(COMMAND_CLEAR_WINDOW, x, y, x2, y2, -1);
+    } else {
+        drawRectangle(x,y,x2,y2,0);
+    }
     
-    m_spi->sendCommandList(COMMAND_CLEAR_WINDOW, x, y, x2, y2, -1);
     
 }
 
@@ -103,20 +132,107 @@ void SSD1131_Display::setBrightness(uint8_t brightness) {
    
     
 }
-
+void SSD1131_Display::set16BitPixel(uint16_t x, uint16_t y, uint16_t color) {
+    if (x >= DISPLAY_X || y >= DISPLAY_Y) return;
+    if (m_bm == BUFFER_MODE_NO_BUFFER) {
+        drawLine(x,y,x,y,color);
+        return;
+    } else {
+        m_currentBackBuffer[x + (DISPLAY_X * y)] = swap16(color);
+    }
+}
 void SSD1131_Display::setPixel(uint16_t x, uint16_t y, uint32_t color) {
     
     if (x >= DISPLAY_X || y >= DISPLAY_Y) return;
-    drawLine(x,y,x,y,color);
+    if (m_bm == BUFFER_MODE_NO_BUFFER) {
+        drawLine(x,y,x,y,color);
+        return;
+    } else {
+        m_currentBackBuffer[x + (DISPLAY_X * y)] = swap16(color24to16(color));
+    }
+    
+    
+}
+void SSD1131_Display::updateScreen() {
+    if (m_bm == BUFFER_MODE_NO_BUFFER) return;
+    for (int i = 0; i < DISPLAY_Y; i++) {
+        draw16BitScanLine(0, i, DISPLAY_X, &m_currentFrontBuffer[i*DISPLAY_X]);
+    }
+    
+}
+void SSD1131_Display::drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
+    if (m_bm == BUFFER_MODE_NO_BUFFER) {
+        uint8_t data[3];
+        data[0] = (color >> 16);
+        data[1] = (color >> 8);
+        data[2] = (color);
+
+        m_spi->sendCommandList(0x21, x1, y1, x2, y2, data[0], data[1], data[2], -1);
+    } else {
+        uint16_t c = color24to16(color);
+        int i,dx,dy,sdx,sdy,dxabs,dyabs,x,y,px,py;
+        dx=x2-x1;      /* the horizontal distance of the line */
+        dy=y2-y1;      /* the vertical distance of the line */
+        dxabs=abs(dx);
+        dyabs=abs(dy);
+        sdx=sgn(dx);
+        sdy=sgn(dy);
+        x=dyabs>>1;
+        y=dxabs>>1;
+        px=x1;
+        py=y1;
+
+        //VGA[(py<<8)+(py<<6)+px]=color;
+
+        if (dxabs>=dyabs) /* the line is more horizontal than vertical */
+        {
+          for(i=0;i<dxabs;i++)
+          {
+            y+=dyabs;
+            if (y>=dxabs)
+            {
+              y-=dxabs;
+              py+=sdy;
+            }
+            px+=sdx;
+            set16BitPixel(px,py,c);
+          }
+        }
+        else /* the line is more vertical than horizontal */
+        {
+          for(i=0;i<dyabs;i++)
+          {
+            x+=dxabs;
+            if (x>=dyabs)
+            {
+              x-=dyabs;
+              px+=sdx;
+            }
+            py+=sdy;
+            set16BitPixel(px,py,c);
+          }
+        }
+    }
+    
 }
 
-void SSD1131_Display::drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
-    uint8_t data[3];
-    data[0] = (color >> 16);
-    data[1] = (color >> 8);
-    data[2] = (color);
+uint16_t SSD1131_Display::color24to16(uint32_t color) {
+    uint8_t red = color >> 16;
+    uint8_t green = color >> 8;
+    uint8_t blue = color;
+    uint16_t b = (blue >> 3) & 0x1f;
+    uint16_t g = ((green >> 2) & 0x3f) << 5;
+    uint16_t r = ((red >> 3) & 0x1f) << 11;
+    return (r | g | b);
+}
+void SSD1131_Display::draw16BitScanLine(uint16_t x, uint16_t y, uint16_t width, uint16_t* colors) {
+    if (x >= DISPLAY_X) return;
+    if (y >= DISPLAY_Y) return ;
+    if (x + width >= DISPLAY_X) width = DISPLAY_X - x;
     
-    m_spi->sendCommandList(0x21, x1, y1, x2, y2, data[0], data[1], data[2], -1);
+    m_spi->sendCommand(0x15, x, (x + width) - 1);
+    m_spi->sendCommand(0x75, y, y);
+    m_spi->sendScanLine((uint8_t*)colors, width*2);
     
 }
 
@@ -126,13 +242,7 @@ void SSD1131_Display::drawScanLine(uint16_t x, uint16_t y, uint16_t width, uint3
     if (x + width >= DISPLAY_X) width = DISPLAY_X - x;
     uint8_t* buffer = (uint8_t*)heap_caps_malloc(width*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
     for (int i = 0; i < width; i++) {
-        uint8_t red = colors[i] >> 16;
-        uint8_t green = colors[i] >> 8;
-        uint8_t blue = colors[i];
-        uint16_t b = (blue >> 3) & 0x1f;
-        uint16_t g = ((green >> 2) & 0x3f) << 5;
-        uint16_t r = ((red >> 3) & 0x1f) << 11;
-        uint16_t c = (r | g | b);
+        uint16_t c = color24to16(colors[i]);
         buffer[i*2] = c;
         buffer[1 + (i*2)] = c >> 8; 
         
@@ -148,11 +258,20 @@ void SSD1131_Display::drawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint1
     uint8_t data[3];
     if (x1 >= DISPLAY_X || y1 >= DISPLAY_Y) return;
     if (x2 >= DISPLAY_X || y2 >= DISPLAY_Y) return;
-    data[0] = (color >> 16);
-    data[1] = (color >> 8);
-    data[2] = (color);
-    
-    m_spi->sendCommandList(0x22, x1, y1, x2, y2, data[0], data[1], data[2], data[0], data[1], data[2], -1);
+    if (m_bm == BUFFER_MODE_NO_BUFFER) {
+        data[0] = (color >> 16);
+        data[1] = (color >> 8);
+        data[2] = (color);
+
+        m_spi->sendCommandList(0x22, x1, y1, x2, y2, data[0], data[1], data[2], data[0], data[1], data[2], -1);
+    } else {
+        uint16_t c = swap16(color24to16(color));
+        for (int ix = x1; ix <= x2; ix++) {
+            for (int iy = y1; iy <= y2; iy++) {
+                 m_currentBackBuffer[ix + (DISPLAY_X * iy)] = c;
+            }
+        }
+    }
 }
 
 void SSD1131_Display::getDisplaySize(uint16_t& sizeX, uint16_t& sizeY) {
