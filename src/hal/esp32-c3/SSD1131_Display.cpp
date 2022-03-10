@@ -247,7 +247,32 @@ uint16_t SSD1131_Display::color24to16(uint32_t color) {
     return (r | g | b);
 }
 
+void SSD1131_Display::draw16BitScanLine(uint16_t x, uint16_t y, uint16_t width, uint16_t* colors) {
+    if (x >= DISPLAY_X) return;
+    if (y >= DISPLAY_Y) return ;
+    if (x + width >= DISPLAY_X) width = DISPLAY_X - x;
+    if (m_bm == BUFFER_MODE_NO_BUFFER) { 
+        uint8_t* buffer = (uint8_t*)heap_caps_malloc(width*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
+        for (int i = 0; i < width; i++) {
+            uint16_t c = colors[i];
+            buffer[i*2] = c;
+            buffer[1 + (i*2)] = c >> 8; 
 
+        }
+    
+        m_spi->sendCommand(0x15, x, (x + width) - 1);
+        m_spi->sendCommand(0x75, y, y);
+        m_spi->sendScanLine(buffer, width*2);
+        free(buffer);
+    } else {
+        xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
+        for (int i = 0; i < width; i++) {
+            m_currentBackBuffer[(x+i) + (DISPLAY_X * y)] = colors[i];
+        }
+        xSemaphoreGive(g_displaySemaphore);
+    }
+    
+}
 void SSD1131_Display::drawScanLine(uint16_t x, uint16_t y, uint16_t width, uint32_t* colors) {
     if (x >= DISPLAY_X) return;
     if (y >= DISPLAY_Y) return ;

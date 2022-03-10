@@ -21,6 +21,7 @@ namespace PocuterLib {
                 void set16BitPixel(uint16_t x, uint16_t y, uint16_t color);
                 void drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color);
                 void drawScanLine(uint16_t x, uint16_t y, uint16_t width, uint32_t* colors);
+                void draw16BitScanLine(uint16_t x, uint16_t y, uint16_t width, uint16_t* colors);
                 
                 void drawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color);
                 void continuousScreenUpdate(bool on);
