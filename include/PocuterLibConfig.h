@@ -35,8 +35,10 @@
 
 /* Disable the Microphone */
 // #define POCUTER_DISABLE_MICROPHONE
+ 
 
-
+/* Disable ADC  (Will also disable the Micrphone) */
+#define POCUTER_DISABLE_ADC
 
 
 /* Please do not change anything from this point */
@@ -49,6 +51,10 @@
 #endif
 
 #endif*/
+
+#ifdef POCUTER_DISABLE_ADC
+#define POCUTER_DISABLE_MICROPHONE
+#endif
 
 #ifdef POCUTER_SWITCH_SDA_SCL
 

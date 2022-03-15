@@ -136,7 +136,7 @@ void esp32_c3_Expander::registerI2Cbus(PocuterI2C* bus) {
 }
 
 esp32_c3_Expander::~esp32_c3_Expander() {
-    delete m_i2c;
+    
 }
 
 void esp32_c3_Expander::registerInterruptPin(uint8_t port, uint8_t pin) {
@@ -221,8 +221,9 @@ uint8_t esp32_c3_Expander::pinMode(uint8_t port, uint8_t pin, uint8_t pinDirecti
 {
   if (! m_expanderOnline) return 0;
   uint8_t portNr = port;
-  uint8_t portReg, portDir;
-
+  uint8_t portReg = 0;
+  uint8_t portDir = 0;
+  
   if(pinDirection == EXPANDER_OUT)
   {
     if(portNr)
@@ -261,8 +262,8 @@ uint8_t esp32_c3_Expander::ledMode(uint8_t port, uint8_t pin, uint8_t ledMode)
 {
   if (! m_expanderOnline) return 0;
   uint8_t portNr = port;
-  uint8_t portReg, portLed;
-
+  uint8_t portReg = 0;
+  uint8_t portLed = 0;
   if(ledMode == EXPANDER_OUT)
   {
     if(portNr)
