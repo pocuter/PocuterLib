@@ -66,7 +66,10 @@ PocuterOTA::OTAERROR esp32_c3_OTA::setNextAppID(uint64_t appID) {
           nvs_close(nvsHandle);
         }
     }
-    if (err == ESP_OK) return OTAERROR_OK;
+    if (err == ESP_OK){
+        bootPartition(PocuterOTA::PART_APPLOADER);
+        return OTAERROR_OK;
+    }
     return OTAERROR_UNKNOWN;
 }
 PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTITION partition, bool checkSigning, bool stepwise, uint8_t *percent) {

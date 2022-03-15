@@ -17,7 +17,7 @@
 class PocuterOTA {
     public:
         enum POCUTER_PARTITION {
-            PART_MENUE,
+            PART_APPLOADER,
             PART_APP1,
             
             PART_UNKNOWN

@@ -124,12 +124,7 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
 #ifndef POCUTER_DISABLE_WIFI 
    WIFI = new esp32_c3_WIFI();
 #endif
-   
-#ifndef POCUTER_DISABLE_SD_CARD
-   if (OTA->getCurrentPartition() != PocuterOTA::PART_MENUE) {
-       OTA->bootPartition(PocuterOTA::PART_MENUE);
-   }
-#endif 
+  
 
 #ifndef POCUTER_DISABLE_ACC   
    Accelerometer = new MXC4005XC_Accelerometer(I2C);
