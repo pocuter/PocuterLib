@@ -38,7 +38,7 @@
  
 
 /* Disable ADC  (Will also disable the Micrphone) */
-#define POCUTER_DISABLE_ADC
+// #define POCUTER_DISABLE_ADC
 
 
 /* Please do not change anything from this point */
