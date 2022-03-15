@@ -16,7 +16,10 @@ PocuterConfig::PocuterConfig(const uint8_t* appName) {
    snprintf((char*)m_configFile, 128, "%s/%s.ini", CONFIG_PATH, appName);
    
 }
-
+PocuterConfig::PocuterConfig(const uint8_t* appFileName, bool isApp) {
+    m_configFile = (uint8_t *)calloc(strlen((const char*)appFileName) + 1, 1);
+    memcpy(m_configFile, appFileName, strlen((const char*)appFileName));
+}
 
 PocuterConfig::~PocuterConfig() {
     free(m_configFile);
@@ -47,7 +50,7 @@ bool PocuterConfig::getEncrypted(const uint8_t* section, const uint8_t* name, ui
    
     uint8_t replyLength = 32;
     hmac->calculateAESKey(name, strlen((const char*)name), reply, replyLength);
-    delete(hmac);
+    delete((PocuterLib::HAL::esp32_c3_hmac*)hmac);
     if (replyLength != 32) return false;
     
     mbedtls_aes_setkey_enc( &aes, reply, 32*8 );
@@ -68,7 +71,7 @@ bool PocuterConfig::setEncrypted(const uint8_t* section, const uint8_t* name, co
     
     uint8_t replyLength = 32;
     hmac->calculateAESKey(name, strlen((const char*)name), reply, replyLength);
-    delete(hmac);
+    delete((PocuterLib::HAL::esp32_c3_hmac*)hmac);
     if (replyLength != 32) return false;
     
     mbedtls_aes_setkey_enc( &aes, reply, 32*8 );

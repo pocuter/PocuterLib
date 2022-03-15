@@ -10,12 +10,46 @@
 
 /* map required file I/O types and functions to the standard C library */
 #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
 #include <ff.h>
 
+char *toLower(const char *str, size_t len)
+{
+    char *str_l = (char*)calloc(len+1, sizeof(char));
 
+    for (size_t i = 0; i < len; ++i) {
+        str_l[i] = tolower((unsigned char)str[i]);
+    }
+    return str_l;
+}
+
+FILE * pocrfopen ( const char * filename, const char * mode ) {
+    char * fn = toLower(filename, strlen(filename));
+    FILE* f = fopen(filename, mode);
+    if (f && ! strstr(fn, ".ini")) {
+        // this seems to be an app file, go to the position where ini starts
+        fpos_t position = 0x14;
+        fsetpos(f, &position);
+        uint32_t iniPosition;
+        fread(&iniPosition, 4, 1, f);
+        position = iniPosition;
+        fsetpos(f, &position);
+    }
+    free(fn);
+    return f;
+}
+FILE * pocwfopen ( const char * filename, const char * mode ) {
+    char * fn = toLower(filename, strlen(filename));
+    if (! strstr(fn, ".ini")) {
+        // wirte only ini files
+        return NULL;
+    }
+    return fopen(filename, mode);
+}
 #define INI_FILETYPE                  FILE*
-#define ini_openread(filename,file)   ((*(file) = fopen((filename),"rb")) != NULL)
-#define ini_openwrite(filename,file)  ((*(file) = fopen((filename),"wb")) != NULL)
+#define ini_openread(filename,file)   ((*(file) = pocrfopen((filename),"rb")) != NULL)
+#define ini_openwrite(filename,file)  ((*(file) = pocwfopen((filename),"wb")) != NULL)
 #define ini_close(file)               (fclose(*(file)) == 0)
 #define ini_read(buffer,size,file)    (fgets((buffer),(size),*(file)) != NULL)
 #define ini_write(buffer,file)        (fputs((buffer),*(file)) >= 0)

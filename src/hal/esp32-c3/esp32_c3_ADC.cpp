@@ -1,4 +1,5 @@
-
+#include "include/PocuterLibConfig.h"
+#ifndef POCUTER_DISABLE_ADC
 #include "include/hal/esp32-c3/esp32_c3_ADC.h"
 #include <string.h>
 #include "esp_adc_cal.h"
@@ -150,4 +151,6 @@ void esp32_c3_ADC::eventTask(void *arg)
     
     vTaskDelete(NULL);
 }
+
+#endif
 

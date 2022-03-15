@@ -6,13 +6,41 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
-#define FILE_BUFFER_SIZE 1024*16
+#include "include/puff/puff.h"
+
+#define FILE_BUFFER_SIZE 1024*40
+#define DEFLATE_BUFFER_SIZE 1024*40
 
 using namespace PocuterLib::HAL;
+
+struct fheader {
+    char magic[5];
+    uint8_t fileVersion;
+    uint16_t crc16;
+    struct version {
+        uint8_t major;
+        uint8_t minor;
+        uint8_t patch;
+    } version;
+    struct features {
+        char hasSignartur : 1;
+        char hasMetaData  : 1;
+        char forFutureUse : 6;
+    } features;
+    uint32_t startSignatur;
+    uint32_t sizeSignatur;
+    uint32_t startMetaFile;
+    uint32_t sizeMetaFile;
+    uint32_t startFlashFile;
+    uint32_t sizeFlashFile;
+
+};
+
 
 esp32_c3_OTA::esp32_c3_OTA(PocuterSDCard* SDCard) {
     m_SDCard = SDCard;
     m_buffer = NULL;
+    m_deflatebuffer = NULL;
     m_fp = NULL;
 }
 
@@ -20,7 +48,7 @@ esp32_c3_OTA::esp32_c3_OTA(PocuterSDCard* SDCard) {
 esp32_c3_OTA::~esp32_c3_OTA() {
 }
 
-PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTITION partition, bool stepwise, uint8_t *percent) {
+PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTITION partition, bool checkSigning, bool stepwise, uint8_t *percent) {
     if (! m_SDCard->cardIsMounted()) return OTAERROR_NO_SD_CARD;
     esp_err_t err;
     PocuterOTA::OTAERROR pError = OTAERROR_OK;
@@ -32,46 +60,67 @@ PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTI
         if (m_update_partition == NULL) return OTAERROR_PATITION_NOT_AVAILABLE;
         if (running == m_update_partition) return OTAERROR_PATITION_IN_USE;
         char fileName[64];
-        snprintf(fileName, 64, "%s/apps/%llu/%s", m_SDCard->getMountPoint(), appID, "/esp32c3.bin");
-    
+        snprintf(fileName, 64, "%s/apps/%llu/%s", m_SDCard->getMountPoint(), appID, "/esp32c3.app");
+        
         m_overall = 0;
         m_fp = fopen (fileName, "rb");
         if (m_fp) {
-            fseek(m_fp, 0L, SEEK_END);
-            m_fileSize = ftell(m_fp);
-            fseek(m_fp, 0L, SEEK_SET);
+            // Read Header
+            fheader header;
+            fread(&header, sizeof(fheader), 1, m_fp);
+            m_fileSize = header.sizeFlashFile;
+            fseek(m_fp, header.startFlashFile, SEEK_SET);
         } else {
             return OTAERROR_FILE_NOT_FOUND;
         }
         err = esp_ota_begin(m_update_partition, OTA_WITH_SEQUENTIAL_WRITES, &m_update_handle);
         if (err != ESP_OK) return OTAERROR_UNKNOWN;
     }
-    
-    // TODO: Check the File! CRC check and possibly Sining check?
-    
-    
-    
+        
     size_t s = 0;
     if (m_buffer == NULL) m_buffer = (char*)malloc(FILE_BUFFER_SIZE);
+    if (m_deflatebuffer == NULL) m_deflatebuffer = (char*)malloc(DEFLATE_BUFFER_SIZE);
     do {
-        s = fread(m_buffer,1,FILE_BUFFER_SIZE,m_fp);
-        if (s > 0) {
-            m_overall += s;
-            
-            err = esp_ota_write( m_update_handle, (const void *)m_buffer, s);
+        s = fread(m_buffer,1,4,m_fp);
+        if (s <= 0) break;
+        uint32_t blockLength = *((uint32_t*)m_buffer);
+        if (blockLength > FILE_BUFFER_SIZE || blockLength < 3) break;
+        s = fread(m_buffer,1,2,m_fp); // skip header
+        if (s <= 0) break;
+        
+        long unsigned int inBytes;
+        long unsigned int outBytes;
+        s = fread(m_buffer,1,blockLength - 2,m_fp);
+        inBytes = s;
+        outBytes = DEFLATE_BUFFER_SIZE;
+        
+        uint32_t infaltedIn = s;
+        
+        int status = puff((unsigned char*)m_deflatebuffer, &outBytes, (unsigned char*)m_buffer, &infaltedIn);
+        if (status != 0) {
+            return OTAERROR_FLASHING_FAILED;
+        }
+        
+        m_overall += s + 6;
+        
+        if (outBytes > 0) {
+            err = esp_ota_write( m_update_handle, (const void *)m_deflatebuffer, outBytes);
             if (err != ESP_OK) {
                 pError = OTAERROR_FLASHING_FAILED;
                 break;
             }
         }
-    }while (s == FILE_BUFFER_SIZE && stepwise == false);
+    }while (stepwise == false);
+    
     if (percent != NULL) {
         if (m_fileSize > 0) *percent = m_overall * 100 / m_fileSize; else *percent = 100;
     }
-    if ( s != FILE_BUFFER_SIZE || pError == OTAERROR_FLASHING_FAILED) {
+    if ( m_overall >= m_fileSize || pError == OTAERROR_FLASHING_FAILED) {
         err = esp_ota_end(m_update_handle);
         free(m_buffer);
         m_buffer = NULL;
+        free(m_deflatebuffer);
+        m_deflatebuffer = NULL;
         fclose(m_fp);
         m_fp = NULL;
         if (pError == OTAERROR_MORE_STEPS) pError = OTAERROR_OK;
