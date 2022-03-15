@@ -116,8 +116,6 @@ void esp32_c3_Expander::registerI2Cbus(PocuterI2C* bus) {
     m_i2c->write(EXPANDER_I2C_ADDRESS, EXP_REG_GLOBAL_CONTROL, 0x13);
     m_i2c->write(EXPANDER_I2C_ADDRESS, EXP_REG_CONFIG_P0, m_P0_Dir);
     m_i2c->write(EXPANDER_I2C_ADDRESS, EXP_REG_CONFIG_P1, m_P1_Dir);
-    //m_i2c->write(EXPANDER_I2C_ADDRESS, EXP_REG_INT_CONFIG_P0, ~(1 << 1));
-    
     
     m_i2c->write(EXPANDER_I2C_ADDRESS, EXP_REG_INT_CONFIG_P0, m_P0_Int);
     m_i2c->write(EXPANDER_I2C_ADDRESS, EXP_REG_INT_CONFIG_P1, m_P1_Int);
