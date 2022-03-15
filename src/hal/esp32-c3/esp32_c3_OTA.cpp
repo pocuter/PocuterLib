@@ -19,6 +19,7 @@ struct fheader {
     char magic[5];
     uint8_t fileVersion;
     uint16_t crc16;
+    uint64_t appID;
     struct version {
         uint8_t major;
         uint8_t minor;
@@ -37,6 +38,7 @@ struct fheader {
     uint32_t sizeFlashFile;
 
 };
+
 
 
 esp32_c3_OTA::esp32_c3_OTA(PocuterSDCard* SDCard) {
