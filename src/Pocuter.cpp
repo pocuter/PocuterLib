@@ -7,7 +7,9 @@
 #include "include/hal/esp32-c3/esp32_c3_hmac.h"
 #include "include/hal/esp32-c3/esp32_c3_SDCard.h"
 #include "include/hal/esp32-c3/esp32_c3_OTA.h"
+#ifndef POCUTER_DISABLE_WIFI  
 #include "include/hal/esp32-c3/esp32_c3_WIFI.h"
+#endif
 #include "include/hal/esp32-c3/esp32_c3_I2C.h"
 #include "include/hal/esp32-c3/MXC4005XC_Accelerometer.h"
 #include "include/hal/esp32-c3/esp32_c3_LightSensor.h"

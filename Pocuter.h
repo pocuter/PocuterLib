@@ -37,7 +37,10 @@
 #include "include/hal/PocuterSDCard.h"
 #include "include/hal/PocuterConfig.h"
 #include "include/hal/PocuterOTA.h"
+
+#ifndef POCUTER_DISABLE_WIFI  
 #include "include/hal/PocuterWIFI.h"
+#endif
 #include "include/hal/PocuterI2C.h"
 #include "include/hal/PocuterAccelerometer.h"
 #include "include/hal/PocuterLightSensor.h"
