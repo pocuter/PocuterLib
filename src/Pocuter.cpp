@@ -1,20 +1,48 @@
 
 #include "Pocuter.h"
 #include <stdio.h>
+
+#ifndef POCUTER_DISABLE_RGBled
 #include "include/hal/esp32-c3/esp32_c3_RGBled.h"
+#endif
+
+#ifndef POCUTER_DISABLE_DISPLAY
 #include "include/hal/esp32-c3/SSD1131_Display.h"
+#endif
+
+#ifndef POCUTER_DISABLE_BUTTONS
 #include "include/hal/esp32-c3/esp32_c3_Buttons.h"
+#endif
+
 #include "include/hal/esp32-c3/esp32_c3_hmac.h"
+
+#ifndef POCUTER_DISABLE_SD_CARD
 #include "include/hal/esp32-c3/esp32_c3_SDCard.h"
 #include "include/hal/esp32-c3/esp32_c3_OTA.h"
+#endif
+
 #ifndef POCUTER_DISABLE_WIFI  
 #include "include/hal/esp32-c3/esp32_c3_WIFI.h"
 #endif
+
 #include "include/hal/esp32-c3/esp32_c3_I2C.h"
+
+#ifndef POCUTER_DISABLE_ACC
 #include "include/hal/esp32-c3/MXC4005XC_Accelerometer.h"
+#endif
+
+#ifndef POCUTER_DISABLE_LIGHTSENSOR
 #include "include/hal/esp32-c3/esp32_c3_LightSensor.h"
+#endif
+
+#ifndef POCUTER_DISABLE_MICROPHONE
 #include "include/hal/esp32-c3/esp32_c3_Mic.h"
+#endif
+
+#ifndef POCUTER_DISABLE_ADC
 #include "include/hal/esp32-c3/esp32_c3_ADC.h"
+#endif
+
 #include <string.h>
 
 
