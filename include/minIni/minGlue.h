@@ -32,7 +32,12 @@ FILE * pocrfopen ( const char * filename, const char * mode ) {
         PocuterLib::HAL::esp32_c3_OTA::fheader header;
         fread(&header, sizeof(header), 1, f);
         fpos_t position = header.startMetaFile;
+        if (position == 0){
+            fclose(f);
+            return NULL;
+        }
         fsetpos(f, &position);
+        
     }
     free(fn);
     return f;
