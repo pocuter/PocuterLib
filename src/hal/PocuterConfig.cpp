@@ -8,17 +8,18 @@
 #include "include/hal/PocuterHMAC.h"
 #include "include/hal/esp32-c3/esp32_c3_hmac.h"
 #include <string.h>
-
+#include <inttypes.h>
 #define CONFIG_PATH "/sd/config"
 PocuterConfig::PocuterConfig(const uint8_t* appName) {
    m_configFile =  (uint8_t *)malloc(128);
    mkdir(CONFIG_PATH, S_IRWXU);
    snprintf((char*)m_configFile, 128, "%s/%s.ini", CONFIG_PATH, appName);
-   
+   m_readony = false;
 }
-PocuterConfig::PocuterConfig(const uint8_t* appFileName, bool isApp) {
-    m_configFile = (uint8_t *)calloc(strlen((const char*)appFileName) + 1, 1);
-    memcpy(m_configFile, appFileName, strlen((const char*)appFileName));
+PocuterConfig::PocuterConfig(uint64_t appID) {
+    m_configFile =  (uint8_t *)malloc(128);
+    snprintf(m_configFile, 128, "%s/%" PRIu64 "/esp32c3.app", CONFIG_PATH, appID);
+    m_readony = true;
 }
 
 PocuterConfig::~PocuterConfig() {
@@ -30,6 +31,7 @@ bool PocuterConfig::get(const uint8_t* section, const uint8_t* name, uint8_t* re
      return (n>0);
 }
 bool PocuterConfig::set(const uint8_t* section, const uint8_t* name, const uint8_t* value) {
+    if (m_readony) return false;
     long  n = ini_puts((const TCHAR*)section, (const TCHAR*)name, (const TCHAR*)value, (const TCHAR*)m_configFile);
     return (n>0);
 }
@@ -59,6 +61,7 @@ bool PocuterConfig::getEncrypted(const uint8_t* section, const uint8_t* name, ui
     return true;
 }
 bool PocuterConfig::setEncrypted(const uint8_t* section, const uint8_t* name, const uint8_t* value) {
+    if (m_readony) return false;
     if (strlen((const char*)value) > 64) return false;
     PocuterHMAC* hmac = new PocuterLib::HAL::esp32_c3_hmac();
     mbedtls_aes_context aes;
@@ -85,6 +88,7 @@ uint32_t PocuterConfig::get(const uint8_t* section, const uint8_t* name) {
 }
 
 bool PocuterConfig::set(const uint8_t* section, const uint8_t* name, uint32_t value) {
+    if (m_readony) return false;
     return ini_putl((const TCHAR*)section, (const TCHAR*)name, value, (const TCHAR*)m_configFile);
 }
 
@@ -98,6 +102,7 @@ bool PocuterConfig::getBinary(const uint8_t* section, const uint8_t* name, void*
     return false;
 }
 bool PocuterConfig::setBinary(const uint8_t* section, const uint8_t* name, const void* value, size_t valueLength) {
+    if (m_readony) return false;
     uint8_t output[128];
     size_t outlen;
     mbedtls_base64_encode((unsigned char *)output, 128, &outlen, (unsigned char *)value, valueLength);

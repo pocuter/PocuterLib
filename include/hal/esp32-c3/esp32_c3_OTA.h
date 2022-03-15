@@ -17,6 +17,31 @@ namespace PocuterLib {
             POCUTER_PARTITION getCurrentPartition();
             OTAERROR restart();
             virtual ~esp32_c3_OTA();
+            
+            struct fheader {
+                char magic[5];
+                uint8_t fileVersion;
+                uint16_t crc16;
+                uint64_t appID;
+                struct version {
+                    uint8_t major;
+                    uint8_t minor;
+                    uint8_t patch;
+                } version;
+                struct features {
+                    char hasSignartur : 1;
+                    char hasMetaData  : 1;
+                    char forFutureUse : 6;
+                } features;
+                uint32_t startSignatur;
+                uint32_t sizeSignatur;
+                uint32_t startMetaFile;
+                uint32_t sizeMetaFile;
+                uint32_t startFlashFile;
+                uint32_t sizeFlashFile;
+
+            };
+
         private:
             PocuterSDCard* m_SDCard;
             char* m_buffer;

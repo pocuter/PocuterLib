@@ -13,7 +13,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <ff.h>
-
+#include "include/hal/esp32-c3/esp32_c3_OTA.h"
 char *toLower(const char *str, size_t len)
 {
     char *str_l = (char*)calloc(len+1, sizeof(char));
@@ -27,13 +27,11 @@ char *toLower(const char *str, size_t len)
 FILE * pocrfopen ( const char * filename, const char * mode ) {
     char * fn = toLower(filename, strlen(filename));
     FILE* f = fopen(filename, mode);
-    if (f && ! strstr(fn, ".ini")) {
+    if (f && strstr(fn, "esp32c3.app")) {
         // this seems to be an app file, go to the position where ini starts
-        fpos_t position = 0x14;
-        fsetpos(f, &position);
-        uint32_t iniPosition;
-        fread(&iniPosition, 4, 1, f);
-        position = iniPosition;
+        PocuterLib::HAL::esp32_c3_OTA::fheader header;
+        fread(&header, sizeof(header), 1, f);
+        fpos_t position = header.startMetaFile;
         fsetpos(f, &position);
     }
     free(fn);
