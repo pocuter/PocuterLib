@@ -7,6 +7,8 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "include/puff/puff.h"
+#include "nvs_flash.h"
+#include "nvs.h"
 
 #define FILE_BUFFER_SIZE 1024*40
 #define DEFLATE_BUFFER_SIZE 1024*40
@@ -47,7 +49,26 @@ esp32_c3_OTA::esp32_c3_OTA(PocuterSDCard* SDCard) {
 
 esp32_c3_OTA::~esp32_c3_OTA() {
 }
-
+PocuterOTA::OTAERROR esp32_c3_OTA::setNextAppID(uint64_t appID) {
+    esp_err_t err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+          // NVS partition was truncated and needs to be erased
+          // Retry nvs_flash_init
+          ESP_ERROR_CHECK(nvs_flash_erase());
+          err = nvs_flash_init();
+    }
+    
+    nvs_handle_t nvsHandle;
+    if (err == ESP_OK) {
+      err = nvs_open("storage", NVS_READWRITE, &nvsHandle);
+      if (err == ESP_OK) {
+          err = nvs_set_u64(nvsHandle, "startApp", appID);
+          nvs_close(nvsHandle);
+        }
+    }
+    if (err == ESP_OK) return OTAERROR_OK;
+    return OTAERROR_UNKNOWN;
+}
 PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTITION partition, bool checkSigning, bool stepwise, uint8_t *percent) {
     if (! m_SDCard->cardIsMounted()) return OTAERROR_NO_SD_CARD;
     esp_err_t err;
