@@ -46,8 +46,8 @@ FILE * pocwfopen ( const char * filename, const char * mode ) {
     return fopen(filename, mode);
 }
 #define INI_FILETYPE                  FILE*
-#define ini_openread(filename,file)   ((*(file) = pocrfopen((filename),"rb")) != NULL)
-#define ini_openwrite(filename,file)  ((*(file) = pocwfopen((filename),"wb")) != NULL)
+#define ini_openread(filename,file)   ((*(file) = pocrfopen((filename),"r")) != NULL)
+#define ini_openwrite(filename,file)  ((*(file) = pocwfopen((filename),"w")) != NULL)
 #define ini_close(file)               (fclose(*(file)) == 0)
 #define ini_read(buffer,size,file)    (fgets((buffer),(size),*(file)) != NULL)
 #define ini_write(buffer,file)        (fputs((buffer),*(file)) >= 0)

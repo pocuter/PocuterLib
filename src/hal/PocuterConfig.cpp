@@ -18,7 +18,7 @@ PocuterConfig::PocuterConfig(const uint8_t* appName) {
 }
 PocuterConfig::PocuterConfig(uint64_t appID) {
     m_configFile =  (uint8_t *)malloc(128);
-    snprintf((char*)m_configFile, 128, "%s/%" PRIu64 "/esp32c3.app", CONFIG_PATH, appID);
+    snprintf((char*)m_configFile, 128, "/sd/apps/%" PRIu64 "/esp32c3.app", appID);
     m_readony = true;
 }
 
