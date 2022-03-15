@@ -5,7 +5,7 @@
 class PocuterConfig {
 public:
     PocuterConfig(const uint8_t* appName);
-    
+    PocuterConfig(const uint8_t* appFileName, bool isApp);
     
     bool get(const uint8_t* section, const uint8_t* name, uint8_t* result, size_t maxLength);
     bool set(const uint8_t* section, const uint8_t* name, const uint8_t* value);

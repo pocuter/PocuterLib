@@ -16,7 +16,10 @@ PocuterConfig::PocuterConfig(const uint8_t* appName) {
    snprintf((char*)m_configFile, 128, "%s/%s.ini", CONFIG_PATH, appName);
    
 }
-
+PocuterConfig::PocuterConfig(const uint8_t* appFileName, bool isApp) {
+    m_configFile = (uint8_t *)calloc(strlen((const char*)appFileName) + 1, 1);
+    memcpy(m_configFile, appFileName, strlen((const char*)appFileName));
+}
 
 PocuterConfig::~PocuterConfig() {
     free(m_configFile);

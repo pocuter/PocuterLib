@@ -32,8 +32,8 @@ PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTI
         if (m_update_partition == NULL) return OTAERROR_PATITION_NOT_AVAILABLE;
         if (running == m_update_partition) return OTAERROR_PATITION_IN_USE;
         char fileName[64];
-        snprintf(fileName, 64, "%s/apps/%llu/%s", m_SDCard->getMountPoint(), appID, "/esp32c3.bin");
-    
+        snprintf(fileName, 64, "%s/apps/%llu/%s", m_SDCard->getMountPoint(), appID, "/esp32c3.app");
+        
         m_overall = 0;
         m_fp = fopen (fileName, "rb");
         if (m_fp) {
