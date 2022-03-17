@@ -164,10 +164,8 @@ PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTI
         s = fread(m_buffer,1,2,m_fp); // skip header
         if (s <= 0) break;
         
-        long unsigned int inBytes;
         long unsigned int outBytes;
         s = fread(m_buffer,1,blockLength - 2,m_fp);
-        inBytes = s;
         outBytes = DEFLATE_BUFFER_SIZE;
         
         uint32_t infaltedIn = s;
