@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include "include/hal/esp32-c3/esp32_c3_I2C.h"
 #include "include/hal/esp32-c3/Pocuter_Pins.h"
+
+#ifndef portTICK_RATE_MS
+#define portTICK_RATE_MS              portTICK_PERIOD_MS
+#endif
+
 using namespace PocuterLib::HAL;
 
 #define WRITE_BIT                          I2C_MASTER_WRITE /*!< I2C master write */

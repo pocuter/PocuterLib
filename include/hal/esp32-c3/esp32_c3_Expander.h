@@ -6,9 +6,9 @@
 #include <vector>
 
 #include "include/hal/PocuterI2C.h"
-#include "FreeRTOS/FreeRTOS.h"
-#include "FreeRTOS/queue.h"
-#include "FreeRTOS/semphr.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+#include "freertos/semphr.h"
 
 #define EXPANDER_OUT   0
 #define EXPANDER_IN    1
