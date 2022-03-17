@@ -322,11 +322,8 @@ int ini_gets(const TCHAR *Section, const TCHAR *Key, const TCHAR *DefValue,
 
   if (Buffer == NULL || BufferSize <= 0 || Key == NULL)
     return 0;
-  printf("1 %s\n", Filename);
   if (ini_openread(Filename, &fp)) {
-      printf("2\n");
     ok = getkeystring(&fp, Section, Key, -1, -1, Buffer, BufferSize, NULL);
-    printf("3:%d\n", ok);
     (void)ini_close(&fp);
   }
   if (!ok)
