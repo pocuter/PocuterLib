@@ -30,11 +30,12 @@ class PocuterOTA {
             OTAERROR_NO_SD_CARD,
             OTAERROR_FLASHING_FAILED,
             OTAERROR_MORE_STEPS,
-            
+            OTAERROR_APP_READ_ERROR,
             
             OTAERROR_UNKNOWN
         };
         virtual OTAERROR setNextAppID(uint64_t appID);
+        virtual OTAERROR getAppVersion(uint64_t appID, uint8_t* major, uint8_t* minor, uint8_t* patch);
         virtual OTAERROR flashFromSDCard(uint64_t appID, POCUTER_PARTITION partition, bool checkSigning = false, bool stepwise = false, uint8_t *percent = NULL) = 0;
         virtual OTAERROR bootPartition(POCUTER_PARTITION partition) = 0;
         virtual POCUTER_PARTITION getCurrentPartition() = 0;

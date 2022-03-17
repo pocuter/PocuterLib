@@ -12,6 +12,7 @@ namespace PocuterLib {
         public:
             esp32_c3_OTA(PocuterSDCard* SDCard);
             OTAERROR setNextAppID(uint64_t appID);
+            OTAERROR getAppVersion(uint64_t appID, uint8_t* major, uint8_t* minor, uint8_t* patch);
             OTAERROR flashFromSDCard(uint64_t appID, POCUTER_PARTITION partition, bool checkSigning, bool stepwise = false, uint8_t *percent = NULL);
             OTAERROR bootPartition(POCUTER_PARTITION partition);
             POCUTER_PARTITION getCurrentPartition();

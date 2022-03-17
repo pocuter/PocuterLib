@@ -28,6 +28,26 @@ esp32_c3_OTA::esp32_c3_OTA(PocuterSDCard* SDCard) {
 
 esp32_c3_OTA::~esp32_c3_OTA() {
 }
+PocuterOTA::OTAERROR esp32_c3_OTA::getAppVersion(uint64_t appID, uint8_t* major, uint8_t* minor, uint8_t* patch ) {
+    char fileName[64];
+    snprintf(fileName, 64, "%s/apps/%llu/%s", m_SDCard->getMountPoint(), appID, "/esp32c3.app");
+    FILE* fp = fopen (fileName, "rb");
+    OTAERROR err = OTAERROR_FILE_NOT_FOUND;
+    if (fp) {
+        fheader header;
+        size_t s = fread(&header, sizeof(fheader), 1, fp);
+        if (s > 0) {
+            *major = header.version.major;
+            *minor = header.version.minor;
+            *patch = header.version.patch;
+            err = OTAERROR_OK;
+        } else {
+            err = OTAERROR_APP_READ_ERROR;
+        }
+        fclose(fp);
+    }
+    return err;  
+}
 PocuterOTA::OTAERROR esp32_c3_OTA::setNextAppID(uint64_t appID) {
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
