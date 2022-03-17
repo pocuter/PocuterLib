@@ -10,8 +10,12 @@ namespace PocuterLib {
     namespace HAL {
         class esp32_c3_OTA : public PocuterOTA {
         public:
+           
             esp32_c3_OTA(PocuterSDCard* SDCard);
             OTAERROR setNextAppID(uint64_t appID);
+            OTAERROR getApps(std::vector<uint64_t>* apps, int maxLength, int offset);
+            uint32_t getAppsCount();
+            
             OTAERROR getAppVersion(uint64_t appID, uint8_t* major, uint8_t* minor, uint8_t* patch);
             OTAERROR flashFromSDCard(uint64_t appID, POCUTER_PARTITION partition, bool checkSigning, bool stepwise = false, uint8_t *percent = NULL);
             OTAERROR bootPartition(POCUTER_PARTITION partition);
@@ -52,7 +56,7 @@ namespace PocuterLib {
             size_t m_fileSize;
             esp_ota_handle_t m_update_handle;
             const esp_partition_t *m_update_partition;
-
+            
         };
     }
 }

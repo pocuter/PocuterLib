@@ -9,6 +9,7 @@
 #include "include/puff/puff.h"
 #include "nvs_flash.h"
 #include "nvs.h"
+#include <dirent.h> 
 
 #define FILE_BUFFER_SIZE 1024*40
 #define DEFLATE_BUFFER_SIZE 1024*40
@@ -27,6 +28,58 @@ esp32_c3_OTA::esp32_c3_OTA(PocuterSDCard* SDCard) {
 
 
 esp32_c3_OTA::~esp32_c3_OTA() {
+}
+uint32_t esp32_c3_OTA::getAppsCount() {
+    uint32_t c = 0;
+    DIR *d;
+    struct dirent *dir;
+    char dirName[64];
+    snprintf(dirName, 64, "%s/apps", m_SDCard->getMountPoint());
+    d = opendir(dirName);
+    if (d) {
+        while ((dir = readdir(d)) != NULL) {
+            if (dir->d_type == DT_DIR) {// 
+                char* end;
+                uint64_t appID = strtoull(dir->d_name, &end, 10);
+                if (appID > 0) {
+                    c++;
+                }
+            }
+        }
+        closedir(d);
+    }
+    return c;
+}
+PocuterOTA::OTAERROR esp32_c3_OTA::getApps(std::vector<uint64_t>* apps, int maxLength, int offset) {
+    DIR *d;
+    struct dirent *dir;
+    char dirName[64];
+    apps->clear();
+    uint32_t currAppNum = 0;
+    uint32_t currLimit = 0;
+    snprintf(dirName, 64, "%s/apps", m_SDCard->getMountPoint());
+    d = opendir(dirName);
+    if (d) {
+        while ((dir = readdir(d)) != NULL) {
+            
+            if (dir->d_type == DT_DIR) {// 
+                
+                char* end;
+                uint64_t appID = strtoull(dir->d_name, &end, 10);
+                if (appID > 0) {
+                    if (offset <= currAppNum++) {
+                        if (++currLimit > maxLength) break;
+                        apps->push_back(appID);
+                    }
+                    
+                }
+                
+            }
+        }
+        closedir(d);
+    }
+    if (apps->size() > 0) return OTAERROR_OK;
+    return OTAERROR_APP_READ_ERROR;
 }
 PocuterOTA::OTAERROR esp32_c3_OTA::getAppVersion(uint64_t appID, uint8_t* major, uint8_t* minor, uint8_t* patch ) {
     char fileName[64];
