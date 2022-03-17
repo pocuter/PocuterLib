@@ -3,8 +3,8 @@
 #define ESP32_C3_ADC_H
 
 #include "driver/adc.h"
-#include "FreeRTOS/FreeRTOS.h"
-#include "FreeRTOS/semphr.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 namespace PocuterLib {
     namespace HAL {
         class esp32_c3_ADC {

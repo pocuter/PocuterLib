@@ -13,8 +13,8 @@
 #ifndef ESP32_C3_LIGHTSENSOR_H
 #define ESP32_C3_LIGHTSENSOR_H
 #include "include/hal/PocuterLightSensor.h"
-#include "FreeRTOS/FreeRTOS.h"
-#include "FreeRTOS/semphr.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 
 namespace PocuterLib {
     namespace HAL {

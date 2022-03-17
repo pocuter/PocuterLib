@@ -3,9 +3,9 @@
 #define MXC4005XC_ACCELEROMETER_H
 #include "include/hal/PocuterAccelerometer.h"
 #include "include/hal/PocuterI2C.h"
-#include "FreeRTOS/FreeRTOS.h"
-#include "FreeRTOS/queue.h"
-#include "FreeRTOS/semphr.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+#include "freertos/semphr.h"
 namespace PocuterLib {
     namespace HAL {
         class MXC4005XC_Accelerometer : public PocuterAccelerometer {
@@ -30,7 +30,7 @@ namespace PocuterLib {
             PocuterI2C* m_i2cBus;
             bool m_online;
             uint8_t m_controlRegister;
-            uint8_t m_deviceID;
+            int m_deviceID;
             
             accEventHandler* m_accEventHandler;
             void* m_accEventHandlerUserData;
