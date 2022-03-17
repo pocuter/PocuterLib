@@ -56,6 +56,7 @@ bool esp32_c3_ADC::registerContinuousRead(esp32_c3_ADC::adcEventHandlerDataEvail
     return ok;
 }
 
+#ifdef ARDUINO 
 void esp32_c3_ADC::continuousAdcInit(uint16_t adc1_chan_mask, adc1_channel_t *channel, uint8_t channel_num, uint32_t sampleFreqHZ)
 {
     esp_err_t ret = ESP_OK;
@@ -103,6 +104,57 @@ void esp32_c3_ADC::continuousAdcInit(uint16_t adc1_chan_mask, adc1_channel_t *ch
    
             
 }
+#else
+void esp32_c3_ADC::continuousAdcInit(uint16_t adc1_chan_mask, adc1_channel_t *channel, uint8_t channel_num, uint32_t sampleFreqHZ)
+{
+    esp_err_t ret = ESP_OK;
+    assert(ret == ESP_OK);
+
+    adc_digi_init_config_t adc_dma_config = {
+        .max_store_buf_size = 1024,
+        .conv_num_each_intr = 256,
+        .adc1_chan_mask = adc1_chan_mask,
+        .adc2_chan_mask = 0x00,
+    };
+    ret = adc_digi_initialize(&adc_dma_config);
+    assert(ret == ESP_OK);
+
+    
+    adc_digi_pattern_config_t adc_pattern[10] = {0};
+
+    //Do not set the sampling frequency out of the range between `SOC_ADC_SAMPLE_FREQ_THRES_LOW` and `SOC_ADC_SAMPLE_FREQ_THRES_HIGH`
+    adc_digi_configuration_t dig_cfg = {
+        .conv_limit_en = 0,
+        .conv_limit_num = 250,
+        .sample_freq_hz = sampleFreqHZ,
+    };
+
+    //dig_cfg.adc_pattern_len = channel_num;
+    
+    
+    
+    for (int i = 0; i < channel_num; i++) {
+        uint8_t unit = ((channel[i] >> 3) & 0x1);
+        uint8_t ch = channel[i] & 0x7;
+        adc_pattern[i].atten = ADC_ATTEN_DB_0;
+        adc_pattern[i].channel = ch;
+        adc_pattern[i].unit = unit;
+       
+        
+    }
+    dig_cfg.adc_pattern = adc_pattern;
+    ret = adc_digi_controller_configure(&dig_cfg);
+    assert(ret == ESP_OK);
+    
+    adc1_config_width(ADC_WIDTH_12Bit);
+    adc1_config_channel_atten(channel[0], ADC_ATTEN_11db);
+    
+    
+   
+            
+}
+
+#endif
 bool esp32_c3_ADC::checkValidData(const adc_digi_output_data_t *data)
 {
     const unsigned int unit = data->type2.unit;
