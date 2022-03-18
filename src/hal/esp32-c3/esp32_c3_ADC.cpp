@@ -5,7 +5,7 @@
 #include "esp_adc_cal.h"
 using namespace PocuterLib::HAL;
 #define TIMES              256
-
+#define GET_UNIT(x)        ((x>>3) & 0x1)
 esp32_c3_ADC* esp32_c3_ADC::m_pInstance = NULL;
 
 
@@ -107,47 +107,36 @@ void esp32_c3_ADC::continuousAdcInit(uint16_t adc1_chan_mask, adc1_channel_t *ch
 #else
 void esp32_c3_ADC::continuousAdcInit(uint16_t adc1_chan_mask, adc1_channel_t *channel, uint8_t channel_num, uint32_t sampleFreqHZ)
 {
-    esp_err_t ret = ESP_OK;
-    assert(ret == ESP_OK);
-
-    adc_digi_init_config_t adc_dma_config = {
+     adc_digi_init_config_t adc_dma_config = {
         .max_store_buf_size = 1024,
-        .conv_num_each_intr = 256,
+        .conv_num_each_intr = TIMES,
         .adc1_chan_mask = adc1_chan_mask,
         .adc2_chan_mask = 0x00,
     };
-    ret = adc_digi_initialize(&adc_dma_config);
-    assert(ret == ESP_OK);
+    ESP_ERROR_CHECK(adc_digi_initialize(&adc_dma_config));
 
-    
-    adc_digi_pattern_config_t adc_pattern[10] = {0};
-
-    //Do not set the sampling frequency out of the range between `SOC_ADC_SAMPLE_FREQ_THRES_LOW` and `SOC_ADC_SAMPLE_FREQ_THRES_HIGH`
     adc_digi_configuration_t dig_cfg = {
         .conv_limit_en = 0,
         .conv_limit_num = 250,
         .sample_freq_hz = sampleFreqHZ,
+        .conv_mode = ADC_CONV_ALTER_UNIT,
+        .format = ADC_DIGI_OUTPUT_FORMAT_TYPE2,
     };
 
-    //dig_cfg.adc_pattern_len = channel_num;
-    
-    
-    
+    adc_digi_pattern_config_t adc_pattern[SOC_ADC_PATT_LEN_MAX] = {0};
+    dig_cfg.pattern_num = channel_num;
     for (int i = 0; i < channel_num; i++) {
-        uint8_t unit = ((channel[i] >> 3) & 0x1);
+        uint8_t unit = GET_UNIT(channel[i]);
         uint8_t ch = channel[i] & 0x7;
         adc_pattern[i].atten = ADC_ATTEN_DB_0;
         adc_pattern[i].channel = ch;
         adc_pattern[i].unit = unit;
-       
-        
+        adc_pattern[i].bit_width = SOC_ADC_DIGI_MAX_BITWIDTH;
+
     }
     dig_cfg.adc_pattern = adc_pattern;
-    ret = adc_digi_controller_configure(&dig_cfg);
-    assert(ret == ESP_OK);
-    
-    adc1_config_width(ADC_WIDTH_12Bit);
-    adc1_config_channel_atten(channel[0], ADC_ATTEN_11db);
+    ESP_ERROR_CHECK(adc_digi_controller_configure(&dig_cfg));
+
     
     
    
@@ -165,6 +154,7 @@ bool esp32_c3_ADC::checkValidData(const adc_digi_output_data_t *data)
 }
 
 
+
 void esp32_c3_ADC::eventTask(void *arg) 
 {
     esp32_c3_ADC* myself = (esp32_c3_ADC*) arg;
@@ -179,9 +169,10 @@ void esp32_c3_ADC::eventTask(void *arg)
 
     myself->continuousAdcInit(adc1_chan_mask, channel, sizeof(channel) / sizeof(adc_channel_t), myself->m_sampleFreqHZ);
     adc_digi_start();
-    
+
     while(myself->m_continuousReading) {
         ret = adc_digi_read_bytes(result, TIMES, &ret_num, ADC_MAX_DELAY);
+        
         for (int i = 0; i < ret_num; i+=4) {
             adc_digi_output_data_t *p = (adc_digi_output_data_t*)&result[i];
             if (checkValidData(p)) {
@@ -190,7 +181,7 @@ void esp32_c3_ADC::eventTask(void *arg)
                 rawData[i / 4] = 0xFFFF;
             }
         }
-            
+       
         xSemaphoreTake(myself->m_eventHandlerSemaphore, portMAX_DELAY);
         if (myself->m_dataEventHandler) myself->m_dataEventHandler(rawData, ret_num / 2, myself->m_dataEventHandlerUserData);
         xSemaphoreGive(myself->m_eventHandlerSemaphore);
