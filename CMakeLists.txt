@@ -1,5 +1,5 @@
 idf_component_register(SRCS "Pocuter.cpp"
                     INCLUDE_DIRS "."
-		    REQUIRES fatfs nvs_flash app_update
+		    REQUIRES fatfs nvs_flash app_update mbedtls wpa_supplicant esp_adc_cal
 )
-#  wpa_supplicant esp_adc_cal
+
