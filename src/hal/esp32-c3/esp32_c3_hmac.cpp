@@ -28,6 +28,7 @@ uint8_t* esp32_c3_hmac::calculateIndividualEfuseKey(const uint8_t* masterKey, ui
         memcpy(buffer, masterKey, keyLength);
         memcpy(buffer + keyLength, mac, 6);
         mbedtls_sha256(buffer, keyLength + 6, efuseKey, 0);
+        free(buffer);
         return efuseKey;
     }
     return NULL;
