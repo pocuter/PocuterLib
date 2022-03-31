@@ -32,12 +32,14 @@ esp32_c3_Buttons::esp32_c3_Buttons() {
     m_currentButtonStates = 0;
     
 }
-uint8_t esp32_c3_Buttons::getButtonState(uint8_t button) {
-    if (button == 0) return m_expander->readPin(EXP_PORT_BTN1, EXP_PIN_BTN1);
-    if (button == 1) return m_expander->readPin(EXP_PORT_BTN2, EXP_PIN_BTN2);
-    if (button == 2) return m_expander->readPin(EXP_PORT_BTN3, EXP_PIN_BTN3);
-    return 0;
+PocuterButtons::PBUTTONS esp32_c3_Buttons::getButtonState() {
+    uint8_t buttons = 0;
+    if (! m_expander->readPin(EXP_PORT_BTN1, EXP_PIN_BTN1)) buttons |= BUTTON_1;
+    if (! m_expander->readPin(EXP_PORT_BTN2, EXP_PIN_BTN2)) buttons |= BUTTON_2;
+    if (! m_expander->readPin(EXP_PORT_BTN3, EXP_PIN_BTN3)) buttons |= BUTTON_3;
+    return (PocuterButtons::PBUTTONS)buttons;
 }
+
 void esp32_c3_Buttons::registerEventHandler(PocuterButtons::buttonEventHandler* e, void* d) {
     m_eventHandler = e;
     m_eventHandlerUserData = d;

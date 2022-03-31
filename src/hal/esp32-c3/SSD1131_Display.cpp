@@ -36,7 +36,9 @@
 
 using namespace PocuterLib::HAL;
 bool SSD1131_Display::g_runUpdateTask = false;
+bool SSD1131_Display::g_continuouseScreenUpdate = true;
 SemaphoreHandle_t SSD1131_Display::g_displaySemaphore;
+SemaphoreHandle_t SSD1131_Display::g_displayPauseSemaphore;
 bool SSD1131_Display::g_initializing = true;
 
 SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
@@ -48,6 +50,10 @@ SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
     g_displaySemaphore = xSemaphoreCreateBinary();
     if (!g_displaySemaphore) abort();
     xSemaphoreGive(g_displaySemaphore);
+    
+    g_displayPauseSemaphore = xSemaphoreCreateBinary();
+    if (!g_displayPauseSemaphore) abort();
+    xSemaphoreGive(g_displayPauseSemaphore);
        
    if (bm == BUFFER_MODE_DOUBLE_BUFFER) {
        m_currentBackBuffer = (uint16_t*)heap_caps_malloc(DISPLAY_X*DISPLAY_Y*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
@@ -110,20 +116,21 @@ SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
     m_spi->sendCommand(COMMAND_DISPLAY_ON, 0xBC);
     
     if (bm == BUFFER_MODE_DOUBLE_BUFFER) {
-       continuousScreenUpdate(true);
+       g_runUpdateTask = true;
+       xTaskCreate(&updateTask, "updateTask", 4000, this, 10, NULL);
    }
     
 }
+void SSD1131_Display::updateScreen() {
+    if (g_continuouseScreenUpdate) return;
+    xSemaphoreGive(g_displayPauseSemaphore);
+}
 void SSD1131_Display::continuousScreenUpdate(bool on) {
     if (m_bm != BUFFER_MODE_DOUBLE_BUFFER) return;
-   
-    if (! on && g_runUpdateTask) {
-        g_runUpdateTask = false;
-    }
-    if (on && ! g_runUpdateTask) {
-        g_runUpdateTask = true;
-        xTaskCreate(&updateTask, "updateTask", 4000, this, 10, NULL);
-    }
+    xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
+    g_continuouseScreenUpdate = on;
+    if (on && ! uxSemaphoreGetCount(g_displayPauseSemaphore)) xSemaphoreGive(g_displayPauseSemaphore);
+    xSemaphoreGive(g_displaySemaphore);
 }
 PocuterDisplay::BUFFER_MODE SSD1131_Display::getBufferMode() {
     return m_bm;
@@ -351,6 +358,10 @@ void SSD1131_Display::updateTask(void *arg) {
         myself->m_spi->sendScanLine((uint8_t*)&(myself->m_currentFrontBuffer[i*DISPLAY_X]), DISPLAY_X*UPDATE_LINES_AT_ONCE*2, true);
         i+=UPDATE_LINES_AT_ONCE;
         if (i == DISPLAY_Y) {
+            // should i stop here?
+            if (! g_continuouseScreenUpdate) xSemaphoreTake(g_displayPauseSemaphore, portMAX_DELAY);
+            
+            
             myself->m_spi->sendCommand(0x15, 0, DISPLAY_X - 1);
             myself->m_spi->sendCommand(0x75, 0, DISPLAY_Y - 1);
             i = 0;

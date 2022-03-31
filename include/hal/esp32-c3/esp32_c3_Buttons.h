@@ -9,7 +9,7 @@ namespace PocuterLib {
             
             esp32_c3_Buttons();
             virtual ~esp32_c3_Buttons();
-            uint8_t getButtonState(uint8_t button);
+            PBUTTONS getButtonState();
             void registerEventHandler(buttonEventHandler*, void*);
             void unregisterEventHandler();
             void expEvent(uint8_t, uint8_t, void*);

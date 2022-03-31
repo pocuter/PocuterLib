@@ -25,6 +25,7 @@ namespace PocuterLib {
                 
                 void drawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color);
                 void continuousScreenUpdate(bool on);
+                void updateScreen();
                 
                 void setBrightness(uint8_t brightness);
                 void clearWindow(uint8_t x, uint8_t y, uint8_t width, uint8_t height);
@@ -44,8 +45,10 @@ namespace PocuterLib {
                 BUFFER_MODE m_bm;
                 static void updateTask(void *arg);
                 static bool g_runUpdateTask;
+                static bool g_continuouseScreenUpdate;
                
                 static SemaphoreHandle_t g_displaySemaphore;
+                static SemaphoreHandle_t g_displayPauseSemaphore;
                 static bool g_initializing;
                 uint16_t color24to16(uint32_t color);
                 

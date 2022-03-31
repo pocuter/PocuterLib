@@ -36,7 +36,7 @@ void esp32_c3_Mic::dataStreamWorker(void* data, size_t size) {
         for (int i = 1; i < size / 2; i++) {
             m_average += dat[i];
             m_averageCount++;
-            m_maxCounter++;
+            
 
             // max 1 Sec. average
             if (m_average > 0x7FFF0000 || m_average < -0x7FFF0000 || m_averageCount == m_hz) {
@@ -45,39 +45,37 @@ void esp32_c3_Mic::dataStreamWorker(void* data, size_t size) {
                 m_averageCount = 1;
 
             }
-            // reduce max sound level every xth sec.
-            if (m_maxCounter == m_hz / m_noiceReductionXThSec) {
-                m_maxCounter = 0;
-                m_max /= m_noiceReduceSpeed;
-            }
+            
         }
         if (m_avg == 0) m_avg = m_average / m_averageCount;
         // find the max sound Level
+        bool nosound = true;
         for (int i = 0; i < size / 2; i++) {
             int16_t* d = (int16_t*)(&dat[i]);
             *d -= m_avg;
-            register int32_t m = dat[i];
-            if (m < 0) m *= -1;
-            m *= 1.5;
-            if (m < 0x7FFF && m > m_max) m_max = m;
+            if (*d > m_noiceReductionMinValue) {
+                 nosound = false;
+            } 
+            
+            
+            
+        }
+        if (nosound) {
+            for (int i = 0; i < size / 2; i++) dat[i] = 0;
         }
 
 
-        double dob;
-        if (m_max > m_noiceReductionMinValue) {
-            dob = 0x7FFF / m_max;
-        } else {
-            dob = 1;
-        }
-    
-        for (int i = 0; i < size / 2; i++) {
-            int16_t* d = (int16_t*)(&dat[i]);
-            register int32_t vol = *d * dob;
-            vol *= m_volume / 100;
-            if (vol > 0x7FFF) vol = 0x7FFF;
-            if (vol < -0x8000) vol = -0x8000;
-            *d = (int16_t)vol;
+      
+        if (m_volume != 100) {
+            for (int i = 0; i < size / 2; i++) {
+                int16_t* d = (int16_t*)(&dat[i]);
+                register int32_t vol = *d;
+                vol *= m_volume / 100;
+                if (vol > 0x7FFF) vol = 0x7FFF;
+                if (vol < -0x8000) vol = -0x8000;
+                *d = (int16_t)vol;
 
+            }
         }
     }
     if (m_eventHandler != NULL) {
@@ -95,23 +93,23 @@ PocuterMicrophone::MICERROR esp32_c3_Mic::startRecording(PocuterMicrophone::SAML
         case REDUCTION_LEVEL_RAW:
         case REDUCTION_LEVEL_NONE:
             m_noiceReductionMinValue = 0;
-            m_noiceReductionXThSec = 1;
-            m_noiceReduceSpeed = 2;
+            
+            
             break;
         case REDUCTION_LEVEL_SMALL:
-            m_noiceReductionMinValue = 0x1FF;
-            m_noiceReductionXThSec = 3;
-            m_noiceReduceSpeed = 1.1;
+            m_noiceReductionMinValue = 0x0FF;
+           
+            
             break;
         case REDUCTION_LEVEL_MEDIUM:
-            m_noiceReductionMinValue = 0x2FF;
-            m_noiceReductionXThSec = 10;
-            m_noiceReduceSpeed = 1.3;
+            m_noiceReductionMinValue = 0x1FF;
+            
+            
             break;
         case REDUCTION_LEVEL_HIGHT:
-            m_noiceReductionMinValue = 0x3FF;
-            m_noiceReductionXThSec = 20;
-            m_noiceReduceSpeed = 5;
+            m_noiceReductionMinValue = 0xFFF;
+           
+            
             break;
             
     }
@@ -122,8 +120,7 @@ PocuterMicrophone::MICERROR esp32_c3_Mic::startRecording(PocuterMicrophone::SAML
     m_average = 0;
     m_averageCount = 0;
     m_avg = 0;
-    m_max = 0;
-    m_maxCounter = 0;
+    
     
     if (esp32_c3_ADC::Instance()->registerContinuousRead(esp32_c3_Mic::dataStream, hz, this)) {
         return MICERROR_OK;

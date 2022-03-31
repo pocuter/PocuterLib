@@ -24,13 +24,11 @@ namespace PocuterLib {
             int64_t m_average;
             uint32_t m_averageCount;
             int16_t m_avg;
-            uint16_t m_max;
-            uint32_t m_maxCounter;
             uint32_t m_hz;
-            double m_noiceReduceSpeed;
+  
             PocuterMicrophone::NOICE_REDUCTION_LEVEL m_noiceLevel;
             uint16_t m_noiceReductionMinValue;
-            uint16_t m_noiceReductionXThSec;
+            
         };
     }
 }

@@ -12,7 +12,7 @@ class PocuterButtons {
         
         virtual void registerEventHandler(buttonEventHandler*, void*) = 0;
         virtual void unregisterEventHandler() = 0;
-        virtual uint8_t getButtonState(uint8_t button) = 0;
+        virtual PBUTTONS getButtonState() = 0;
        
     private:
         

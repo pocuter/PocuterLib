@@ -22,6 +22,10 @@ esp32_c3_SDCard::esp32_c3_SDCard() {
     m_sdcardMounted = false;
     
     esp32_c3_Expander::Instance()->pinMode(SD_PORT_CARDDETECT, SD_PIN_CARDDETECT, EXPANDER_IN);
+    if (! cardInSlot()){
+        return;
+    }
+    
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
     host.slot = SPI2_HOST;
     sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
@@ -46,10 +50,7 @@ esp32_c3_SDCard::~esp32_c3_SDCard() {
 }
 
 bool esp32_c3_SDCard::cardInSlot() {
-    // seems not to work yet
-    //return esp32_c3_Expander::Instance()->readPin(SD_PORT_CARDDETECT, SD_PIN_CARDDETECT);
-    return m_sdcardMounted;
-    
+    return (! esp32_c3_Expander::Instance()->readPin(SD_PORT_CARDDETECT, SD_PIN_CARDDETECT));
 }
 bool esp32_c3_SDCard::cardIsMounted() {
     return m_sdcardMounted;

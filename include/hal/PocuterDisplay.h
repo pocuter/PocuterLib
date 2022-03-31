@@ -21,6 +21,7 @@ class PocuterDisplay {
         virtual void clearScreen() = 0;
         virtual void continuousScreenUpdate(bool on) = 0;
         virtual BUFFER_MODE getBufferMode() = 0;
+        virtual void updateScreen() = 0;
     private:
 
 };
