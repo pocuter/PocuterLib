@@ -123,6 +123,9 @@ SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
 }
 void SSD1131_Display::updateScreen() {
     if (g_continuouseScreenUpdate) return;
+    xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
+    memcpy(m_currentFrontBuffer, m_currentBackBuffer, DISPLAY_X*DISPLAY_Y*2);
+    xSemaphoreGive(g_displaySemaphore);
     xSemaphoreGive(g_displayPauseSemaphore);
 }
 void SSD1131_Display::continuousScreenUpdate(bool on) {
@@ -365,9 +368,11 @@ void SSD1131_Display::updateTask(void *arg) {
             myself->m_spi->sendCommand(0x15, 0, DISPLAY_X - 1);
             myself->m_spi->sendCommand(0x75, 0, DISPLAY_Y - 1);
             i = 0;
-            xSemaphoreTake(myself->g_displaySemaphore, portMAX_DELAY);
-            memcpy(myself->m_currentFrontBuffer, myself->m_currentBackBuffer, DISPLAY_X*DISPLAY_Y*2);
-            xSemaphoreGive(myself->g_displaySemaphore);
+            if (g_continuouseScreenUpdate) {
+                xSemaphoreTake(myself->g_displaySemaphore, portMAX_DELAY);
+                memcpy(myself->m_currentFrontBuffer, myself->m_currentBackBuffer, DISPLAY_X*DISPLAY_Y*2);
+                xSemaphoreGive(myself->g_displaySemaphore);
+            }
         }
         vTaskDelay(0);
     }
