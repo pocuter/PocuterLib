@@ -1,14 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/cppFiles/file.h to edit this template
- */
-
-/* 
- * File:   PocuterHMAC.h
- * Author: Test
- *
- * Created on 5. Februar 2022, 15:22
- */
 
 #ifndef POCUTERHMAC_H
 #define POCUTERHMAC_H
