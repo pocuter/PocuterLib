@@ -17,18 +17,18 @@ namespace PocuterLib {
                 virtual ~SSD1131_Display();
                 
                 void getDisplaySize(uint16_t& sizeX, uint16_t& sizeY);
-                void setPixel(uint16_t x, uint16_t y, uint32_t color);
-                void set16BitPixel(uint16_t x, uint16_t y, uint16_t color);
-                void drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color);
-                void drawScanLine(uint16_t x, uint16_t y, uint16_t width, uint32_t* colors);
-                void draw16BitScanLine(uint16_t x, uint16_t y, uint16_t width, uint16_t* colors);
+                void setPixel(int16_t x, int16_t y, uint32_t color);
+                void set16BitPixel(int16_t x, int16_t y, uint16_t color);
+                void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint32_t color);
+                void drawScanLine(int16_t x, int16_t y, uint16_t width, uint32_t* colors);
+                void draw16BitScanLine(int16_t x, int16_t y, uint16_t width, uint16_t* colors);
                 
-                void drawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color);
+                void drawRectangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint32_t color);
                 void continuousScreenUpdate(bool on);
                 void updateScreen();
                 
                 void setBrightness(uint8_t brightness);
-                void clearWindow(uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+                void clearWindow(int8_t x, int8_t y, uint8_t width, uint8_t height);
                 void clearScreen();
                 
                 
