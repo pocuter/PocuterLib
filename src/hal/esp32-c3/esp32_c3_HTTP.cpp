@@ -78,5 +78,5 @@ PocuterHTTP::HTTPERROR esp32_c3_HTTP::downloadFile(const uint8_t* url, const uin
         if (m_downloadTotalReadLen != m_downloadContentLength) return PocuterHTTP::HTTPERROR_DOWNLOAD_FAILED;
         return PocuterHTTP::HTTPERROR_OK;
     }
-    return PocuterHTTP::HTTPERROR_OTAERROR_MORE_STEPS;
+    return PocuterHTTP::HTTPERROR_MORE_STEPS;
 }

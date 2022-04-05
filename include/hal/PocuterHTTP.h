@@ -10,7 +10,7 @@ class PocuterHTTP {
            HTTPERROR_NO_MEMORY,
            HTTPERROR_FILE_OPEN_FAILED,
            HTTPERROR_DOWNLOAD_FAILED,
-           HTTPERROR_OTAERROR_MORE_STEPS,
+           HTTPERROR_MORE_STEPS,
            HTTPERROR_UNKNOWN
            
           
