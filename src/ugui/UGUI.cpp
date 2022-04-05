@@ -438,6 +438,28 @@ UG_GUI* gui = _gui;
   }
 }
 
+UG_U16 UGUI::UG_StringWidth( const char* str )
+{
+  UG_GUI* gui = _gui;
+  
+  UG_U8 cw;
+  char chr;
+  
+  UG_U16 w = 0;
+  
+  while ( *str != 0 )
+  {
+    chr = *str++;
+	if (chr < gui->font.start_char || chr > gui->font.end_char) continue;
+	
+    cw = gui->font.widths ? gui->font.widths[chr - gui->font.start_char] : gui->font.char_width;
+
+    w += cw + gui->char_h_space;
+  }
+  
+  return w - gui->char_h_space;
+}
+
 void UGUI::UG_PutChar( char chr, UG_S16 x, UG_S16 y, UG_COLOR fc, UG_COLOR bc )
 {
   UG_GUI* gui = _gui;
