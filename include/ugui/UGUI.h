@@ -894,6 +894,7 @@ class UGUI {
   void UG_FontSelect( const UG_FONT* font );
   void UG_Update( void );
   void UG_PutString( UG_S16 x, UG_S16 y, const char* str );
+  void UG_PutStringSingleLine( UG_S16 x, UG_S16 y, const char* str );
   UG_U16 UG_StringWidth( const char* str );
   void UG_PutChar( char chr, UG_S16 x, UG_S16 y, UG_COLOR fc, UG_COLOR bc );
   void UG_WaitForUpdate( void );
