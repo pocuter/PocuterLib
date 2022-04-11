@@ -9,50 +9,23 @@
  */
 
 /* map required file I/O types and functions to the standard C library */
+
+#ifndef MINGLUE_H
+#define MINGLUE_H
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <ff.h>
 #include "include/hal/esp32-c3/esp32_c3_OTA.h"
-char *toLower(const char *str, size_t len)
-{
-    char *str_l = (char*)calloc(len+1, sizeof(char));
 
-    for (size_t i = 0; i < len; ++i) {
-        str_l[i] = tolower((unsigned char)str[i]);
-    }
-    return str_l;
-}
+char *toLower(const char *str, size_t len);
+FILE * pocrfopen ( const char * filename, const char * mode );
+FILE * pocwfopen ( const char * filename, const char * mode );
 
-FILE * pocrfopen ( const char * filename, const char * mode ) {
-    char * fn = toLower(filename, strlen(filename));
-    FILE* f = fopen(filename, mode);
-    if (f && strstr(fn, "esp32c3.app")) {
-        // this seems to be an app file, go to the position where ini starts
-        PocuterLib::HAL::esp32_c3_OTA::fheader header;
-        fread(&header, sizeof(header), 1, f);
-        fpos_t position = header.startMetaFile;
-        if (position == 0){
-            fclose(f);
-            return NULL;
-        }
-        fsetpos(f, &position);
-        
-    }
-    free(fn);
-    return f;
-}
-FILE * pocwfopen ( const char * filename, const char * mode ) {
-    char * fn = toLower(filename, strlen(filename));
-    if (! strstr(fn, ".ini")) {
-        // wirte only ini files
-        return NULL;
-    }
-    return fopen(filename, mode);
-}
 #define INI_FILETYPE                  FILE*
-#define ini_openread(filename,file)   ((*(file) = pocrfopen((filename),"r")) != NULL)
-#define ini_openwrite(filename,file)  ((*(file) = pocwfopen((filename),"w")) != NULL)
+#define ini_openread(filename,file)   ((*(file) = pocrfopen((filename),"rb")) != NULL)
+#define ini_openwrite(filename,file)  ((*(file) = pocwfopen((filename),"wb")) != NULL)
 #define ini_close(file)               (fclose(*(file)) == 0)
 #define ini_read(buffer,size,file)    (fgets((buffer),(size),*(file)) != NULL)
 #define ini_write(buffer,file)        (fputs((buffer),*(file)) >= 0)
@@ -67,3 +40,4 @@ FILE * pocwfopen ( const char * filename, const char * mode ) {
 #define INI_REAL                      float
 #define ini_ftoa(string,value)        sprintf((string),"%f",(value))
 #define ini_atof(string)              (INI_REAL)strtod((string),NULL)
+#endif
