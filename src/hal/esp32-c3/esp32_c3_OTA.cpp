@@ -112,18 +112,17 @@ PocuterOTA::OTAERROR esp32_c3_OTA::getAppVersion(uint64_t appID, uint8_t* major,
 }
 PocuterOTA::OTAERROR esp32_c3_OTA::setNextAppID(uint64_t appID) {
     
-   
-     nvs_handle_t nvsHandle;
-   
-    esp_err_t err = nvs_open("storage", NVS_READWRITE, &nvsHandle);
+    nvs_handle_t nvsHandle;
+    esp_err_t err = -1;
+    err = nvs_open("storage", NVS_READWRITE, &nvsHandle);
+    vTaskDelay(10); // there seem to be a timing issue someware in idf. Without it, it crashes.
     if (err == ESP_OK) {
         err = nvs_set_u64(nvsHandle, "startApp", appID);
         if (err == ESP_OK) {
             err = nvs_commit(nvsHandle);
         }
         nvs_close(nvsHandle);
-      }
-    
+    }
     if (err == ESP_OK){
         bootPartition(PocuterOTA::PART_APPLOADER);
         return OTAERROR_OK;
@@ -253,9 +252,9 @@ PocuterOTA::OTAERROR esp32_c3_OTA::restart() {
     return OTAERROR_UNKNOWN;
 }
 uint64_t esp32_c3_OTA::getCurrentAppID() {
-    PocuterOTA::POCUTER_PARTITION part = getCurrentPartitionStatic();
-    if (part == PART_APPLOADER) return 1;
-    if (part == PART_UNKNOWN) return 0;
+   // PocuterOTA::POCUTER_PARTITION part = getCurrentPartitionStatic();
+    //if (part == PART_APPLOADER) return 1;
+    //if (part == PART_UNKNOWN) return 0;
     
     uint64_t currentAPP = 1;  
     nvs_handle_t nvsHandle;
