@@ -7,13 +7,18 @@
 #include "mbedtls/aes.h"
 #include "include/hal/PocuterHMAC.h"
 #include "include/hal/esp32-c3/esp32_c3_hmac.h"
+#include "include/hal/esp32-c3/esp32_c3_OTA.h"
 #include <string.h>
 #include <inttypes.h>
 #define CONFIG_PATH "/sd/config"
-PocuterConfig::PocuterConfig(const uint8_t* appName) {
+
+PocuterConfig::PocuterConfig(const uint8_t* configName) {
+   uint64_t appID = PocuterLib::HAL::esp32_c3_OTA::getCurrentAppID();
    m_configFile =  (uint8_t *)malloc(128);
    mkdir(CONFIG_PATH, S_IRWXU);
-   snprintf((char*)m_configFile, 128, "%s/%s.ini", CONFIG_PATH, appName);
+   snprintf((char*)m_configFile, 128, "%s/%" PRIu64, CONFIG_PATH, appID);
+   mkdir((char*)m_configFile, S_IRWXU);
+   snprintf((char*)m_configFile, 128, "%s/%" PRIu64 "/%s.ini", CONFIG_PATH, appID, configName);
    m_readony = false;
 }
 PocuterConfig::PocuterConfig(uint64_t appID) {

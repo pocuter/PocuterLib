@@ -4,7 +4,7 @@
 #include <stddef.h>
 class PocuterConfig {
 public:
-    PocuterConfig(const uint8_t* appName);
+    PocuterConfig(const uint8_t* configName);
     PocuterConfig(uint64_t appID);
     
     bool get(const uint8_t* section, const uint8_t* name, uint8_t* result, size_t maxLength);

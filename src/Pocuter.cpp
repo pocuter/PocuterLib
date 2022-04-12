@@ -25,6 +25,10 @@
 #include "include/hal/esp32-c3/esp32_c3_WIFI.h"
 #endif
 
+#ifndef POCUTER_DISABLE_HTTP
+#include "include/hal/esp32-c3/esp32_c3_HTTP.h"
+#endif
+
 #include "include/hal/esp32-c3/esp32_c3_I2C.h"
 
 #ifndef POCUTER_DISABLE_ACC
@@ -81,6 +85,9 @@ PocuterOTA* Pocuter::OTA = NULL;
 PocuterWIFI* Pocuter::WIFI = NULL;
 #endif
 
+#ifndef POCUTER_DISABLE_HTTP
+PocuterHTTP* Pocuter::HTTP = NULL;
+#endif
 #ifndef POCUTER_DISABLE_ACC   
 PocuterAccelerometer* Pocuter::Accelerometer = NULL;
 #endif
@@ -124,7 +131,9 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
 #ifndef POCUTER_DISABLE_WIFI 
    WIFI = new esp32_c3_WIFI();
 #endif
-  
+#ifndef POCUTER_DISABLE_HTTP
+   HTTP = new esp32_c3_HTTP();
+#endif
 
 #ifndef POCUTER_DISABLE_ACC   
    Accelerometer = new MXC4005XC_Accelerometer(I2C);

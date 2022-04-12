@@ -45,7 +45,7 @@
 #include "include/hal/PocuterAccelerometer.h"
 #include "include/hal/PocuterLightSensor.h"
 #include "include/hal/PocuterMicrophone.h"
-
+#include "include/hal/PocuterHTTP.h"
 
 class Pocuter {
 public:
@@ -86,6 +86,10 @@ public:
     static PocuterWIFI* WIFI;
 #endif  
 
+#ifndef POCUTER_DISABLE_HTTP
+    static PocuterHTTP* HTTP;
+#endif 
+    
 #ifndef POCUTER_DISABLE_MICROPHONE    
     static PocuterMicrophone* Microphone;
 #endif

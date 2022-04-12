@@ -123,6 +123,9 @@ SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
 }
 void SSD1131_Display::updateScreen() {
     if (g_continuouseScreenUpdate) return;
+    xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
+    memcpy(m_currentFrontBuffer, m_currentBackBuffer, DISPLAY_X*DISPLAY_Y*2);
+    xSemaphoreGive(g_displaySemaphore);
     xSemaphoreGive(g_displayPauseSemaphore);
 }
 void SSD1131_Display::continuousScreenUpdate(bool on) {
@@ -139,17 +142,17 @@ void SSD1131_Display::clearScreen() {
     clearWindow(0,0,DISPLAY_X, DISPLAY_Y);
     
 }
-void SSD1131_Display::clearWindow(uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
+void SSD1131_Display::clearWindow(int8_t x, int8_t y, uint8_t width, uint8_t height) {
     if (x > DISPLAY_X || y > DISPLAY_Y)
         return;
-    uint8_t x2 = x + width - 1;
-    uint8_t y2 = y + height - 1;
+    int16_t x2 = x + width - 1;
+    int16_t y2 = y + height - 1;
     if (x2 > DISPLAY_X)
         x2 = DISPLAY_X;
     if (y2 > DISPLAY_Y)
         y2 = DISPLAY_Y;
     if (m_bm == BUFFER_MODE_NO_BUFFER) {
-        m_spi->sendCommandList(COMMAND_CLEAR_WINDOW, x, y, x2, y2, -1);
+        m_spi->sendCommandList(COMMAND_CLEAR_WINDOW, x, y, (uint8_t)x2, (uint8_t)y2, -1);
     } else {
         drawRectangle(x,y,x2,y2,0);
     }
@@ -164,8 +167,8 @@ void SSD1131_Display::setBrightness(uint8_t brightness) {
    
     
 }
-void SSD1131_Display::set16BitPixel(uint16_t x, uint16_t y, uint16_t color) {
-    if (x >= DISPLAY_X || y >= DISPLAY_Y) return;
+void SSD1131_Display::set16BitPixel(int16_t x, int16_t y, uint16_t color) {
+    if (x >= DISPLAY_X || y >= DISPLAY_Y || x < 0 || y < 0) return;
     if (m_bm == BUFFER_MODE_NO_BUFFER) return;
    
     xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
@@ -173,9 +176,9 @@ void SSD1131_Display::set16BitPixel(uint16_t x, uint16_t y, uint16_t color) {
     xSemaphoreGive(g_displaySemaphore);
     
 }
-void SSD1131_Display::setPixel(uint16_t x, uint16_t y, uint32_t color) {
+void SSD1131_Display::setPixel(int16_t x, int16_t y, uint32_t color) {
     
-    if (x >= DISPLAY_X || y >= DISPLAY_Y) return;
+    if (x >= DISPLAY_X || y >= DISPLAY_Y || x < 0 || y < 0) return;
     if (m_bm == BUFFER_MODE_NO_BUFFER) {
         drawLine(x,y,x,y,color);
         return;
@@ -188,8 +191,10 @@ void SSD1131_Display::setPixel(uint16_t x, uint16_t y, uint32_t color) {
     
 }
 
-void SSD1131_Display::drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
+void SSD1131_Display::drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint32_t color) {
     if (m_bm == BUFFER_MODE_NO_BUFFER) {
+        if (x1 < 0) x1 = 0;
+        if (y1 < 0) y1 = 0;
         uint8_t data[3];
         data[0] = (color >> 16);
         data[1] = (color >> 8);
@@ -254,10 +259,17 @@ uint16_t SSD1131_Display::color24to16(uint32_t color) {
     return (r | g | b);
 }
 
-void SSD1131_Display::draw16BitScanLine(uint16_t x, uint16_t y, uint16_t width, uint16_t* colors) {
+void SSD1131_Display::draw16BitScanLine(int16_t x, int16_t y, uint16_t width, uint16_t* colors) {
     if (x >= DISPLAY_X) return;
     if (y >= DISPLAY_Y) return ;
+    if (y < 0) return ;
     if (x + width >= DISPLAY_X) width = DISPLAY_X - x;
+    if (x + width < 0) return;
+    if (x < 0) {
+        width += x;
+        colors += (x * -1);
+        x = 0;
+    }
     if (m_bm == BUFFER_MODE_NO_BUFFER) { 
         uint8_t* buffer = (uint8_t*)heap_caps_malloc(width*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
         for (int i = 0; i < width; i++) {
@@ -280,10 +292,18 @@ void SSD1131_Display::draw16BitScanLine(uint16_t x, uint16_t y, uint16_t width, 
     }
     
 }
-void SSD1131_Display::drawScanLine(uint16_t x, uint16_t y, uint16_t width, uint32_t* colors) {
+void SSD1131_Display::drawScanLine(int16_t x, int16_t y, uint16_t width, uint32_t* colors) {
     if (x >= DISPLAY_X) return;
     if (y >= DISPLAY_Y) return ;
+    if (y < 0) return ;
     if (x + width >= DISPLAY_X) width = DISPLAY_X - x;
+    if (x + width < 0) return;
+    if (x < 0) {
+        width += x;
+        colors += (x * -1);
+        x = 0;
+        
+    }
     if (m_bm == BUFFER_MODE_NO_BUFFER) { 
         uint8_t* buffer = (uint8_t*)heap_caps_malloc(width*2, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
         for (int i = 0; i < width; i++) {
@@ -307,21 +327,25 @@ void SSD1131_Display::drawScanLine(uint16_t x, uint16_t y, uint16_t width, uint3
     }
 }
 
-void SSD1131_Display::drawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color) {
+void SSD1131_Display::drawRectangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint32_t color) {
     uint8_t data[3];
     if (x1 >= DISPLAY_X || y1 >= DISPLAY_Y) return;
-    if (x2 >= DISPLAY_X || y2 >= DISPLAY_Y) return;
+    
     if (m_bm == BUFFER_MODE_NO_BUFFER) {
         data[0] = (color >> 16);
         data[1] = (color >> 8);
         data[2] = (color);
-
+         
+        if (x1 < 0) x1 = 0;
+        if (y1 < 0) y1 = 0;
         m_spi->sendCommandList(0x22, x1, y1, x2, y2, data[0], data[1], data[2], data[0], data[1], data[2], -1);
     } else {
         uint16_t c = swap16(color24to16(color));
         xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
         for (int ix = x1; ix <= x2; ix++) {
             for (int iy = y1; iy <= y2; iy++) {
+                if (iy < 0) continue;
+                if (ix < 0) continue;
                 m_currentBackBuffer[ix + (DISPLAY_X * iy)] = c;
             }
         }
@@ -365,9 +389,11 @@ void SSD1131_Display::updateTask(void *arg) {
             myself->m_spi->sendCommand(0x15, 0, DISPLAY_X - 1);
             myself->m_spi->sendCommand(0x75, 0, DISPLAY_Y - 1);
             i = 0;
-            xSemaphoreTake(myself->g_displaySemaphore, portMAX_DELAY);
-            memcpy(myself->m_currentFrontBuffer, myself->m_currentBackBuffer, DISPLAY_X*DISPLAY_Y*2);
-            xSemaphoreGive(myself->g_displaySemaphore);
+            if (g_continuouseScreenUpdate) {
+                xSemaphoreTake(myself->g_displaySemaphore, portMAX_DELAY);
+                memcpy(myself->m_currentFrontBuffer, myself->m_currentBackBuffer, DISPLAY_X*DISPLAY_Y*2);
+                xSemaphoreGive(myself->g_displaySemaphore);
+            }
         }
         vTaskDelay(0);
     }

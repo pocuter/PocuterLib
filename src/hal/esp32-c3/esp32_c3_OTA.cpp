@@ -24,6 +24,15 @@ esp32_c3_OTA::esp32_c3_OTA(PocuterSDCard* SDCard) {
     m_buffer = NULL;
     m_deflatebuffer = NULL;
     m_fp = NULL;
+    
+    esp_err_t err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+          // NVS partition was truncated and needs to be erased
+          // Retry nvs_flash_init
+          ESP_ERROR_CHECK(nvs_flash_erase());
+          err = nvs_flash_init();
+    }
+    
 }
 
 
@@ -102,22 +111,16 @@ PocuterOTA::OTAERROR esp32_c3_OTA::getAppVersion(uint64_t appID, uint8_t* major,
     return err;  
 }
 PocuterOTA::OTAERROR esp32_c3_OTA::setNextAppID(uint64_t appID) {
-    esp_err_t err = nvs_flash_init();
-    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-          // NVS partition was truncated and needs to be erased
-          // Retry nvs_flash_init
-          ESP_ERROR_CHECK(nvs_flash_erase());
-          err = nvs_flash_init();
-    }
     
+   
     nvs_handle_t nvsHandle;
+   
+    esp_err_t err = nvs_open("storage", NVS_READWRITE, &nvsHandle);
     if (err == ESP_OK) {
-      err = nvs_open("storage", NVS_READWRITE, &nvsHandle);
-      if (err == ESP_OK) {
-          err = nvs_set_u64(nvsHandle, "startApp", appID);
-          nvs_close(nvsHandle);
-        }
-    }
+        err = nvs_set_u64(nvsHandle, "startApp", appID);
+        nvs_close(nvsHandle);
+      }
+    
     if (err == ESP_OK){
         bootPartition(PocuterOTA::PART_APPLOADER);
         return OTAERROR_OK;
@@ -217,6 +220,9 @@ PocuterOTA::OTAERROR esp32_c3_OTA::bootPartition(PocuterOTA::POCUTER_PARTITION p
     return OTAERROR_OK;
 }
 PocuterOTA::POCUTER_PARTITION esp32_c3_OTA::getCurrentPartition() {
+    return getCurrentPartitionStatic();
+}
+PocuterOTA::POCUTER_PARTITION esp32_c3_OTA::getCurrentPartitionStatic() {
     const esp_partition_t *running = esp_ota_get_running_partition();
     if (running != NULL && running->type == ESP_PARTITION_TYPE_APP) {
         if (running->subtype >= ESP_PARTITION_SUBTYPE_APP_OTA_MIN && running->subtype < ESP_PARTITION_SUBTYPE_APP_OTA_MAX){
@@ -243,4 +249,20 @@ PocuterOTA::OTAERROR esp32_c3_OTA::restart() {
     esp_restart();
     return OTAERROR_UNKNOWN;
 }
+uint64_t esp32_c3_OTA::getCurrentAppID() {
+    PocuterOTA::POCUTER_PARTITION part = getCurrentPartitionStatic();
+    if (part == PART_APPLOADER) return 1;
+    if (part == PART_UNKNOWN) return 0;
+    
+    uint64_t currentAPP = 1;  
+    nvs_handle_t nvsHandle;
+    esp_err_t err = nvs_open("storage", NVS_READWRITE, &nvsHandle);
+    if (err == ESP_OK) {
+        err = nvs_get_u64(nvsHandle, "startApp", &currentAPP);
+        nvs_close(nvsHandle);
+    }
+    return currentAPP;
+}
+
+
 #endif

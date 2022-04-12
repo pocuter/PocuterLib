@@ -23,6 +23,9 @@ namespace PocuterLib {
             OTAERROR restart();
             OTAERROR verifyPartition(POCUTER_PARTITION partition);
             
+            static POCUTER_PARTITION getCurrentPartitionStatic();
+            static uint64_t getCurrentAppID();
+            
             virtual ~esp32_c3_OTA();
             
             struct fheader {
