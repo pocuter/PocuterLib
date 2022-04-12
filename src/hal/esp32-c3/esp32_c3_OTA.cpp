@@ -252,9 +252,9 @@ PocuterOTA::OTAERROR esp32_c3_OTA::restart() {
     return OTAERROR_UNKNOWN;
 }
 uint64_t esp32_c3_OTA::getCurrentAppID() {
-   // PocuterOTA::POCUTER_PARTITION part = getCurrentPartitionStatic();
-    //if (part == PART_APPLOADER) return 1;
-    //if (part == PART_UNKNOWN) return 0;
+    PocuterOTA::POCUTER_PARTITION part = getCurrentPartitionStatic();
+    if (part == PART_APPLOADER) return 1;
+    if (part == PART_UNKNOWN) return 0;
     
     uint64_t currentAPP = 1;  
     nvs_handle_t nvsHandle;
