@@ -1,4 +1,5 @@
-
+#include "include/PocuterLibConfig.h"
+#ifndef POCUTER_DISABLE_HTTP
 #include <esp_http_client.h>
 
 #include "include/hal/esp32-c3/esp32_c3_HTTP.h"
@@ -80,3 +81,4 @@ PocuterHTTP::HTTPERROR esp32_c3_HTTP::downloadFile(const uint8_t* url, const uin
     }
     return PocuterHTTP::HTTPERROR_MORE_STEPS;
 }
+#endif
