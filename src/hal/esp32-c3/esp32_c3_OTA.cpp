@@ -113,11 +113,14 @@ PocuterOTA::OTAERROR esp32_c3_OTA::getAppVersion(uint64_t appID, uint8_t* major,
 PocuterOTA::OTAERROR esp32_c3_OTA::setNextAppID(uint64_t appID) {
     
    
-    nvs_handle_t nvsHandle;
+     nvs_handle_t nvsHandle;
    
     esp_err_t err = nvs_open("storage", NVS_READWRITE, &nvsHandle);
     if (err == ESP_OK) {
         err = nvs_set_u64(nvsHandle, "startApp", appID);
+        if (err == ESP_OK) {
+            err == nvs_commit(nvsHandle);
+        }
         nvs_close(nvsHandle);
       }
     
