@@ -212,7 +212,6 @@ PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTI
 PocuterOTA::OTAERROR esp32_c3_OTA::bootPartition(PocuterOTA::POCUTER_PARTITION partition) {
     const esp_partition_t *bootPartition = esp_partition_find_first(ESP_PARTITION_TYPE_APP, (esp_partition_subtype_t)(ESP_PARTITION_SUBTYPE_APP_OTA_MIN + partition), NULL);
     if (bootPartition == NULL) return OTAERROR_PATITION_NOT_AVAILABLE;
-    // ToDO check valid Partition?
     esp_err_t err = esp_ota_set_boot_partition(bootPartition);
     if (err != ESP_OK) return OTAERROR_UNKNOWN;
     return OTAERROR_OK;
@@ -226,6 +225,19 @@ PocuterOTA::POCUTER_PARTITION esp32_c3_OTA::getCurrentPartition() {
     }
     return PART_UNKNOWN;
     
+}
+PocuterOTA::OTAERROR esp32_c3_OTA::verifyPartition(POCUTER_PARTITION partition) {
+    esp_image_metadata_t dat;
+    const esp_partition_t *bootPartition = esp_partition_find_first(ESP_PARTITION_TYPE_APP, (esp_partition_subtype_t)(ESP_PARTITION_SUBTYPE_APP_OTA_MIN + partition), NULL);
+    if (bootPartition == NULL) return OTAERROR_PATITION_NOT_AVAILABLE;
+    esp_partition_pos_t part; 
+    part.offset = bootPartition->address;
+    part.size = bootPartition->size;
+    dat.start_addr = bootPartition->address;
+    if (esp_image_verify(ESP_IMAGE_VERIFY_SILENT, &part, &dat) == ESP_OK) return OTAERROR_OK;
+    return OTAERROR_APP_READ_ERROR;
+    
+      
 }
 PocuterOTA::OTAERROR esp32_c3_OTA::restart() {
     esp_restart();

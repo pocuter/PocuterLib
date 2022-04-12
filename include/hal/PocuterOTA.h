@@ -44,6 +44,7 @@ class PocuterOTA {
         virtual OTAERROR bootPartition(POCUTER_PARTITION partition) = 0;
         virtual POCUTER_PARTITION getCurrentPartition() = 0;
         virtual OTAERROR restart() = 0;
+        virtual OTAERROR verifyPartition(POCUTER_PARTITION partition) = 0; 
     private:
 
 };
