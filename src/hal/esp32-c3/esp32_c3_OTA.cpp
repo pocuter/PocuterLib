@@ -119,7 +119,7 @@ PocuterOTA::OTAERROR esp32_c3_OTA::setNextAppID(uint64_t appID) {
     if (err == ESP_OK) {
         err = nvs_set_u64(nvsHandle, "startApp", appID);
         if (err == ESP_OK) {
-            err == nvs_commit(nvsHandle);
+            err = nvs_commit(nvsHandle);
         }
         nvs_close(nvsHandle);
       }
