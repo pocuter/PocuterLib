@@ -463,6 +463,9 @@ UG_GUI* gui = _gui;
 
 UG_U16 UGUI::UG_StringWidth( const char* str )
 {
+  if (*str == 0)
+    return 0;
+  
   UG_GUI* gui = _gui;
   
   UG_U8 cw;
