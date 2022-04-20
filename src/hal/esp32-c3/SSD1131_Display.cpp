@@ -217,6 +217,7 @@ void SSD1131_Display::drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, u
 
         //VGA[(py<<8)+(py<<6)+px]=color;
 
+        set16BitPixel(px,py,c);
         if (dxabs>=dyabs) /* the line is more horizontal than vertical */
         {
           for(i=0;i<dxabs;i++)
