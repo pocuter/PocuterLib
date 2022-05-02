@@ -347,6 +347,8 @@ void SSD1131_Display::drawRectangle(int16_t x1, int16_t y1, int16_t x2, int16_t 
             for (int iy = y1; iy <= y2; iy++) {
                 if (iy < 0) continue;
                 if (ix < 0) continue;
+                if (iy >= DISPLAY_Y) continue;
+                if (ix >= DISPLAY_X) continue;
                 m_currentBackBuffer[ix + (DISPLAY_X * iy)] = c;
             }
         }
