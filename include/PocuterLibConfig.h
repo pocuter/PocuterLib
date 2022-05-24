@@ -13,7 +13,7 @@
 // #define POCUTER_DISABLE_SD_CARD
 
 /* Dont use WIFI functions */
- #define POCUTER_DISABLE_WIFI
+// #define POCUTER_DISABLE_WIFI
 
 /* Don't include the RGBled function */
 // #define POCUTER_DISABLE_RGBled
@@ -25,20 +25,20 @@
 // #define POCUTER_DISABLE_EXPANDER
 
 /* Don't include the accelerator sensor */
-#define POCUTER_DISABLE_ACC
+// #define POCUTER_DISABLE_ACC
 
 /* Swap SDA and SCL at the I2C bus. This will deactivate the expander and with it RGBled, OTA, SD-Card, Buttons and Display */
 // #define POCUTER_SWITCH_SDA_SCL
 
 /* Disable Light Sensor */
-#define POCUTER_DISABLE_LIGHTSENSOR
+// #define POCUTER_DISABLE_LIGHTSENSOR
 
 /* Disable the Microphone */
-#define POCUTER_DISABLE_MICROPHONE
+// #define POCUTER_DISABLE_MICROPHONE
  
 
 /* Disable ADC  (Will also disable the Micrphone and light sensor) */
-#define POCUTER_DISABLE_ADC
+// #define POCUTER_DISABLE_ADC
 
 
 /* Please do not change anything from this point */
