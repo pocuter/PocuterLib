@@ -9,7 +9,10 @@
 #include "esp_event.h"
 #include "esp_wps.h"
 #include "nvs_flash.h"
+#include <esp_http_server.h>
 #include <string.h>
+#include "include/hal/esp32-c3/esp32_c3_CaptivePortalDNS.h"
+
 namespace PocuterLib {
     namespace HAL {
        
@@ -20,16 +23,28 @@ namespace PocuterLib {
             
             void registerEventHandler(PocuterWIFI::wifiEventHandler*, void*);
             WIFIERROR startWPS();
+            WIFIERROR startAccessPoint();
             WIFIERROR connect();
             WIFIERROR connect(const wifiCredentials*);
             
             WIFIERROR getCredentials(PocuterWIFI::wifiCredentials*);
             WIFI_STATE getState();
+            
+            static esp_err_t http_get_handler(httpd_req_t *req);
+            static esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err);
+            
         private:
             
-            
+            PocuterWIFI::WIFIERROR wifiInit();
+            PocuterWIFI::WIFIERROR wifiDeInit();
             static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
             static void got_ip_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
+            esp_netif_t *m_sta_netif;
+            void start_webserver();
+            void stop_webserver();
+            
+            
+            
             esp_wps_config_t m_wpsConfig;
             wifi_config_t m_wps_ap_creds[MAX_WPS_AP_CRED];
             int m_s_ap_creds_num = 0;
@@ -37,6 +52,17 @@ namespace PocuterLib {
             WIFI_STATE m_state;
             wifiEventHandler* m_wifiEventHandler;
             void* m_wifiEventHandler_userData;
+            httpd_handle_t m_httpServer = NULL;
+            bool m_didWifiInit;
+            
+            esp32_c3_CaptivePortalDNS* m_dns;
+            const char* m_head =    "<!DOCTYPE HTML><html><head><meta content=\"text/html; charset=ISO-8859-1\"http-equiv=\"content-type\"><meta name = \"viewport\" content = \"width = device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable=0\"><title>Pocuter Portal</title><style>body { background-color: #0067B3  ; font-family: Arial, Helvetica, Sans-Serif; Color: #FFFFFF; }</style></head><body><center><h1 style=\"color:#FFFFFF; fontfamily:verdana;font-family: verdana;padding-top: 10px;padding-bottom: 10px;font-size: 36px\">Pocuter Portal</h1>";
+            const char* m_webPageForm = "<h3 style=\"color:#FFFFFF;font-family: Verdana;font: caption;font-size: 27px;padding-top: 10px;padding-bottom: 10px;\">Please give Your WiFi Credentials</h3><FORM action=\"/\" method=\"get\"><P ><label style=\"font-family:Times New Roman\">SSID</label><br><input maxlength=\"30px\" type='text'id=\"ssid_wifi\" name=\"ssid\" placeholder='Enter WiFi SSID' style=\"width: 300px; padding: 5px 10px ; margin: 8px 0; border : 2px solid #3498db; border-radius: 4px; box-sizing:border-box\" ><br></P><P><label style=\"font-family:Times New Roman\">PASSKEY</label><br><input maxlength=\"30px\" type = \"text\" id=\"pass_wifi\" name=\"passkey\"  placeholder = \"Enter WiFi PASSKEY\" style=\"width: 300px;padding: 5px 10px ; margin: 8px 0; border : 2px solid #3498db; border-radius: 4px; box-sizing:border-box\" ><br>&nbsp;<p/><INPUT type=\"submit\"><INPUT type=\"reset\"><style>input[type=\"reset\"]{background-color: #3498DB; border: none; color: white; padding:  15px 48px; text-align: center; text-decoration: none;display:inline-block; font-size: 16px;}input[type=\"submit\"]{background-color: #3498DB; border: none; color: white; padding:  15px 48px;text-align: center; text-decoration: none;display: inline-block;font-size: 16px;}</style></FORM>";
+            const char* m_webPageConnecting = "<h3 style=\"color:#FFFFFF;font-family: Verdana;font: caption;font-size: 27px;padding-top: 10px;padding-bottom: 10px;\">Connecting to Wifi</h3>";
+            const char* m_foot =    "</center></body></html>";
+            
+          
+            
         };
     }
 }

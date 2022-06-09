@@ -9,6 +9,9 @@
 
 using namespace PocuterLib::HAL;
 
+#pragma GCC diagnostic push     
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers" 
+
 esp32_c3_HTTP::esp32_c3_HTTP() {
     m_downloadBuffer = NULL;
 }
@@ -81,4 +84,7 @@ PocuterHTTP::HTTPERROR esp32_c3_HTTP::downloadFile(const uint8_t* url, const uin
     }
     return PocuterHTTP::HTTPERROR_MORE_STEPS;
 }
+
+#pragma GCC diagnostic pop 
+
 #endif

@@ -40,7 +40,8 @@ class PocuterWIFI {
             WIFI_STATE_INIT_FAILED,     
             WIFI_STATE_DISCONNECTED,
             WIFI_STATE_CONNECTED,
-            WIFI_WAITING_WPS
+            WIFI_WAITING_WPS,
+            WIFI_WAITING_AP     
         };
             
             
@@ -50,6 +51,7 @@ class PocuterWIFI {
        virtual WIFI_STATE getState() = 0;
        virtual void registerEventHandler(wifiEventHandler*, void*) = 0;
        virtual WIFIERROR startWPS() = 0;
+       virtual WIFIERROR startAccessPoint() = 0;
        virtual WIFIERROR getCredentials(wifiCredentials*) = 0;
        virtual WIFIERROR connect() = 0;
        virtual WIFIERROR connect(const wifiCredentials*) = 0;

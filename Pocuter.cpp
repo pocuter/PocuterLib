@@ -20,4 +20,5 @@
 #include "src/hal/esp32-c3/esp32_c3_ADC.cpp"
 #include "src/hal/esp32-c3/esp32_c3_Mic.cpp"
 #include "src/hal/esp32-c3/esp32_c3_HTTP.cpp"
+#include "src/hal/esp32-c3/esp32_c3_CaptivePortalDNS.cpp"
 #include "src/hal/PocuterConfig.cpp"

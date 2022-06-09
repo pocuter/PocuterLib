@@ -13,6 +13,8 @@ namespace PocuterLib {
             void registerEventHandler(buttonEventHandler*, void*);
             void unregisterEventHandler();
             void expEvent(uint8_t, uint8_t, void*);
+            
+            
         private:
             esp32_c3_Expander* m_expander;
             buttonEventHandler* m_eventHandler;
@@ -20,6 +22,7 @@ namespace PocuterLib {
             uint8_t m_currentButtonStates;
             
             static void expEventHandler(uint8_t, uint8_t, void*);
+            void checkCeatCodes(uint8_t buttons);
         };
     }
 }

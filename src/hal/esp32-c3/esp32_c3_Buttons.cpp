@@ -2,7 +2,8 @@
 #ifndef POCUTER_DISABLE_BUTTONS
 
 #include "include/hal/esp32-c3/esp32_c3_Buttons.h"
-
+#include "include/hal/esp32-c3/esp32_c3_WIFI.h"
+#include "Pocuter.h"
 
 #define EXP_PORT_BTN1 0
 #define EXP_PIN_BTN1  6
@@ -51,8 +52,6 @@ void esp32_c3_Buttons::unregisterEventHandler() {
 void esp32_c3_Buttons::expEventHandler(uint8_t a, uint8_t b, void* dat) {
     esp32_c3_Buttons* myself = (esp32_c3_Buttons*) dat;
     
-    if (myself->m_eventHandler == NULL) return;
-    
     uint8_t buttons = 0;
     uint8_t port = 0;
     
@@ -63,12 +62,22 @@ void esp32_c3_Buttons::expEventHandler(uint8_t a, uint8_t b, void* dat) {
     if (EXP_PORT_BTN3 == 0) port = a; else port = b;
     if (!(port & (1 << EXP_PIN_BTN3))) buttons |= BUTTON_3;
     
-    
     if (buttons != myself->m_currentButtonStates) {
+        myself->checkCeatCodes(buttons);
+        
         myself->m_currentButtonStates = buttons;
-        myself->m_eventHandler((PBUTTONS)buttons, myself->m_eventHandlerUserData);
+        if (myself->m_eventHandler != NULL) myself->m_eventHandler((PBUTTONS)buttons, myself->m_eventHandlerUserData);
     }
     
+}
+void esp32_c3_Buttons::checkCeatCodes(uint8_t buttons) {
+#ifndef POCUTER_DISABLE_WIFI 
+    // check for WIFI AP
+    //if (buttons == (BUTTON_1 & BUTTON_2 & BUTTON_3)) {
+        Pocuter::WIFI->startAccessPoint();
+     //       Pocuter::WIFI->startWPS();
+   // }
+#endif
 }
 esp32_c3_Buttons::~esp32_c3_Buttons() {
 }

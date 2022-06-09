@@ -2,6 +2,8 @@
 #ifndef POCUTER_DISABLE_WIFI
 
 #include "include/hal/esp32-c3/esp32_c3_WIFI.h"
+#include "include/hal/esp32-c3/esp32_c3_CaptivePortalDNS.h"
+
 #define MAX_RETRY_ATTEMPTS     2
 #define TAG "WIFI_TEST"
 #ifndef PIN2STR
@@ -9,12 +11,31 @@
 #define PINSTR "%c%c%c%c%c%c%c%c"
 #endif
 
+#define ESP_WIFI_SSID "POCUTER"
+
+#pragma GCC diagnostic push     
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers" 
+
+
 using namespace PocuterLib::HAL;
+
+
+static httpd_uri_t uri_get = {
+    .uri       = "/",
+    .method    = HTTP_GET,
+    .handler   = esp32_c3_WIFI::http_get_handler,
+    .user_ctx  = NULL
+};
+
+
 
 esp32_c3_WIFI::esp32_c3_WIFI() {
     /* Initialize NVS — it is used to store PHY calibration data */
+    m_didWifiInit = false;
+    m_sta_netif = NULL;
     m_state = WIFI_STATE_INIT_FAILED;
     m_wifiEventHandler = NULL;
+    m_dns = NULL;
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ret = nvs_flash_erase();
@@ -27,17 +48,34 @@ esp32_c3_WIFI::esp32_c3_WIFI() {
     if (ret != ESP_OK) return;
     ret = esp_event_loop_create_default();
     if (ret != ESP_OK) return;
-    esp_netif_t *sta_netif = esp_netif_create_default_wifi_sta();
-    if (!sta_netif) return;
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ret = esp_wifi_init(&cfg);
-    if (ret != ESP_OK) return;
-    esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, this);
-    esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &got_ip_event_handler, this);
     
     
     m_state = WIFI_STATE_DISCONNECTED;
     
+}
+PocuterWIFI::WIFIERROR esp32_c3_WIFI::wifiInit() {
+    esp_err_t ret;
+    m_sta_netif = esp_netif_create_default_wifi_sta();
+    if (!m_sta_netif) return WIFIERROR_INIT_FAILED;
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ret = esp_wifi_init(&cfg);
+    if (ret != ESP_OK) return WIFIERROR_INIT_FAILED;
+    esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, this);
+    esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &got_ip_event_handler, this);
+    m_didWifiInit = true;
+    return WIFIERROR_OK;
+}
+PocuterWIFI::WIFIERROR esp32_c3_WIFI::wifiDeInit() {
+    if (! m_didWifiInit) return WIFIERROR_OK; 
+    esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler);
+    esp_event_handler_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, &got_ip_event_handler);
+    esp_wifi_disconnect();
+    esp_wifi_stop();
+    if (m_sta_netif) esp_netif_destroy_default_wifi(m_sta_netif);
+    esp_wifi_deinit();
+    m_didWifiInit = false;
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+    return WIFIERROR_OK;
 }
 
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::getCredentials(PocuterWIFI::wifiCredentials* c) {
@@ -58,6 +96,7 @@ PocuterWIFI::WIFI_STATE esp32_c3_WIFI::getState() {
 
 void esp32_c3_WIFI::wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
     esp32_c3_WIFI* myself = (esp32_c3_WIFI*) arg;
+    printf("EVENT: %d\n", event_id);
     static int ap_idx = 1;
     switch (event_id) {
         case WIFI_EVENT_STA_CONNECTED:
@@ -124,7 +163,7 @@ void esp32_c3_WIFI::wifi_event_handler(void* arg, esp_event_base_t event_base, i
         case WIFI_EVENT_STA_WPS_ER_PIN:
             {
                 /* display the PIN code */
-                wifi_event_sta_wps_er_pin_t* event = (wifi_event_sta_wps_er_pin_t*) event_data;
+                //wifi_event_sta_wps_er_pin_t* event = (wifi_event_sta_wps_er_pin_t*) event_data;
                 //printf("WPS_PIN = " PINSTR "\n", PIN2STR(event->pin_code));
                 break;
             }
@@ -133,6 +172,85 @@ void esp32_c3_WIFI::wifi_event_handler(void* arg, esp_event_base_t event_base, i
     }
     
 }
+// HTTP Error (404) Handler - Redirects all requests to the root page
+esp_err_t esp32_c3_WIFI::http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)
+{
+    // Set status
+    httpd_resp_set_status(req, "302 Temporary Redirect");
+    // Redirect to the "/" root directory
+    httpd_resp_set_hdr(req, "Location", "/");
+    // iOS requires content in the response to detect a captive portal, simply redirecting is not sufficient.
+    httpd_resp_send(req, "Redirect to the captive portal", HTTPD_RESP_USE_STRLEN);
+
+    return ESP_OK;
+}
+
+esp_err_t esp32_c3_WIFI::http_get_handler(httpd_req_t *req) {
+    char*  buf;
+    size_t buf_len;
+    esp32_c3_WIFI* myself = (esp32_c3_WIFI*)req->user_ctx;
+   /*
+    
+    buf_len = httpd_req_get_hdr_value_len(req, "Host") + 1;
+    if (buf_len > 1) {
+        buf = (char*)malloc(buf_len);
+        if (httpd_req_get_hdr_value_str(req, "Host", buf, buf_len) == ESP_OK) {
+            ESP_LOGI(TAG, "Found header => Host: %s", buf);
+        }
+        free(buf);
+    }
+
+   */
+
+    buf_len = httpd_req_get_url_query_len(req) + 1;
+    if (buf_len > 1) {
+        buf = (char*)malloc(buf_len);
+        if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
+            ESP_LOGI(TAG, "Found URL query => %s", buf);
+            PocuterWIFI::wifiCredentials cred;
+            if (httpd_query_key_value(buf, "ssid", (char*)cred.ssid, 32) == ESP_OK) {
+                if (httpd_query_key_value(buf, "passkey", (char*)cred.password, 64) == ESP_OK) {
+                    httpd_resp_set_type(req, "text/html");
+                    httpd_resp_send_chunk(req, myself->m_head, HTTPD_RESP_USE_STRLEN);
+                    httpd_resp_send_chunk(req, myself->m_webPageConnecting, HTTPD_RESP_USE_STRLEN);
+                    httpd_resp_send_chunk(req, myself->m_foot, HTTPD_RESP_USE_STRLEN);
+                    httpd_resp_send_chunk(req, NULL, 0);
+                    
+                    vTaskDelay(1000 / portTICK_PERIOD_MS);
+                    
+                    myself->wifiDeInit();
+                    wifi_config_t wifi_config = {
+                        .sta = {
+                            .pmf_cfg = {
+                                .capable = true,
+                                .required = false
+                            },
+                        },
+                    };
+                    strncpy((char*)wifi_config.sta.ssid, (char*)cred.ssid, sizeof(wifi_config.sta.ssid));
+                    strncpy((char*)wifi_config.sta.password, (char*)cred.password, sizeof(wifi_config.sta.password));
+                    esp_wifi_set_mode(WIFI_MODE_STA);
+                    esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
+                    esp_wifi_connect();
+                    free(buf);
+                    
+                    esp_restart();
+                    return ESP_OK;
+                }
+            }
+
+        }
+        
+    }
+    
+    httpd_resp_set_type(req, "text/html");
+    httpd_resp_send_chunk(req, myself->m_head, HTTPD_RESP_USE_STRLEN);
+    httpd_resp_send_chunk(req, myself->m_webPageForm, HTTPD_RESP_USE_STRLEN);
+    httpd_resp_send_chunk(req, myself->m_foot, HTTPD_RESP_USE_STRLEN);
+    httpd_resp_send_chunk(req, NULL, 0);
+    return ESP_OK;
+}
+
 void esp32_c3_WIFI::got_ip_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
     static ipInfo info;
     esp32_c3_WIFI* myself = (esp32_c3_WIFI*) arg;
@@ -149,6 +267,8 @@ void esp32_c3_WIFI::registerEventHandler(PocuterWIFI::wifiEventHandler* h, void*
     m_wifiEventHandler_userData = u;
 }
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect(const PocuterWIFI::wifiCredentials* c) {
+    wifiDeInit();
+    wifiInit();
     esp_err_t ret = esp_wifi_set_mode(WIFI_MODE_STA);
     if (ret != ESP_OK) return WIFIERROR_COULD_NOT_SET_WIFI_MODE;
     wifi_config_t wifi_config = {
@@ -175,6 +295,8 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect(const PocuterWIFI::wifiCredentials
     return WIFIERROR_OK;
 }
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect() {
+    wifiDeInit();
+    wifiInit();
     esp_err_t ret = esp_wifi_set_mode(WIFI_MODE_STA);
     if (ret != ESP_OK) return WIFIERROR_COULD_NOT_SET_WIFI_MODE;
     ret = esp_wifi_start();
@@ -184,7 +306,50 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect() {
     
     return WIFIERROR_OK;
 }
+PocuterWIFI::WIFIERROR esp32_c3_WIFI::startAccessPoint() {
+    
+    wifiDeInit();
+    
+    m_sta_netif = esp_netif_create_default_wifi_ap();
+    
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+//    esp_netif_dhcps_option();
+    
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                        ESP_EVENT_ANY_ID,
+                                                        &esp32_c3_WIFI::wifi_event_handler,
+                                                        NULL,
+                                                        NULL));
+
+    wifi_config_t wifi_config = {
+        .ap = {
+            .ssid_len = strlen(ESP_WIFI_SSID),
+            .channel = 1,
+            .authmode = WIFI_AUTH_OPEN,
+            .max_connection = 1,
+            .beacon_interval = 100,
+            .pairwise_cipher = WIFI_CIPHER_TYPE_TKIP,
+            .ftm_responder = false
+        }
+        
+    };
+    strncpy((char*)wifi_config.ap.ssid, ESP_WIFI_SSID, 32);
+    wifi_config.ap.password[0] = 0;
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
+    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
+    ESP_ERROR_CHECK(esp_wifi_start());
+    
+    start_webserver();
+    m_state = WIFI_WAITING_AP;
+    return WIFIERROR_OK;
+}
+
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::startWPS() {
+    
+    wifiDeInit();
+    
     esp_err_t ret;
     m_s_ap_creds_num = 0;
     m_RetryNum = 0;
@@ -196,19 +361,48 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::startWPS() {
     strncpy(m_wpsConfig.factory_info.model_name, "POCUTER 1", 33);
     strncpy(m_wpsConfig.factory_info.model_number, "ONE", 33);
     
-    esp_wifi_disconnect();
+    wifiInit();
+    
     
     ret = esp_wifi_set_mode(WIFI_MODE_STA);
     if (ret != ESP_OK) return WIFIERROR_COULD_NOT_SET_WIFI_MODE;
+    
     ret = esp_wifi_start();
     if (ret != ESP_OK) return WIFIERROR_INIT_FAILED;
+    
     esp_wifi_wps_enable(&m_wpsConfig);
     esp_wifi_wps_start(0);
+    
     return WIFIERROR_OK;
 }
-
+void esp32_c3_WIFI::stop_webserver() {
+    httpd_stop(m_httpServer);
+    
+    
+}
+void esp32_c3_WIFI::start_webserver() {
+    /* Generate default configuration */
+    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+    uri_get.user_ctx = this;
+    
+    /* Start the httpd server */
+    if (httpd_start(&m_httpServer, &config) == ESP_OK) {
+        /* Register URI handlers */
+        httpd_register_uri_handler(m_httpServer, &uri_get);
+        httpd_register_err_handler(m_httpServer, HTTPD_404_NOT_FOUND, http_404_error_handler);
+        //httpd_register_uri_handler(server, &uri_post);
+    }
+    if (m_dns == NULL) m_dns = new esp32_c3_CaptivePortalDNS();
+    
+    /* If server failed to start, handle will be NULL */
+    //return server;
+}
 esp32_c3_WIFI::~esp32_c3_WIFI() {
     esp_wifi_stop();
     esp_wifi_deinit();
 }
+
+#pragma GCC diagnostic pop 
+
+
 #endif

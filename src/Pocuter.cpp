@@ -130,6 +130,7 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
    
 #ifndef POCUTER_DISABLE_WIFI 
    WIFI = new esp32_c3_WIFI();
+   WIFI->connect();
 #endif
 #ifndef POCUTER_DISABLE_HTTP
    HTTP = new esp32_c3_HTTP();
