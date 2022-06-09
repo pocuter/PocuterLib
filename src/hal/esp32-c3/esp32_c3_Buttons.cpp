@@ -74,7 +74,7 @@ void esp32_c3_Buttons::checkCeatCodes(uint8_t buttons) {
 #ifndef POCUTER_DISABLE_WIFI 
     // check for WIFI AP
     //if (buttons == (BUTTON_1 & BUTTON_2 & BUTTON_3)) {
-        Pocuter::WIFI->startAccessPoint();
+    //    Pocuter::WIFI->startAccessPoint();
      //       Pocuter::WIFI->startWPS();
    // }
 #endif
