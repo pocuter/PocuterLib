@@ -56,7 +56,7 @@ bool esp32_c3_ADC::registerContinuousRead(esp32_c3_ADC::adcEventHandlerDataEvail
     return ok;
 }
 
-#ifdef ARDUINO 
+#ifdef OLD_VERSION 
 void esp32_c3_ADC::continuousAdcInit(uint16_t adc1_chan_mask, adc1_channel_t *channel, uint8_t channel_num, uint32_t sampleFreqHZ)
 {
     esp_err_t ret = ESP_OK;

@@ -71,7 +71,10 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::wifiDeInit() {
     esp_event_handler_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, &got_ip_event_handler);
     esp_wifi_disconnect();
     esp_wifi_stop();
-    if (m_sta_netif) esp_netif_destroy_default_wifi(m_sta_netif);
+    if (m_sta_netif){
+        esp_netif_destroy(m_sta_netif);
+        m_sta_netif = NULL;
+    }
     esp_wifi_deinit();
     m_didWifiInit = false;
     vTaskDelay(500 / portTICK_PERIOD_MS);
@@ -219,6 +222,7 @@ esp_err_t esp32_c3_WIFI::http_get_handler(httpd_req_t *req) {
                     vTaskDelay(1000 / portTICK_PERIOD_MS);
                     
                     myself->wifiDeInit();
+                    myself->wifiInit();
                     wifi_config_t wifi_config = {
                         .sta = {
                             .pmf_cfg = {
