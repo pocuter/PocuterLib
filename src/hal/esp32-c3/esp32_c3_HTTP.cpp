@@ -22,7 +22,6 @@ esp32_c3_HTTP::~esp32_c3_HTTP() {
 }
 
 esp_err_t esp32_c3_HTTP::fileDownloadEventHandler(esp_http_client_event_t *evt) {
-    printf("http event: %d\n", evt->event_id);
     
     return ESP_OK;
 }
@@ -47,7 +46,10 @@ PocuterHTTP::HTTPERROR esp32_c3_HTTP::downloadFile(const uint8_t* url, const uin
         esp_http_client_config_t config = {
             .url = (const char*) url,
             .cert_pem = (const char*)PEMcert,
-            .cert_len = 0
+            .cert_len = 0,
+            .disable_auto_redirect = true,
+            .event_handler = fileDownloadEventHandler,
+                  
         };
         m_client = esp_http_client_init(&config);
         esp_err_t err;
@@ -59,6 +61,19 @@ PocuterHTTP::HTTPERROR esp32_c3_HTTP::downloadFile(const uint8_t* url, const uin
         }
         m_downloadContentLength = esp_http_client_fetch_headers(m_client);
         m_downloadTotalReadLen = 0;
+        if (esp_http_client_get_status_code(m_client) == 302){
+            esp_http_client_set_redirection(m_client);
+             if ((err = esp_http_client_open(m_client, 0)) != ESP_OK) {
+                free(m_downloadBuffer);
+                m_downloadBuffer = NULL;
+                fclose(m_downloadFp);
+                return PocuterHTTP::HTTPERROR_CONNECT_FAILED;
+            }
+            m_downloadContentLength = esp_http_client_fetch_headers(m_client);
+            m_downloadTotalReadLen = 0;
+
+        }
+        
     }
     
     int read_len = -1;
