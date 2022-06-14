@@ -54,6 +54,7 @@ esp32_c3_WIFI::esp32_c3_WIFI() {
     
 }
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::wifiInit() {
+    if (m_didWifiInit) return WIFIERROR_OK;
     esp_err_t ret;
     m_sta_netif = esp_netif_create_default_wifi_sta();
     if (!m_sta_netif) return WIFIERROR_INIT_FAILED;
@@ -311,7 +312,7 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect() {
     return WIFIERROR_OK;
 }
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::startAccessPoint() {
-    
+    if (m_state == WIFI_WAITING_AP) return WIFIERROR_OK; //already started
     wifiDeInit();
     
     m_sta_netif = esp_netif_create_default_wifi_ap();
@@ -351,7 +352,7 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::startAccessPoint() {
 }
 
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::startWPS() {
-    
+    if (m_state == WIFI_WAITING_WPS) return WIFIERROR_OK; //already started
     wifiDeInit();
     
     esp_err_t ret;
@@ -400,6 +401,23 @@ void esp32_c3_WIFI::start_webserver() {
     
     /* If server failed to start, handle will be NULL */
     //return server;
+}
+PocuterWIFI::WIFIERROR esp32_c3_WIFI::scanAPs(apInfo* ai, uint16_t* size, uint16_t* totalAPs) {
+    wifiInit();
+    *totalAPs = 0;
+    wifi_ap_record_t ap_info[*size];
+    memset(ap_info, 0, sizeof(ap_info));
+    esp_wifi_scan_start(NULL, true);
+    esp_wifi_scan_get_ap_records(size, ap_info);
+    esp_wifi_scan_get_ap_num(totalAPs);
+    for (int i = 0; (i < *size) && (i < *totalAPs); i++) {
+        ai[i].authMode = (AUTH_MODE)ap_info[i].authmode;
+        memcpy(ai[i].bssid, ap_info[i].bssid, 6);
+        memcpy(ai[i].ssid, ap_info[i].ssid, 33);
+        ai[i].channel = ap_info[i].primary;
+        ai[i].signalStrength = ap_info[i].rssi;
+    }
+    return WIFIERROR_OK;
 }
 esp32_c3_WIFI::~esp32_c3_WIFI() {
     esp_wifi_stop();

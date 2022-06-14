@@ -26,6 +26,7 @@ namespace PocuterLib {
             WIFIERROR startAccessPoint();
             WIFIERROR connect();
             WIFIERROR connect(const wifiCredentials*);
+            WIFIERROR scanAPs(apInfo*, uint16_t* size, uint16_t* totalAPs);
             
             WIFIERROR getCredentials(PocuterWIFI::wifiCredentials*);
             WIFI_STATE getState();

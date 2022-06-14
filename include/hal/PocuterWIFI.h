@@ -13,6 +13,28 @@ class PocuterWIFI {
             uint32_t netmask;
             uint32_t gw;
         };
+       
+        enum AUTH_MODE {
+            WIFIAUTH_OPEN = 0,         /**< authenticate mode : open */
+            WIFIAUTH_WEP,              /**< authenticate mode : WEP */
+            WIFIAUTH_WPA_PSK,          /**< authenticate mode : WPA_PSK */
+            WIFIAUTH_WPA2_PSK,         /**< authenticate mode : WPA2_PSK */
+            WIFIAUTH_WPA_WPA2_PSK,     /**< authenticate mode : WPA_WPA2_PSK */
+            WIFIAUTH_WPA2_ENTERPRISE,  /**< authenticate mode : WPA2_ENTERPRISE */
+            WIFIAUTH_WPA3_PSK,         /**< authenticate mode : WPA3_PSK */
+            WIFIAUTH_WPA2_WPA3_PSK,    /**< authenticate mode : WPA2_WPA3_PSK */
+            WIFIAUTH_WAPI_PSK,         /**< authenticate mode : WAPI_PSK */
+            WIFIAUTH_MAX
+        };
+
+        struct apInfo {
+            uint8_t ssid[33];
+            uint8_t bssid[6];
+            uint8_t channel; 
+            int8_t  signalStrength;
+            AUTH_MODE authMode;
+        };
+        
        enum WIFIERROR {
            WIFIERROR_OK = 0,
            WIFIERROR_INIT_FAILED,
@@ -55,6 +77,7 @@ class PocuterWIFI {
        virtual WIFIERROR getCredentials(wifiCredentials*) = 0;
        virtual WIFIERROR connect() = 0;
        virtual WIFIERROR connect(const wifiCredentials*) = 0;
+       virtual WIFIERROR scanAPs(apInfo*, uint16_t* size, uint16_t* totalAPs) = 0;
     private:
 
 };
