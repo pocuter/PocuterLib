@@ -47,6 +47,11 @@
 #include "include/hal/esp32-c3/esp32_c3_ADC.h"
 #endif
 
+#ifndef POCUTER_DISABLE_TIME
+#include "include/hal/esp32-c3/esp32_c3_Time.h"
+#endif
+
+
 #include <string.h>
 
 
@@ -95,7 +100,11 @@ PocuterAccelerometer* Pocuter::Accelerometer = NULL;
 #ifndef POCUTER_DISABLE_MICROPHONE
 PocuterMicrophone* Pocuter::Microphone = NULL;
 #endif
-        
+
+#ifndef POCUTER_DISABLE_TIME
+PocuterTime* Pocuter::PocTime = NULL;
+#endif
+
 Pocuter::Pocuter() {
   
     
@@ -146,7 +155,9 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
 #ifndef POCUTER_DISABLE_MICROPHONE
     Microphone = new esp32_c3_Mic();
 #endif
-        
+#ifndef POCUTER_DISABLE_TIME
+    PocTime = new esp32_c3_Time();
+#endif
 
 #ifndef POCUTER_DISABLE_DISPLAY       
    uint16_t sizeX;
