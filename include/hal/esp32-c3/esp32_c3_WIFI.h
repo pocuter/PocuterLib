@@ -44,7 +44,8 @@ namespace PocuterLib {
             void start_webserver();
             void stop_webserver();
             
-            
+            WIFIERROR saveConfigOnSDCard(wifi_config_t *conf);
+            WIFIERROR loadConfigFromSDCard(wifi_config_t *conf);
             
             esp_wps_config_t m_wpsConfig;
             wifi_config_t m_wps_ap_creds[MAX_WPS_AP_CRED];
