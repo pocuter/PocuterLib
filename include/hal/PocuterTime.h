@@ -1,4 +1,4 @@
-
+#ifndef POCUTER_DISABLE_TIME
 #ifndef POCUTERTIME_H
 #define POCUTERTIME_H
 #include <time.h>
@@ -506,4 +506,5 @@ class PocuterTime {
 
 
 #endif /* POCUTERTIME_H */
+#endif
 

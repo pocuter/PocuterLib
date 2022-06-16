@@ -1,4 +1,4 @@
-
+#ifndef POCUTER_DISABLE_TIME
 #include "include/hal/esp32-c3/esp32_c3_Time.h"
 #include <time.h>
 #include <lwip/sockets.h>
@@ -98,3 +98,4 @@ PocuterTime::TIMEERROR esp32_c3_Time::setLocalTime(tm* localtime){
    
     return TIMEERROR_OK;
 }
+#endif

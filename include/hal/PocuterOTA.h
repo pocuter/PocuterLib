@@ -1,15 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/cppFiles/file.h to edit this template
- */
-
-/* 
- * File:   PocuterOTA.h
- * Author: Test
- *
- * Created on 12. Februar 2022, 12:01
- */
-
 #ifndef POCUTEROTA_H
 #define POCUTEROTA_H
 #include <stdint.h>
