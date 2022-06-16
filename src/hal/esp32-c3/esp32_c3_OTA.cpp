@@ -13,7 +13,7 @@
 
 #define FILE_BUFFER_SIZE 1024*40
 #define DEFLATE_BUFFER_SIZE 1024*40
-
+#define RTC_SLOW_MEM_POCUTER ((uint32_t*) (0x50000000)+ 1024 * 7)       /*!< RTC slow memory, 8k size, Pocuter Data at the end*/
 using namespace PocuterLib::HAL;
 
 
@@ -215,10 +215,7 @@ PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTI
     
 }
 PocuterOTA::OTAERROR esp32_c3_OTA::bootPartition(PocuterOTA::POCUTER_PARTITION partition) {
-    const esp_partition_t *bootPartition = esp_partition_find_first(ESP_PARTITION_TYPE_APP, (esp_partition_subtype_t)(ESP_PARTITION_SUBTYPE_APP_OTA_MIN + partition), NULL);
-    if (bootPartition == NULL) return OTAERROR_PATITION_NOT_AVAILABLE;
-    esp_err_t err = esp_ota_set_boot_partition(bootPartition);
-    if (err != ESP_OK) return OTAERROR_UNKNOWN;
+    // there are Problems with Arduino yet. The bootloader will load the other Partitilon
     return OTAERROR_OK;
 }
 PocuterOTA::POCUTER_PARTITION esp32_c3_OTA::getCurrentPartition() {
