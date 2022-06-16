@@ -98,8 +98,8 @@ bool PocuterConfig::set(const uint8_t* section, const uint8_t* name, uint32_t va
 }
 
 bool PocuterConfig::getBinary(const uint8_t* section, const uint8_t* name, void* result, size_t maxLength) {
-    uint8_t input[128];
-    if (get(section, name, input, 128)) {
+    uint8_t input[256];
+    if (get(section, name, input, 256)) {
         size_t outlen;
         mbedtls_base64_decode((unsigned char *)result, maxLength, &outlen, (unsigned char *)input, strlen((char *)input));
         return (outlen > 0);
@@ -108,9 +108,9 @@ bool PocuterConfig::getBinary(const uint8_t* section, const uint8_t* name, void*
 }
 bool PocuterConfig::setBinary(const uint8_t* section, const uint8_t* name, const void* value, size_t valueLength) {
     if (m_readony) return false;
-    uint8_t output[128];
+    uint8_t output[256];
     size_t outlen;
-    mbedtls_base64_encode((unsigned char *)output, 128, &outlen, (unsigned char *)value, valueLength);
+    mbedtls_base64_encode((unsigned char *)output, 256, &outlen, (unsigned char *)value, valueLength);
     return set(section, name, output);
 }
 
