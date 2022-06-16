@@ -3,7 +3,7 @@
 
 #include "include/hal/esp32-c3/esp32_c3_WIFI.h"
 #include "include/hal/esp32-c3/esp32_c3_CaptivePortalDNS.h"
-
+#include "include/hal/PocuterConfig.h"
 #define MAX_RETRY_ATTEMPTS     2
 #define TAG "WIFI_TEST"
 #ifndef PIN2STR
@@ -58,7 +58,11 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::wifiInit() {
     esp_err_t ret;
     m_sta_netif = esp_netif_create_default_wifi_sta();
     if (!m_sta_netif) return WIFIERROR_INIT_FAILED;
+    
+    
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    
+    
     ret = esp_wifi_init(&cfg);
     if (ret != ESP_OK) return WIFIERROR_INIT_FAILED;
     esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, this);
@@ -98,6 +102,21 @@ PocuterWIFI::WIFI_STATE esp32_c3_WIFI::getState() {
     return m_state;
 }
 
+PocuterWIFI::WIFIERROR esp32_c3_WIFI::saveConfigOnSDCard(wifi_config_t *conf) {
+    PocuterConfig* config = new PocuterConfig(1);
+    bool ok = config->setBinary((const uint8_t*)"WIFI", (const uint8_t*)"config", conf, sizeof(wifi_config_t));
+    delete(config);
+    if (ok)  return WIFIERROR_OK;
+    return WIFIERROR_UNKNOWN;
+}
+PocuterWIFI::WIFIERROR esp32_c3_WIFI::loadConfigFromSDCard(wifi_config_t *conf){
+    PocuterConfig* config = new PocuterConfig(1);
+    bool ok = config->getBinary((const uint8_t*)"WIFI", (const uint8_t*)"config", conf, sizeof(wifi_config_t));
+    delete(config);
+    if (ok)  return WIFIERROR_OK;
+    return WIFIERROR_UNKNOWN;
+}
+            
 void esp32_c3_WIFI::wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
     esp32_c3_WIFI* myself = (esp32_c3_WIFI*) arg;
     printf("EVENT: %d\n", event_id);
@@ -140,7 +159,9 @@ void esp32_c3_WIFI::wifi_event_handler(void* arg, esp_event_base_t event_base, i
                                sizeof(evt->ap_cred[i].passphrase));
                     }
                     /* If multiple AP credentials are received from WPS, connect with first one */
-                    
+                    if (myself->saveConfigOnSDCard(&myself->m_wps_ap_creds[0]) != WIFIERROR_OK) {
+                        printf("Could not save config on SD Card!\n");
+                    }
                     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &myself->m_wps_ap_creds[0]) );
                 }
                 /*
@@ -234,6 +255,9 @@ esp_err_t esp32_c3_WIFI::http_get_handler(httpd_req_t *req) {
                     };
                     strncpy((char*)wifi_config.sta.ssid, (char*)cred.ssid, sizeof(wifi_config.sta.ssid));
                     strncpy((char*)wifi_config.sta.password, (char*)cred.password, sizeof(wifi_config.sta.password));
+                    if (myself->saveConfigOnSDCard(&wifi_config) != WIFIERROR_OK) {
+                        printf("Could not save config on SD Card!\n");
+                    }
                     esp_wifi_set_mode(WIFI_MODE_STA);
                     esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
                     esp_wifi_connect();
@@ -292,6 +316,9 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect(const PocuterWIFI::wifiCredentials
     };
     strncpy((char*)wifi_config.sta.ssid, (char*)c->ssid, sizeof(wifi_config.sta.ssid));
     strncpy((char*)wifi_config.sta.password, (char*)c->password, sizeof(wifi_config.sta.password));
+    if (saveConfigOnSDCard(&wifi_config) != WIFIERROR_OK) {
+        printf("Could not save config on SD Card!\n");
+    }
     if (esp_wifi_set_config(WIFI_IF_STA, &wifi_config) != ESP_OK) return WIFIERROR_INIT_FAILED;
     ret = esp_wifi_start();
     if (ret != ESP_OK) return WIFIERROR_INIT_FAILED;
@@ -304,6 +331,14 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect() {
     wifiInit();
     esp_err_t ret = esp_wifi_set_mode(WIFI_MODE_STA);
     if (ret != ESP_OK) return WIFIERROR_COULD_NOT_SET_WIFI_MODE;
+    wifi_config_t wifi_config;
+    if (saveConfigOnSDCard(&wifi_config) != WIFIERROR_OK) {
+        printf("Could not save config on SD Card!\n");
+    } else {
+        esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
+    }
+    
+    
     ret = esp_wifi_start();
     if (ret != ESP_OK) return WIFIERROR_INIT_FAILED;
     ret = esp_wifi_connect();
