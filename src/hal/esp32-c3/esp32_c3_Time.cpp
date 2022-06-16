@@ -55,6 +55,8 @@ PocuterTime::TIMEERROR esp32_c3_Time::setTimezone(const pocuterTimezone* timeZ, 
 
             nvs_close(nvsHandle);
         }
+    } else {
+        strncpy(m_currentTimeZone, timeZ->name, 32);
     }
     return TIMEERROR_OK;
 }
