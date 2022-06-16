@@ -33,6 +33,16 @@ esp32_c3_OTA::esp32_c3_OTA(PocuterSDCard* SDCard) {
           err = nvs_flash_init();
     }
     
+    nvs_handle_t nvsHandle;
+    err = nvs_open("storage", NVS_READWRITE, &nvsHandle);
+    vTaskDelay(10); // there seem to be a timing issue someware in idf. Without it, it crashes.
+    if (err == ESP_OK) {
+        err = nvs_set_u64(nvsHandle, "lastApp", getCurrentAppID());
+        nvs_commit(nvsHandle);
+        nvs_close(nvsHandle);
+    }
+
+      
 }
 
 
