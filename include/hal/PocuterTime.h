@@ -484,11 +484,11 @@ class PocuterTime {
            
        };
        
-       virtual TIMEERROR setTimezone(const char *timezoneString) = 0;
+       virtual TIMEERROR setTimezone(const pocuterTimezone*, bool save = true) = 0;
        virtual TIMEERROR getLocalTime(tm*) = 0;
        virtual TIMEERROR getGMTTime(tm*) = 0;
        virtual TIMEERROR setLocalTime(tm*) = 0;
-       
+       virtual const char* getCurrentTimezone() = 0;
        
        
        TIMEERROR getAllTimezones(const pocuterTimezone** tz, uint16_t* count) {

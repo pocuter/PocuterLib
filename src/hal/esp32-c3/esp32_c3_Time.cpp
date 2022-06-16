@@ -2,19 +2,60 @@
 #include "include/hal/esp32-c3/esp32_c3_Time.h"
 #include <time.h>
 #include <lwip/sockets.h>
-
+#include "nvs_flash.h"
+#include "nvs.h"
 
 using namespace PocuterLib::HAL;
 
 esp32_c3_Time::esp32_c3_Time() {
+    m_currentTimeZone[0] = 0;
+    esp_err_t err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+          ESP_ERROR_CHECK(nvs_flash_erase());
+          err = nvs_flash_init();
+    }
+    if (err == ESP_OK) {
+        nvs_handle_t nvsHandle;
+        esp_err_t err = nvs_open("storage", NVS_READONLY, &nvsHandle);
+        if (err == ESP_OK) {
+            size_t size = 32;
+            char tzString[32];
+            err = nvs_get_str(nvsHandle, "TZ", tzString, &size);
+            if (err == ESP_OK) {
+                setenv("TZ",tzString,1);
+                tzset();
+                size = 32;
+                err = nvs_get_str(nvsHandle, "TZN", m_currentTimeZone, &size);
+            } else {
+                strncpy(m_currentTimeZone, "GMT", 32);
+            }
+            
+            nvs_close(nvsHandle);
+        }
+    }
 }
 
 esp32_c3_Time::~esp32_c3_Time() {
 }
-
-PocuterTime::TIMEERROR esp32_c3_Time::setTimezone(const char *timezoneString) {
-    setenv("TZ",timezoneString,1);
+const char* esp32_c3_Time::getCurrentTimezone() {
+    return m_currentTimeZone;
+}
+PocuterTime::TIMEERROR esp32_c3_Time::setTimezone(const pocuterTimezone* timeZ, bool save) {
+    setenv("TZ",timeZ->timezoneString,1);
     tzset();
+    if (save) {
+        nvs_handle_t nvsHandle;
+        esp_err_t err = nvs_open("storage", NVS_READWRITE, &nvsHandle);
+        if (err == ESP_OK) {
+            err = nvs_set_str(nvsHandle, "TZ", timeZ->timezoneString);
+            err = nvs_set_str(nvsHandle, "TZN", timeZ->name);
+            if (err == ESP_OK) {
+                strncpy(m_currentTimeZone, timeZ->name, 32);
+            }
+
+            nvs_close(nvsHandle);
+        }
+    }
     return TIMEERROR_OK;
 }
 PocuterTime::TIMEERROR esp32_c3_Time::getLocalTime(tm* localtime) {
