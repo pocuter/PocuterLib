@@ -91,9 +91,11 @@ bool PocuterConfig::setEncrypted(const uint8_t* section, const uint8_t* name, co
     bool res = false;
     if (hmac->isEncryptionKeySet()) {
         size_t length = strlen((const char*)value) + 1;
+        
         if (length <= 366) {
             size_t needSize = ENC_BLOCKSIZE;
             if (length > needSize) needSize = length + (ENC_BLOCKSIZE - (length % ENC_BLOCKSIZE));
+            printf("needSize setEnc length: %d\n", needSize);
             mbedtls_aes_context aes;
             unsigned char iv[] = {0xff, 0x01, 0x02, 0x03, 0x04, 0x05, 0xAA, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
             uint8_t AESKey[32];
@@ -148,16 +150,19 @@ bool PocuterConfig::getBinary(const uint8_t* section, const uint8_t* name, void*
     return res;
 }
 bool PocuterConfig::setBinary(const uint8_t* section, const uint8_t* name, const void* value, size_t valueLength, bool encrypt) {
+    printf("SetBinary %d: %d\n", encrypt, valueLength);
     if (m_readony) return false;
+    if (encrypt && valueLength > 261) return false;
+    
     size_t needSize = 4*(valueLength/3) + 8;
     uint8_t* output = new uint8_t[needSize];
     size_t outlen;
     mbedtls_base64_encode((unsigned char *)output, needSize, &outlen, (unsigned char *)value, valueLength);
     bool ret;
     if (! encrypt) {
-        set(section, name, output);
+        ret = set(section, name, output);
     } else {
-        setEncrypted(section, name, output);
+        ret = setEncrypted(section, name, output);
     }
     
     
