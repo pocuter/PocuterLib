@@ -139,7 +139,7 @@ bool PocuterConfig::getBinary(const uint8_t* section, const uint8_t* name, void*
         res = getEncrypted(section, name, input, needSize);
     }
     
-    if (get(section, name, input, needSize)) {
+    if (res) {
         size_t outlen;
         mbedtls_base64_decode((unsigned char *)result, maxLength, &outlen, (unsigned char *)input, strlen((char *)input));
         res = (outlen > 0);
