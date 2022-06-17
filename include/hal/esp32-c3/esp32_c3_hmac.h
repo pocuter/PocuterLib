@@ -9,7 +9,7 @@ namespace PocuterLib {
         public:
             esp32_c3_hmac();
             virtual ~esp32_c3_hmac();
-            
+            bool isEncryptionKeySet();
             bool setEfuseKey(const uint8_t* masterKey, uint8_t keyLength);
             uint8_t* getChipID();
             void calculateChallengeReply(const uint8_t* challenge, uint8_t challengeLength, uint8_t* reply, uint8_t& replyLength);

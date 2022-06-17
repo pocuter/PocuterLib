@@ -122,7 +122,14 @@ PocuterWIFI::WIFI_STATE esp32_c3_WIFI::getState() {
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::saveConfigOnSDCard(wifi_config_t *conf) {
     uint64_t appId = 1;
     PocuterConfig* config = new PocuterConfig((const uint8_t*)"WIFI", &appId);
-    bool ok = config->setBinary((const uint8_t*)"WIFI", (const uint8_t*)"config", conf, sizeof(wifi_config_t));
+    
+    
+    
+    bool ok = config->setBinary((const uint8_t*)"WIFI_ENC", (const uint8_t*)"config", conf, sizeof(wifi_config_t), true);
+    if (! ok) {
+        ok = config->setBinary((const uint8_t*)"WIFI", (const uint8_t*)"config", conf, sizeof(wifi_config_t), false);
+    }
+    
     delete(config);
     if (ok)  return WIFIERROR_OK;
     return WIFIERROR_UNKNOWN;
@@ -130,7 +137,11 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::saveConfigOnSDCard(wifi_config_t *conf) {
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::loadConfigFromSDCard(wifi_config_t *conf){
     uint64_t appId = 1;
     PocuterConfig* config = new PocuterConfig((const uint8_t*)"WIFI", &appId);
-    bool ok = config->getBinary((const uint8_t*)"WIFI", (const uint8_t*)"config", conf, sizeof(wifi_config_t));
+    bool ok = config->getBinary((const uint8_t*)"WIFI_ENC", (const uint8_t*)"config", conf, sizeof(wifi_config_t), true);
+    if (! ok) {
+        ok = config->getBinary((const uint8_t*)"WIFI", (const uint8_t*)"config", conf, sizeof(wifi_config_t), false);
+    }
+    
     delete(config);
     if (ok)  return WIFIERROR_OK;
     return WIFIERROR_UNKNOWN;

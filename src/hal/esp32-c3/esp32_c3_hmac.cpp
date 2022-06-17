@@ -33,7 +33,9 @@ uint8_t* esp32_c3_hmac::calculateIndividualEfuseKey(const uint8_t* masterKey, ui
     }
     return NULL;
 }
-
+bool esp32_c3_hmac::isEncryptionKeySet() {
+    return (! ets_efuse_key_block_unused(SECURE_KEY_EFUSE_BLOCK));
+}
 bool esp32_c3_hmac::setEfuseKey(const uint8_t* masterKey, uint8_t keyLength) {
     uint8_t* key = calculateIndividualEfuseKey(masterKey, keyLength);
     if (key && ets_efuse_write_key(SECURE_KEY_EFUSE_BLOCK,
