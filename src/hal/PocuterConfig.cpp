@@ -12,8 +12,14 @@
 #include <inttypes.h>
 #define CONFIG_PATH "/sd/config"
 
-PocuterConfig::PocuterConfig(const uint8_t* configName) {
-   uint64_t appID = PocuterLib::HAL::esp32_c3_OTA::getCurrentAppID();
+PocuterConfig::PocuterConfig(const uint8_t* configName, uint64_t* pappID) {
+   uint64_t appID = 1;
+   if (pappID != NULL) {
+       appID = *pappID;
+   } else {
+       appID = PocuterLib::HAL::esp32_c3_OTA::getCurrentAppID();
+   }
+   
    m_configFile =  (uint8_t *)malloc(128);
    mkdir(CONFIG_PATH, S_IRWXU);
    snprintf((char*)m_configFile, 128, "%s/%" PRIu64, CONFIG_PATH, appID);
@@ -38,6 +44,7 @@ bool PocuterConfig::get(const uint8_t* section, const uint8_t* name, uint8_t* re
 bool PocuterConfig::set(const uint8_t* section, const uint8_t* name, const uint8_t* value) {
     if (m_readony) return false;
     long  n = ini_puts((const TCHAR*)section, (const TCHAR*)name, (const TCHAR*)value, (const TCHAR*)m_configFile);
+    printf("set result: %d\n", n);
     return (n>0);
 }
 bool PocuterConfig::del(const uint8_t* section, const uint8_t* name) {
@@ -98,19 +105,25 @@ bool PocuterConfig::set(const uint8_t* section, const uint8_t* name, uint32_t va
 }
 
 bool PocuterConfig::getBinary(const uint8_t* section, const uint8_t* name, void* result, size_t maxLength) {
-    uint8_t input[256];
-    if (get(section, name, input, 256)) {
+    size_t needSize = 4*(maxLength/3) + 8;
+    uint8_t* input = new uint8_t[needSize];
+    bool res = false;
+    if (get(section, name, input, needSize)) {
         size_t outlen;
         mbedtls_base64_decode((unsigned char *)result, maxLength, &outlen, (unsigned char *)input, strlen((char *)input));
-        return (outlen > 0);
+        res = (outlen > 0);
     }
-    return false;
+    delete[] input;
+    return res;
 }
 bool PocuterConfig::setBinary(const uint8_t* section, const uint8_t* name, const void* value, size_t valueLength) {
     if (m_readony) return false;
-    uint8_t output[256];
+    size_t needSize = 4*(valueLength/3) + 8;
+    uint8_t* output = new uint8_t[needSize];
     size_t outlen;
-    mbedtls_base64_encode((unsigned char *)output, 256, &outlen, (unsigned char *)value, valueLength);
-    return set(section, name, output);
+    mbedtls_base64_encode((unsigned char *)output, needSize, &outlen, (unsigned char *)value, valueLength);
+    bool ret = set(section, name, output);
+    delete[] output;
+    return ret;
 }
 

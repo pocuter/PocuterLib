@@ -4,7 +4,7 @@
 #include "include/hal/esp32-c3/esp32_c3_WIFI.h"
 #include "include/hal/esp32-c3/esp32_c3_CaptivePortalDNS.h"
 #include "include/hal/PocuterConfig.h"
-#define MAX_RETRY_ATTEMPTS     2
+#define MAX_RETRY_ATTEMPTS     3
 #define TAG "WIFI_TEST"
 #ifndef PIN2STR
 #define PIN2STR(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5], (a)[6], (a)[7]
@@ -36,21 +36,38 @@ esp32_c3_WIFI::esp32_c3_WIFI() {
     m_state = WIFI_STATE_INIT_FAILED;
     m_wifiEventHandler = NULL;
     m_dns = NULL;
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ret = nvs_flash_erase();
-        if (ret == ESP_OK) {
-            ret = nvs_flash_init();
-        }
-        
-    }
-    ret = esp_netif_init();
+    m_wifiSemaphore = xSemaphoreCreateBinary();
+    if (!m_wifiSemaphore) abort();
+    xSemaphoreGive(m_wifiSemaphore);
+    
+    xTaskCreate(&wifiTask, "intTaskWIFI", 4000, this, 10, NULL);
+    
+    esp_wifi_set_storage(WIFI_STORAGE_RAM);
+    esp_err_t ret = esp_netif_init();
     if (ret != ESP_OK) return;
     ret = esp_event_loop_create_default();
     if (ret != ESP_OK) return;
     
     
     m_state = WIFI_STATE_DISCONNECTED;
+    
+}
+void esp32_c3_WIFI::wifiTask(void *arg) {
+    esp32_c3_WIFI* myself = (esp32_c3_WIFI*) arg;
+    while(true) {
+        vTaskDelay(30000 / portTICK_PERIOD_MS);
+        xSemaphoreTake(myself->m_wifiSemaphore, portMAX_DELAY);
+        if (myself->m_state == WIFI_STATE_DISCONNECTED) {
+            myself->m_RetryNum = 0;
+            esp_wifi_connect();
+            
+        }
+        xSemaphoreGive(myself->m_wifiSemaphore);
+       
+    }
+        
+
+    
     
 }
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::wifiInit() {
@@ -103,14 +120,16 @@ PocuterWIFI::WIFI_STATE esp32_c3_WIFI::getState() {
 }
 
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::saveConfigOnSDCard(wifi_config_t *conf) {
-    PocuterConfig* config = new PocuterConfig(1);
+    uint64_t appId = 1;
+    PocuterConfig* config = new PocuterConfig((const uint8_t*)"WIFI", &appId);
     bool ok = config->setBinary((const uint8_t*)"WIFI", (const uint8_t*)"config", conf, sizeof(wifi_config_t));
     delete(config);
     if (ok)  return WIFIERROR_OK;
     return WIFIERROR_UNKNOWN;
 }
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::loadConfigFromSDCard(wifi_config_t *conf){
-    PocuterConfig* config = new PocuterConfig(1);
+    uint64_t appId = 1;
+    PocuterConfig* config = new PocuterConfig((const uint8_t*)"WIFI", &appId);
     bool ok = config->getBinary((const uint8_t*)"WIFI", (const uint8_t*)"config", conf, sizeof(wifi_config_t));
     delete(config);
     if (ok)  return WIFIERROR_OK;
@@ -119,50 +138,40 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::loadConfigFromSDCard(wifi_config_t *conf){
             
 void esp32_c3_WIFI::wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
     esp32_c3_WIFI* myself = (esp32_c3_WIFI*) arg;
-    printf("EVENT: %d\n", event_id);
+    //printf("EVENT: %d\n", event_id);
     static int ap_idx = 1;
     switch (event_id) {
         case WIFI_EVENT_STA_CONNECTED:
             myself->m_state = WIFI_STATE_CONNECTED;
             if (myself->m_wifiEventHandler) myself->m_wifiEventHandler(WIFIEVENT_CONNECTED, NULL, myself->m_wifiEventHandler_userData);
+            
             break;
         case WIFI_EVENT_STA_START:
             break;
         case WIFI_EVENT_STA_DISCONNECTED:
-            if (myself->m_wifiEventHandler) myself->m_wifiEventHandler(WIFIEVENT_DISCONNECTED, NULL, myself->m_wifiEventHandler_userData);
-            myself->m_state = WIFI_STATE_DISCONNECTED;
+            if (myself->m_state == WIFI_WAITING_WPS) break;
+            
+            
             if (myself->m_RetryNum < MAX_RETRY_ATTEMPTS) {
+               if (myself->m_wifiEventHandler) myself->m_wifiEventHandler(WIFIEVENT_TRY_CONNECTING, NULL, myself->m_wifiEventHandler_userData);
+                myself->m_state = WIFI_STATE_TRY_CONNECTING;
                 esp_wifi_connect();
                 myself->m_RetryNum++;
-            } else if (ap_idx < myself->m_s_ap_creds_num) {
-                /* Try the next AP credential if first one fails */
-
-                if (ap_idx < myself->m_s_ap_creds_num) {
-                    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &myself->m_wps_ap_creds[ap_idx++]) );
-                    esp_wifi_connect();
-                }
-                myself->m_RetryNum = 0;
-            } 
+            } else {
+                if (myself->m_wifiEventHandler) myself->m_wifiEventHandler(WIFIEVENT_DISCONNECTED, NULL, myself->m_wifiEventHandler_userData);
+                myself->m_state = WIFI_STATE_DISCONNECTED;
+            }
 
             break;
         case WIFI_EVENT_STA_WPS_ER_SUCCESS:
             {
                 wifi_event_sta_wps_er_success_t *evt =
                     (wifi_event_sta_wps_er_success_t *)event_data;
-                int i;
+                
                 if (evt) {
-                    myself->m_s_ap_creds_num = evt->ap_cred_cnt;
-                    for (i = 0; i < myself->m_s_ap_creds_num; i++) {
-                        memcpy(myself->m_wps_ap_creds[i].sta.ssid, evt->ap_cred[i].ssid,
-                               sizeof(evt->ap_cred[i].ssid));
-                        memcpy(myself->m_wps_ap_creds[i].sta.password, evt->ap_cred[i].passphrase,
-                               sizeof(evt->ap_cred[i].passphrase));
-                    }
-                    /* If multiple AP credentials are received from WPS, connect with first one */
-                    if (myself->saveConfigOnSDCard(&myself->m_wps_ap_creds[0]) != WIFIERROR_OK) {
-                        printf("Could not save config on SD Card!\n");
-                    }
-                    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &myself->m_wps_ap_creds[0]) );
+                    
+                    /* If multiple AP credentials are received from WPS, not allowed, yet */
+                   
                 }
                 /*
                  * If only one AP credential is received from WPS, there will be no event data and
@@ -255,9 +264,7 @@ esp_err_t esp32_c3_WIFI::http_get_handler(httpd_req_t *req) {
                     };
                     strncpy((char*)wifi_config.sta.ssid, (char*)cred.ssid, sizeof(wifi_config.sta.ssid));
                     strncpy((char*)wifi_config.sta.password, (char*)cred.password, sizeof(wifi_config.sta.password));
-                    if (myself->saveConfigOnSDCard(&wifi_config) != WIFIERROR_OK) {
-                        printf("Could not save config on SD Card!\n");
-                    }
+                    myself->saveConfigOnSDCard(&wifi_config);
                     esp_wifi_set_mode(WIFI_MODE_STA);
                     esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
                     esp_wifi_connect();
@@ -294,12 +301,16 @@ void esp32_c3_WIFI::got_ip_event_handler(void* arg, esp_event_base_t event_base,
 void esp32_c3_WIFI::registerEventHandler(PocuterWIFI::wifiEventHandler* h, void* u) {
     m_wifiEventHandler = h;
     m_wifiEventHandler_userData = u;
+    
+    if (m_wifiEventHandler && m_state == WIFI_STATE_CONNECTED) m_wifiEventHandler(WIFIEVENT_CONNECTED, NULL, m_wifiEventHandler_userData);
+    
 }
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect(const PocuterWIFI::wifiCredentials* c) {
+    xSemaphoreTake(m_wifiSemaphore, portMAX_DELAY);
     wifiDeInit();
     wifiInit();
     esp_err_t ret = esp_wifi_set_mode(WIFI_MODE_STA);
-    if (ret != ESP_OK) return WIFIERROR_COULD_NOT_SET_WIFI_MODE;
+    if (ret != ESP_OK){ xSemaphoreGive(m_wifiSemaphore); return WIFIERROR_COULD_NOT_SET_WIFI_MODE; }
     wifi_config_t wifi_config = {
         .sta = {
             
@@ -316,38 +327,42 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect(const PocuterWIFI::wifiCredentials
     };
     strncpy((char*)wifi_config.sta.ssid, (char*)c->ssid, sizeof(wifi_config.sta.ssid));
     strncpy((char*)wifi_config.sta.password, (char*)c->password, sizeof(wifi_config.sta.password));
-    if (saveConfigOnSDCard(&wifi_config) != WIFIERROR_OK) {
-        printf("Could not save config on SD Card!\n");
+    saveConfigOnSDCard(&wifi_config);
+    if (esp_wifi_set_config(WIFI_IF_STA, &wifi_config) == ESP_OK)  {
+        ret = esp_wifi_start();
+        if (ret == ESP_OK){
+            ret = esp_wifi_connect();
+        }
     }
-    if (esp_wifi_set_config(WIFI_IF_STA, &wifi_config) != ESP_OK) return WIFIERROR_INIT_FAILED;
-    ret = esp_wifi_start();
+    xSemaphoreGive(m_wifiSemaphore);
     if (ret != ESP_OK) return WIFIERROR_INIT_FAILED;
-    ret = esp_wifi_connect();
-    if (ret != ESP_OK) return WIFIERROR_INIT_FAILED;
+    
     return WIFIERROR_OK;
 }
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect() {
+    xSemaphoreTake(m_wifiSemaphore, portMAX_DELAY);
     wifiDeInit();
     wifiInit();
     esp_err_t ret = esp_wifi_set_mode(WIFI_MODE_STA);
-    if (ret != ESP_OK) return WIFIERROR_COULD_NOT_SET_WIFI_MODE;
-    wifi_config_t wifi_config;
-    if (saveConfigOnSDCard(&wifi_config) != WIFIERROR_OK) {
-        printf("Could not save config on SD Card!\n");
-    } else {
-        esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
+    if (ret == ESP_OK) {
+        wifi_config_t wifi_config;
+        if (loadConfigFromSDCard(&wifi_config) == WIFIERROR_OK) {
+            esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
+        }
+        ret = esp_wifi_start();
+        if (ret == ESP_OK) {
+            ret = esp_wifi_connect();
+        }
     }
+    xSemaphoreGive(m_wifiSemaphore);
     
-    
-    ret = esp_wifi_start();
-    if (ret != ESP_OK) return WIFIERROR_INIT_FAILED;
-    ret = esp_wifi_connect();
     if (ret != ESP_OK) return WIFIERROR_INIT_FAILED;
     
     return WIFIERROR_OK;
 }
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::startAccessPoint() {
     if (m_state == WIFI_WAITING_AP) return WIFIERROR_OK; //already started
+    xSemaphoreTake(m_wifiSemaphore, portMAX_DELAY);
     wifiDeInit();
     
     m_sta_netif = esp_netif_create_default_wifi_ap();
@@ -383,15 +398,15 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::startAccessPoint() {
     
     start_webserver();
     m_state = WIFI_WAITING_AP;
+    xSemaphoreGive(m_wifiSemaphore);
     return WIFIERROR_OK;
 }
 
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::startWPS() {
     if (m_state == WIFI_WAITING_WPS) return WIFIERROR_OK; //already started
+    xSemaphoreTake(m_wifiSemaphore, portMAX_DELAY);
     wifiDeInit();
-    
     esp_err_t ret;
-    m_s_ap_creds_num = 0;
     m_RetryNum = 0;
     m_wpsConfig.wps_type = WPS_TYPE_PBC;
     m_state = WIFI_WAITING_WPS;
@@ -403,16 +418,31 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::startWPS() {
     
     wifiInit();
     
-    
+   
     ret = esp_wifi_set_mode(WIFI_MODE_STA);
-    if (ret != ESP_OK) return WIFIERROR_COULD_NOT_SET_WIFI_MODE;
-    
+    if (ret != ESP_OK) {xSemaphoreGive(m_wifiSemaphore);return WIFIERROR_COULD_NOT_SET_WIFI_MODE;}
+
     ret = esp_wifi_start();
-    if (ret != ESP_OK) return WIFIERROR_INIT_FAILED;
+    if (ret != ESP_OK) {xSemaphoreGive(m_wifiSemaphore);return WIFIERROR_INIT_FAILED;}
+    
     
     esp_wifi_wps_enable(&m_wpsConfig);
-    esp_wifi_wps_start(0);
     
+    esp_err_t err = esp_wifi_wps_start(0); 
+    int timeout = 100;
+    while(m_state != WIFI_STATE_CONNECTED && timeout --) {
+        vTaskDelay(600 / portTICK_PERIOD_MS);
+    }
+    xSemaphoreGive(m_wifiSemaphore);
+    if (m_state != WIFI_STATE_CONNECTED){
+        esp_wifi_wps_disable();
+        m_state = WIFI_STATE_DISCONNECTED;
+        return WIFIERROR_WPS_TIMEOUT;
+    }
+    wifi_config_t conf;
+    err = esp_wifi_get_config(WIFI_IF_STA, &conf);
+    if (err != ESP_OK) return WIFIERROR_NO_CREDENTIALS;
+    saveConfigOnSDCard(&conf);
     return WIFIERROR_OK;
 }
 void esp32_c3_WIFI::stop_webserver() {

@@ -111,7 +111,7 @@ Pocuter::Pocuter() {
 }
 void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
    I2C = new esp32_c3_I2C(0);
-
+   
 #ifndef POCUTER_DISABLE_EXPANDER    
    esp32_c3_Expander::Instance()->registerI2Cbus(I2C);
 #endif   

@@ -40,7 +40,7 @@ class PocuterWIFI {
            WIFIERROR_INIT_FAILED,
            WIFIERROR_COULD_NOT_SET_WIFI_MODE,
            WIFIERROR_NO_CREDENTIALS,
-           
+           WIFIERROR_WPS_TIMEOUT,
            
            
            
@@ -52,6 +52,7 @@ class PocuterWIFI {
        enum WIFIEVENT {
            WIFIEVENT_DISCONNECTED,
            WIFIEVENT_CONNECTED,
+           WIFIEVENT_TRY_CONNECTING,
            WIFIEVENT_GOT_IP,
            WIFIEVENT_WPS_TIMEOUT,
            WIFIEVENT_WPS_FAILED,
@@ -61,6 +62,7 @@ class PocuterWIFI {
        enum WIFI_STATE {
             WIFI_STATE_INIT_FAILED,     
             WIFI_STATE_DISCONNECTED,
+            WIFI_STATE_TRY_CONNECTING,
             WIFI_STATE_CONNECTED,
             WIFI_WAITING_WPS,
             WIFI_WAITING_AP     

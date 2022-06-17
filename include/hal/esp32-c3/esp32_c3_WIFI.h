@@ -47,9 +47,9 @@ namespace PocuterLib {
             WIFIERROR saveConfigOnSDCard(wifi_config_t *conf);
             WIFIERROR loadConfigFromSDCard(wifi_config_t *conf);
             
+            static void wifiTask(void *arg);
+            SemaphoreHandle_t m_wifiSemaphore;
             esp_wps_config_t m_wpsConfig;
-            wifi_config_t m_wps_ap_creds[MAX_WPS_AP_CRED];
-            int m_s_ap_creds_num = 0;
             int m_RetryNum = 0;
             WIFI_STATE m_state;
             wifiEventHandler* m_wifiEventHandler;
