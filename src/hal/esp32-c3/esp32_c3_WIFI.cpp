@@ -36,6 +36,7 @@ esp32_c3_WIFI::esp32_c3_WIFI() {
     m_state = WIFI_STATE_INIT_FAILED;
     m_wifiEventHandler = NULL;
     m_dns = NULL;
+    m_apInfos = NULL;
     m_wifiSemaphore = xSemaphoreCreateBinary();
     if (!m_wifiSemaphore) abort();
     xSemaphoreGive(m_wifiSemaphore);
@@ -232,6 +233,7 @@ esp_err_t esp32_c3_WIFI::http_404_error_handler(httpd_req_t *req, httpd_err_code
 
 esp_err_t esp32_c3_WIFI::http_get_handler(httpd_req_t *req) {
     char*  buf;
+    bool showSSIDInput = false;
     size_t buf_len;
     esp32_c3_WIFI* myself = (esp32_c3_WIFI*)req->user_ctx;
    /*
@@ -254,45 +256,62 @@ esp_err_t esp32_c3_WIFI::http_get_handler(httpd_req_t *req) {
             ESP_LOGI(TAG, "Found URL query => %s", buf);
             PocuterWIFI::wifiCredentials cred;
             if (httpd_query_key_value(buf, "ssid", (char*)cred.ssid, 32) == ESP_OK) {
-                if (httpd_query_key_value(buf, "passkey", (char*)cred.password, 64) == ESP_OK) {
-                    httpd_resp_set_type(req, "text/html");
-                    httpd_resp_send_chunk(req, myself->m_head, HTTPD_RESP_USE_STRLEN);
-                    httpd_resp_send_chunk(req, myself->m_webPageConnecting, HTTPD_RESP_USE_STRLEN);
-                    httpd_resp_send_chunk(req, myself->m_foot, HTTPD_RESP_USE_STRLEN);
-                    httpd_resp_send_chunk(req, NULL, 0);
-                    
-                    vTaskDelay(1000 / portTICK_PERIOD_MS);
-                    
-                    myself->wifiDeInit();
-                    myself->wifiInit();
-                    wifi_config_t wifi_config = {
-                        .sta = {
-                            .pmf_cfg = {
-                                .capable = true,
-                                .required = false
+                if (! strcmp("dfsf34fq434fq44", (char*)cred.ssid)) {
+                    showSSIDInput = true;
+                } else {
+                    if (httpd_query_key_value(buf, "passkey", (char*)cred.password, 64) == ESP_OK) {
+                        httpd_resp_set_type(req, "text/html");
+                        httpd_resp_send_chunk(req, myself->m_head, HTTPD_RESP_USE_STRLEN);
+                        httpd_resp_send_chunk(req, myself->m_webPageConnecting, HTTPD_RESP_USE_STRLEN);
+                        httpd_resp_send_chunk(req, myself->m_foot, HTTPD_RESP_USE_STRLEN);
+                        httpd_resp_send_chunk(req, NULL, 0);
+                        printf("ssid: \"%s\"", (char*)cred.ssid);
+                        printf("password: \"%s\"", (char*)cred.password);
+
+                        vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+                        myself->wifiDeInit();
+                        myself->wifiInit();
+                        wifi_config_t wifi_config = {
+                            .sta = {
+                                .pmf_cfg = {
+                                    .capable = true,
+                                    .required = false
+                                },
                             },
-                        },
-                    };
-                    strncpy((char*)wifi_config.sta.ssid, (char*)cred.ssid, sizeof(wifi_config.sta.ssid));
-                    strncpy((char*)wifi_config.sta.password, (char*)cred.password, sizeof(wifi_config.sta.password));
-                    myself->saveConfigOnSDCard(&wifi_config);
-                    esp_wifi_set_mode(WIFI_MODE_STA);
-                    esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
-                    esp_wifi_connect();
-                    free(buf);
-                    
-                    esp_restart();
-                    return ESP_OK;
+                        };
+                        strncpy((char*)wifi_config.sta.ssid, (char*)cred.ssid, sizeof(wifi_config.sta.ssid));
+                        strncpy((char*)wifi_config.sta.password, (char*)cred.password, sizeof(wifi_config.sta.password));
+                        myself->saveConfigOnSDCard(&wifi_config);
+                        esp_wifi_set_mode(WIFI_MODE_STA);
+                        esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
+                        esp_wifi_connect();
+
+
+                        esp_restart();
+                        return ESP_OK;
+                    }
                 }
             }
 
         }
+        free(buf);
         
     }
     
     httpd_resp_set_type(req, "text/html");
     httpd_resp_send_chunk(req, myself->m_head, HTTPD_RESP_USE_STRLEN);
-    httpd_resp_send_chunk(req, myself->m_webPageForm, HTTPD_RESP_USE_STRLEN);
+    if (! showSSIDInput) {
+        httpd_resp_send_chunk(req, myself->m_webPageForm1, HTTPD_RESP_USE_STRLEN);
+        char sbuf[256];
+        for (int i = 0 ; i < myself->m_apInfosSize; i++) {
+            snprintf(sbuf, 256, "<option value = \"%s\">%s (%d)</option>", myself->m_apInfos[i].ssid, myself->m_apInfos[i].ssid, myself->m_apInfos[i].signalStrength);
+            httpd_resp_send_chunk(req, sbuf, HTTPD_RESP_USE_STRLEN);
+        }
+        httpd_resp_send_chunk(req, myself->m_webPageForm2, HTTPD_RESP_USE_STRLEN);
+    } else {
+         httpd_resp_send_chunk(req, myself->m_webPageFormInput, HTTPD_RESP_USE_STRLEN);
+    }
     httpd_resp_send_chunk(req, myself->m_foot, HTTPD_RESP_USE_STRLEN);
     httpd_resp_send_chunk(req, NULL, 0);
     return ESP_OK;
@@ -373,6 +392,10 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect() {
 }
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::startAccessPoint() {
     if (m_state == WIFI_WAITING_AP) return WIFIERROR_OK; //already started
+    uint16_t aps;
+    if (m_apInfos == NULL) m_apInfos = new apInfo[10]; // this memory will be killed at reboot
+    m_apInfosSize = 10;
+    scanAPs(m_apInfos, &m_apInfosSize, &aps);
     xSemaphoreTake(m_wifiSemaphore, portMAX_DELAY);
     wifiDeInit();
     
