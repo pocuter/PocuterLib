@@ -1,5 +1,6 @@
 #ifndef POCUTER_DISABLE_TIME
 #include "include/hal/esp32-c3/esp32_c3_Time.h"
+#include "include/hal/PocuterConfig.h"
 #include <time.h>
 #include <lwip/sockets.h>
 #include "nvs_flash.h"
@@ -9,29 +10,13 @@ using namespace PocuterLib::HAL;
 
 esp32_c3_Time::esp32_c3_Time() {
     m_currentTimeZone[0] = 0;
-    esp_err_t err = nvs_flash_init();
-    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-          ESP_ERROR_CHECK(nvs_flash_erase());
-          err = nvs_flash_init();
-    }
-    if (err == ESP_OK) {
-        nvs_handle_t nvsHandle;
-        esp_err_t err = nvs_open("storage", NVS_READONLY, &nvsHandle);
-        if (err == ESP_OK) {
-            size_t size = 32;
-            char tzString[32];
-            err = nvs_get_str(nvsHandle, "TZ", tzString, &size);
-            if (err == ESP_OK) {
-                setenv("TZ",tzString,1);
-                tzset();
-                size = 32;
-                err = nvs_get_str(nvsHandle, "TZN", m_currentTimeZone, &size);
-            } else {
-                strncpy(m_currentTimeZone, "GMT", 32);
-            }
-            
-            nvs_close(nvsHandle);
-        }
+    char buffer[32];
+    uint64_t appId = 1;
+    PocuterConfig* config = new PocuterConfig((const uint8_t*)"TIME", &appId);
+    bool gotN = config->get((const uint8_t*)"TIMEZONE", (const uint8_t*)"NAME", (uint8_t*)m_currentTimeZone, 32);  
+    bool gotS = config->get((const uint8_t*)"TIMEZONE", (const uint8_t*)"STRING", (uint8_t*)buffer, 32);  
+    if (gotN && gotS) {
+        setenv("TZ",buffer,1);
     }
 }
 
@@ -43,22 +28,25 @@ const char* esp32_c3_Time::getCurrentTimezone() {
 PocuterTime::TIMEERROR esp32_c3_Time::setTimezone(const pocuterTimezone* timeZ, bool save) {
     setenv("TZ",timeZ->timezoneString,1);
     tzset();
+    TIMEERROR ret = TIMEERROR_FAILED;
     if (save) {
         nvs_handle_t nvsHandle;
-        esp_err_t err = nvs_open("storage", NVS_READWRITE, &nvsHandle);
-        if (err == ESP_OK) {
-            err = nvs_set_str(nvsHandle, "TZ", timeZ->timezoneString);
-            err = nvs_set_str(nvsHandle, "TZN", timeZ->name);
-            if (err == ESP_OK) {
+        uint64_t appId = 1;
+        PocuterConfig* config = new PocuterConfig((const uint8_t*)"TIME", &appId);
+        if (config != NULL) {
+            bool nsaved = config->set((const uint8_t*)"TIMEZONE", (const uint8_t*)"NAME", (const uint8_t*)timeZ->name);
+            bool ssaved = config->set((const uint8_t*)"TIMEZONE", (const uint8_t*)"STRING", (const uint8_t*)timeZ->timezoneString);
+            if (nsaved && ssaved) {
                 strncpy(m_currentTimeZone, timeZ->name, 32);
+                ret = TIMEERROR_OK;
             }
-
-            nvs_close(nvsHandle);
+            
         }
     } else {
         strncpy(m_currentTimeZone, timeZ->name, 32);
+        ret = TIMEERROR_OK;
     }
-    return TIMEERROR_OK;
+    return ret;
 }
 PocuterTime::TIMEERROR esp32_c3_Time::getLocalTime(tm* localtime) {
     time_t now;
