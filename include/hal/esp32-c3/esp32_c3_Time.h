@@ -17,9 +17,17 @@ namespace PocuterLib  {
             TIMEERROR getGMTTime(tm*);
             TIMEERROR setLocalTime(tm*);
             const char* getCurrentTimezone();
-       
+            
+            TIMEERROR setTimeServer(const char* timeServer);
+            TIMEERROR setSNTPD(bool on);
+            bool isSNTP();
+            const char* getSMTPTimeServer();
+            
         private:
             char m_currentTimeZone[32];
+            char m_currentSNTPServerName[64];
+            bool m_isSNTPOn;
+            
         };
     }
 }

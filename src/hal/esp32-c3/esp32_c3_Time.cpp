@@ -1,11 +1,13 @@
 #ifndef POCUTER_DISABLE_TIME
 #include "include/hal/esp32-c3/esp32_c3_Time.h"
 #include "include/hal/PocuterConfig.h"
+#include <esp_sntp.h>
 #include <time.h>
 #include <lwip/sockets.h>
 #include "nvs_flash.h"
 #include "nvs.h"
 
+#define DEFAULT_SNTPSERVER "pool.ntp.org"
 using namespace PocuterLib::HAL;
 
 esp32_c3_Time::esp32_c3_Time() {
@@ -18,6 +20,20 @@ esp32_c3_Time::esp32_c3_Time() {
     if (gotN && gotS) {
         setenv("TZ",buffer,1);
     }
+    if (! config->get((const uint8_t*)"SERVER", (const uint8_t*)"NAME", (uint8_t*)m_currentSNTPServerName, 64)) {
+        strncpy(m_currentSNTPServerName, DEFAULT_SNTPSERVER, 64);
+    }
+     m_isSNTPOn = true;
+    if (config->get((const uint8_t*)"SERVER", (const uint8_t*)"ACTIVE", (uint8_t*)buffer, 32)) {
+        if (strncmp(buffer, "ON", 2))  m_isSNTPOn = false;
+    }
+    if (m_isSNTPOn){
+        sntp_setoperatingmode(SNTP_OPMODE_POLL);
+        sntp_setservername(0, m_currentSNTPServerName);
+        sntp_init();
+    }
+    delete(config);
+    
 }
 
 esp32_c3_Time::~esp32_c3_Time() {
@@ -40,12 +56,14 @@ PocuterTime::TIMEERROR esp32_c3_Time::setTimezone(const pocuterTimezone* timeZ, 
                 strncpy(m_currentTimeZone, timeZ->name, 32);
                 ret = TIMEERROR_OK;
             }
-            
+            delete config;
         }
+        
     } else {
         strncpy(m_currentTimeZone, timeZ->name, 32);
         ret = TIMEERROR_OK;
     }
+    
     return ret;
 }
 PocuterTime::TIMEERROR esp32_c3_Time::getLocalTime(tm* localtime) {
@@ -86,4 +104,58 @@ PocuterTime::TIMEERROR esp32_c3_Time::setLocalTime(tm* localtime){
    
     return TIMEERROR_OK;
 }
+
+
+
+PocuterTime::TIMEERROR esp32_c3_Time::setTimeServer(const char* timeServer) {
+    TIMEERROR ret = TIMEERROR_FAILED;
+    if (timeServer == NULL) return ret;
+    strncpy(m_currentSNTPServerName, timeServer, 64);
+    uint64_t appId = 1;
+    PocuterConfig* config = new PocuterConfig((const uint8_t*)"TIME", &appId);
+    if (config->set((const uint8_t*)"SERVER", (const uint8_t*)"NAME", (const uint8_t*)timeServer)) ret = TIMEERROR_OK;
+    delete(config);
+    
+    if (isSNTP()) {
+        sntp_stop();
+        sntp_setoperatingmode(SNTP_OPMODE_POLL);
+        sntp_setservername(0, timeServer);
+        sntp_init();
+    }
+    return ret;
+}
+PocuterTime::TIMEERROR esp32_c3_Time::setSNTPD(bool on) {
+    TIMEERROR ret = TIMEERROR_FAILED;
+    if (m_isSNTPOn == on) return TIMEERROR_OK;
+    m_isSNTPOn = on;
+    uint64_t appId = 1;
+    PocuterConfig* config = new PocuterConfig((const uint8_t*)"TIME", &appId);
+    
+    if (on) {
+        if (config->set((const uint8_t*)"SERVER", (const uint8_t*)"ACTIVE", (const uint8_t*)"ON")) ret = TIMEERROR_OK;
+    } else {
+        if (config->set((const uint8_t*)"SERVER", (const uint8_t*)"ACTIVE", (const uint8_t*)"OFF")) ret = TIMEERROR_OK;
+    }
+    
+    
+    delete(config);
+    
+    if (isSNTP()) {
+        sntp_setoperatingmode(SNTP_OPMODE_POLL);
+        sntp_setservername(0, m_currentSNTPServerName);
+        sntp_init();
+    } else {
+        sntp_stop();
+    }
+    return ret;
+}
+bool esp32_c3_Time::isSNTP(){
+    return m_isSNTPOn;
+}
+const char* esp32_c3_Time::getSMTPTimeServer(){
+    return m_currentSNTPServerName;
+}
+            
+            
+            
 #endif

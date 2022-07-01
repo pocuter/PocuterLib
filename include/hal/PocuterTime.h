@@ -8,6 +8,7 @@ class PocuterTime {
     public:
         enum TIMEERROR {
            TIMEERROR_OK = 0,
+           TIMEERROR_FAILED = 1,
           
            
            TIMEERROR_UNKNOWN
@@ -490,6 +491,11 @@ class PocuterTime {
        virtual TIMEERROR setLocalTime(tm*) = 0;
        virtual const char* getCurrentTimezone() = 0;
        
+       virtual TIMEERROR setTimeServer(const char* timeServer) = 0;
+       virtual TIMEERROR setSNTPD(bool on) = 0;
+       virtual bool isSNTP() = 0;
+       virtual const char* getSMTPTimeServer() = 0;
+            
        
        TIMEERROR getAllTimezones(const pocuterTimezone** tz, uint16_t* count) {
            *tz = c_tz;
