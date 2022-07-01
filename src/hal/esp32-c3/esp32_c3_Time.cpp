@@ -116,7 +116,7 @@ PocuterTime::TIMEERROR esp32_c3_Time::setTimeServer(const char* timeServer) {
     if (config->set((const uint8_t*)"SERVER", (const uint8_t*)"NAME", (const uint8_t*)timeServer)) ret = TIMEERROR_OK;
     delete(config);
     
-    if (isSNTP()) {
+    if (isTimeServer()) {
         sntp_stop();
         sntp_setoperatingmode(SNTP_OPMODE_POLL);
         sntp_setservername(0, timeServer);
@@ -140,7 +140,7 @@ PocuterTime::TIMEERROR esp32_c3_Time::setTimeServer(bool on) {
     
     delete(config);
     
-    if (isSNTP()) {
+    if (isTimeServer()) {
         sntp_setoperatingmode(SNTP_OPMODE_POLL);
         sntp_setservername(0, m_currentSNTPServerName);
         sntp_init();
