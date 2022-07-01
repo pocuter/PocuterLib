@@ -124,7 +124,7 @@ PocuterTime::TIMEERROR esp32_c3_Time::setTimeServer(const char* timeServer) {
     }
     return ret;
 }
-PocuterTime::TIMEERROR esp32_c3_Time::setSNTPD(bool on) {
+PocuterTime::TIMEERROR esp32_c3_Time::setTimeServer(bool on) {
     TIMEERROR ret = TIMEERROR_FAILED;
     if (m_isSNTPOn == on) return TIMEERROR_OK;
     m_isSNTPOn = on;
@@ -149,10 +149,10 @@ PocuterTime::TIMEERROR esp32_c3_Time::setSNTPD(bool on) {
     }
     return ret;
 }
-bool esp32_c3_Time::isSNTP(){
+bool esp32_c3_Time::isTimeServer(){
     return m_isSNTPOn;
 }
-const char* esp32_c3_Time::getSMTPTimeServer(){
+const char* esp32_c3_Time::getTimeServer(){
     return m_currentSNTPServerName;
 }
             

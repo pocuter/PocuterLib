@@ -19,9 +19,9 @@ namespace PocuterLib  {
             const char* getCurrentTimezone();
             
             TIMEERROR setTimeServer(const char* timeServer);
-            TIMEERROR setSNTPD(bool on);
-            bool isSNTP();
-            const char* getSMTPTimeServer();
+            TIMEERROR setTimeServer(bool on);
+            bool isTimeServer();
+            const char* getTimeServer();
             
         private:
             char m_currentTimeZone[32];

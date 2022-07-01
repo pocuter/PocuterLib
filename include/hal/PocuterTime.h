@@ -492,9 +492,9 @@ class PocuterTime {
        virtual const char* getCurrentTimezone() = 0;
        
        virtual TIMEERROR setTimeServer(const char* timeServer) = 0;
-       virtual TIMEERROR setSNTPD(bool on) = 0;
-       virtual bool isSNTP() = 0;
-       virtual const char* getSMTPTimeServer() = 0;
+       virtual TIMEERROR setTimeServer(bool on) = 0;
+       virtual bool isTimeServer() = 0;
+       virtual const char* getTimeServer() = 0;
             
        
        TIMEERROR getAllTimezones(const pocuterTimezone** tz, uint16_t* count) {
