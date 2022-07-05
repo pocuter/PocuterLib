@@ -15,9 +15,10 @@ class PocuterHTTP {
            
           
        };
+      
         
         virtual HTTPERROR downloadFile(const uint8_t* url, const uint8_t* destination, bool stepwise, uint8_t *percent, const uint8_t* PEMcert = NULL) = 0;
-        
+        virtual HTTPERROR getResponse(const uint8_t* url, uint8_t* response, size_t maxSize, const uint8_t* PEMcert = NULL) = 0;
     private:
 
 };
