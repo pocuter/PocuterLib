@@ -47,6 +47,7 @@
 #include "include/hal/PocuterMicrophone.h"
 #include "include/hal/PocuterHTTP.h"
 #include "include/hal/PocuterTime.h"
+#include "include/hal/PocuterServer.h"
 
 class Pocuter {
 public:
@@ -98,6 +99,11 @@ public:
 #ifndef POCUTER_DISABLE_TIME
     static PocuterTime* PocTime;
 #endif
+
+#ifndef POCUTER_DISABLE_SERVER
+    static PocuterServer* Server;
+#endif
+    
 #ifndef POCUTER_DISABLE_ACC       
     static PocuterAccelerometer* Accelerometer;
 #endif

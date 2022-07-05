@@ -51,6 +51,11 @@
 #include "include/hal/esp32-c3/esp32_c3_Time.h"
 #endif
 
+#ifndef POCUTER_DISABLE_SERVER
+#include "include/hal/PocuterServer.h"
+#endif
+
+
 
 #include <string.h>
 
@@ -103,6 +108,10 @@ PocuterMicrophone* Pocuter::Microphone = NULL;
 
 #ifndef POCUTER_DISABLE_TIME
 PocuterTime* Pocuter::PocTime = NULL;
+#endif
+
+#ifndef POCUTER_DISABLE_SERVER
+PocuterServer* Pocuter::Server = NULL;
 #endif
 
 Pocuter::Pocuter() {
@@ -158,6 +167,10 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
 #ifndef POCUTER_DISABLE_TIME
     PocTime = new esp32_c3_Time();
 #endif
+#ifndef POCUTER_DISABLE_SERVER
+    Server = new PocuterServer(HMAC, OTA, HTTP);
+#endif
+    
 
 #ifndef POCUTER_DISABLE_DISPLAY       
    uint16_t sizeX;
