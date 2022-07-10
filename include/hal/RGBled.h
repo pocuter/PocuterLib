@@ -6,7 +6,23 @@
 
 class RGBled {
     public:
-        virtual int setRGB(uint8_t ledNumber, uint8_t r, uint8_t g, uint8_t b) = 0;
+        enum LEDERROR {
+            LEDERROR_OK,
+            LEDERROR_FAILURE
+            
+        };
+        /**
+        * @brief Setting Status LED
+        *
+        * @param red value
+        * @param green value
+        * @param blue value
+        *
+        * @return
+        *     - LEDERROR_OK Success
+        *     - LEDERROR_FAILURE failed to set RGB
+        */
+        virtual LEDERROR setRGB(uint8_t ledNumber, uint8_t r, uint8_t g, uint8_t b) = 0;
         
     private:
 };

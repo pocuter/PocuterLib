@@ -13,7 +13,7 @@ namespace PocuterLib {
             public:
                 esp32_c3_RGBled();
                 ~esp32_c3_RGBled();
-                int setRGB(uint8_t ledNumber, uint8_t r, uint8_t g, uint8_t b);
+                LEDERROR setRGB(uint8_t ledNumber, uint8_t r, uint8_t g, uint8_t b);
             private:
                 esp32_c3_Expander* m_expander;  
         };

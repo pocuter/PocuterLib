@@ -32,10 +32,10 @@ esp32_c3_RGBled::esp32_c3_RGBled() {
 esp32_c3_RGBled::~esp32_c3_RGBled() {
     
 }
-int esp32_c3_RGBled::setRGB(uint8_t ledNumber, uint8_t r, uint8_t g, uint8_t b) {
+RGBled::LEDERROR esp32_c3_RGBled::setRGB(uint8_t ledNumber, uint8_t r, uint8_t g, uint8_t b) {
     m_expander->setLed(LED_R_PORT, LED_R_PIN, r);
     m_expander->setLed(LED_G_PORT, LED_G_PIN, g);
     m_expander->setLed(LED_B_PORT, LED_B_PIN, b);
-    return 0;
+    return LEDERROR_OK;
 }
 #endif

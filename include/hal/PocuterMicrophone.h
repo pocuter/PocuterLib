@@ -6,40 +6,82 @@
 class PocuterMicrophone {
     public:
         enum MICERROR {
-            MICERROR_OK,
-            MICERROR_RESOURCE_NOT_AVAILABLE,
+            MICERROR_OK,                        /*!< everything went well */
+            MICERROR_RESOURCE_NOT_AVAILABLE,    /*!< the given recource in not available now */
             
-            MICERROR_UNKNOWN,
+            MICERROR_UNKNOWN,                   /*!< an unusual error */
         };
         enum MICEVENT {
-            MIC_DATA_PACKAGE
+            MIC_DATA_PACKAGE    /*!< a data package is ready */
            
         };   
         enum NOICE_REDUCTION_LEVEL {
-            REDUCTION_LEVEL_NONE,
-            REDUCTION_LEVEL_SMALL,
-            REDUCTION_LEVEL_MEDIUM,
-            REDUCTION_LEVEL_HIGHT,
-            REDUCTION_LEVEL_RAW,
+            REDUCTION_LEVEL_NONE,   /*!< No noice reduction */
+            REDUCTION_LEVEL_SMALL,  /*!< A little reduction */
+            REDUCTION_LEVEL_MEDIUM, /*!< Medium reduction */
+            REDUCTION_LEVEL_HIGHT,  /*!< hight noice reduction */
+            REDUCTION_LEVEL_RAW,    /*!< send raw data only */
            
         };  
         
         enum SAMLE_RATE_HZ {
-            SAMLE_RATE_8000 = 8000,
-            SAMLE_RATE_11025 = 11025,
-            SAMLE_RATE_16000 = 16000,
-            SAMLE_RATE_22050 = 22050,
-            SAMLE_RATE_32000 = 32000,
-            SAMLE_RATE_44100 = 44100,
-            SAMLE_RATE_48000 = 48000
+            SAMLE_RATE_8000 = 8000,     /*!< Sample Rate 8 khz */
+            SAMLE_RATE_11025 = 11025,   /*!< Sample Rate 11 khz */
+            SAMLE_RATE_16000 = 16000,   /*!< Sample Rate 16 khz */
+            SAMLE_RATE_22050 = 22050,   /*!< Sample Rate 22 khz */
+            SAMLE_RATE_32000 = 32000,   /*!< Sample Rate 32 khz */
+            SAMLE_RATE_44100 = 44100,   /*!< Sample Rate 44 khz */
+            SAMLE_RATE_48000 = 48000    /*!< Sample Rate 48 khz */
           
         };  
+       
+         
+        typedef void (micEventHandler)(MICEVENT, void* data, size_t dataSize, void* userData);  /* Callback type definition */
         
-        typedef void (micEventHandler)(MICEVENT, void* data, size_t dataSize, void* userData);
+        /**
+        * @brief register an event callback
+        * 
+        * @note the event handler is called every time a new data package is ready. You can only have one event handler at a time.
+        * 
+        * @param micEventHandler a pointer to the callback function
+        * @param void a pointer to user data sent to the event handler on each event
+        * 
+        * @return 
+        *     - MICERROR_OK everything works well
+        *     - MICERROR_RESOURCE_NOT_AVAILABLE can not add an event handler now
+        */
         virtual MICERROR registerEventHandler(micEventHandler*, void*) = 0;
+
+        /**
+        * @brief unregister the event handler
+        * 
+        */
         virtual void unregisterEventHandler() = 0;
+        
+        /**
+        * @brief start the recording
+        * 
+        * @note after starting the event handler will be calls periodically, when a data package is ready.
+        * 
+        * @param SAMLE_RATE_HZ the sample rate
+        * @param NOICE_REDUCTION_LEVEL the noice reduction level, or raw data
+        * 
+        * @return 
+        *     - MICERROR_OK everything works well
+        *     - MICERROR_RESOURCE_NOT_AVAILABLE cannot start recording
+        */
         virtual MICERROR startRecording(SAMLE_RATE_HZ, NOICE_REDUCTION_LEVEL) = 0;
+        
+        /**
+        * @brief stop the recording
+        * 
+        * @note after stopping the event handler will not be called anymore
+ 
+        */
         virtual MICERROR stopRecording() = 0;
+        
+        
+        
         
     private:
         

@@ -56,56 +56,93 @@ public:
         POCUTER_RESULT_FAILED
     };
     
+    /**
+    * @brief Pocuter constructor
+    * 
+    * @note you have to call begin() after this
+    * 
+    * @return
+    *     - the pocuter class
+    */
     Pocuter();
+    
+    /**
+    * @brief Pocuter destructor
+    * 
+    */
+    
     virtual ~Pocuter();
+
+    /**
+    * @brief initializes your Pocuter
+    *
+    * @note BUFFER_MODE_NO_BUFFER saves memory, but can lead to flickering of the display in certain applications
+    * 
+    * @param the buffer mode for the Pocuter. 
+    *
+    */
     void begin(PocuterDisplay::BUFFER_MODE bm = PocuterDisplay::BUFFER_MODE_NO_BUFFER);
     
 #ifndef POCUTER_DISABLE_RGBled    
+    /**
+    * @brief Setting Status LED
+    *
+    * @param red value
+    * @param green value
+    * @param blue value
+    *
+    * @return
+    *     - LEDERROR_OK Success
+    *     - LEDERROR_FAILURE failed to set RGB
+    */
     int setStatusLED(uint8_t r, uint8_t g, uint8_t b);
-    static RGBled* RGBLed;
+    
+   
+    static RGBled* RGBLed;                      /*!< RGBLed Class Acccess */
+    
 #endif
-    static PocuterI2C* I2C;
+    static PocuterI2C* I2C;                     /*!< PocuterI2C Class Acccess */
 
 #ifndef POCUTER_DISABLE_DISPLAY      
-    static PocuterDisplay* Display;
-    static UGUI* ugui;
-#endif
+    static PocuterDisplay* Display;             /*!< PocuterDisplay Class Acccess */
+    static UGUI* ugui;                          /*!< UGUI Class Acccess */
+#endif 
 #ifndef POCUTER_DISABLE_LIGHTSENSOR 
-    static PocuterLightSensor* LightSensor;
+    static PocuterLightSensor* LightSensor;     /*!< PocuterLightSensor Class Acccess */
 #endif
 #ifndef POCUTER_DISABLE_BUTTONS    
-    static PocuterButtons* Buttons;
+    static PocuterButtons* Buttons;             /*!< PocuterButtons Class Acccess */
 #endif
     
-    static PocuterHMAC* HMAC;
+    static PocuterHMAC* HMAC;                   /*!< PocuterHMAC Class Acccess */
     
 #ifndef POCUTER_DISABLE_SD_CARD      
-    static PocuterSDCard* SDCard;
-    static PocuterOTA* OTA;
+    static PocuterSDCard* SDCard;               /*!< PocuterSDCard Class Acccess */
+    static PocuterOTA* OTA;                     /*!< PocuterOTA Class Acccess */
 #endif  
     
 #ifndef POCUTER_DISABLE_WIFI  
-    static PocuterWIFI* WIFI;
+    static PocuterWIFI* WIFI;                   /*!< PocuterWIFI Class Acccess */
 #endif  
 
 #ifndef POCUTER_DISABLE_HTTP
-    static PocuterHTTP* HTTP;
+    static PocuterHTTP* HTTP;                   /*!< PocuterHTTP Class Acccess */
 #endif 
     
 #ifndef POCUTER_DISABLE_MICROPHONE    
-    static PocuterMicrophone* Microphone;
+    static PocuterMicrophone* Microphone;       /*!< PocuterMicrophone Class Acccess */
 #endif
 
 #ifndef POCUTER_DISABLE_TIME
-    static PocuterTime* PocTime;
+    static PocuterTime* PocTime;                /*!< PocuterTime Class Acccess */
 #endif
 
 #ifndef POCUTER_DISABLE_SERVER
-    static PocuterServer* Server;
+    static PocuterServer* Server;               /*!< PocuterServer Class Acccess */
 #endif
     
 #ifndef POCUTER_DISABLE_ACC       
-    static PocuterAccelerometer* Accelerometer;
+    static PocuterAccelerometer* Accelerometer; /*!< PocuterAccelerometer Class Acccess */
 #endif
     
 private:
