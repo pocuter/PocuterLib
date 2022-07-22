@@ -78,7 +78,7 @@ public:
     *
     * @note BUFFER_MODE_NO_BUFFER saves memory, but can lead to flickering of the display in certain applications
     * 
-    * @param the buffer mode for the Pocuter. 
+    * @param bm (optional) the buffer mode for the Pocuter. 
     *
     */
     void begin(PocuterDisplay::BUFFER_MODE bm = PocuterDisplay::BUFFER_MODE_NO_BUFFER);
@@ -87,9 +87,9 @@ public:
     /**
     * @brief Setting Status LED
     *
-    * @param red value
-    * @param green value
-    * @param blue value
+    * @param r value
+    * @param g value
+    * @param b value
     *
     * @return
     *     - LEDERROR_OK Success

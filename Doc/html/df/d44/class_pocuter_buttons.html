@@ -17,7 +17,7 @@
 <script type="text/javascript" src="../../search/searchdata.js"></script>
 <script type="text/javascript" src="../../search/search.js"></script>
 <link href="../../doxygen.css" rel="stylesheet" type="text/css" />
-<link href="../../doxygen-style.css" rel="stylesheet" type="text/css"/>
+<link href="../../doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -107,9 +107,9 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a83282e42029291244301c17ede78c9d6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/class_pocuter_buttons.html#a83282e42029291244301c17ede78c9d6">registerEventHandler</a> (<a class="el" href="../../df/d44/class_pocuter_buttons.html#a6c5b7fdf3cc0ad575834e6c9507a6fc8">buttonEventHandler</a> *, void *)=0</td></tr>
-<tr class="memdesc:a83282e42029291244301c17ede78c9d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">register an event callback  <a href="../../df/d44/class_pocuter_buttons.html#a83282e42029291244301c17ede78c9d6">More...</a><br /></td></tr>
-<tr class="separator:a83282e42029291244301c17ede78c9d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5df77dd63f6b3bf8df71f96db9890836"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/class_pocuter_buttons.html#a5df77dd63f6b3bf8df71f96db9890836">registerEventHandler</a> (<a class="el" href="../../df/d44/class_pocuter_buttons.html#a6c5b7fdf3cc0ad575834e6c9507a6fc8">buttonEventHandler</a> *e, void *u)=0</td></tr>
+<tr class="memdesc:a5df77dd63f6b3bf8df71f96db9890836"><td class="mdescLeft">&#160;</td><td class="mdescRight">register an event callback  <a href="../../df/d44/class_pocuter_buttons.html#a5df77dd63f6b3bf8df71f96db9890836">More...</a><br /></td></tr>
+<tr class="separator:a5df77dd63f6b3bf8df71f96db9890836"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c06f58e7a0323ad75786aad36bff65f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d44/class_pocuter_buttons.html#a3c06f58e7a0323ad75786aad36bff65f">unregisterEventHandler</a> ()=0</td></tr>
 <tr class="memdesc:a3c06f58e7a0323ad75786aad36bff65f"><td class="mdescLeft">&#160;</td><td class="mdescRight">unregister the event handler  <a href="../../df/d44/class_pocuter_buttons.html#a3c06f58e7a0323ad75786aad36bff65f">More...</a><br /></td></tr>
 <tr class="separator:a3c06f58e7a0323ad75786aad36bff65f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -186,8 +186,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a83282e42029291244301c17ede78c9d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a83282e42029291244301c17ede78c9d6">&#9670;&nbsp;</a></span>registerEventHandler()</h2>
+<a id="a5df77dd63f6b3bf8df71f96db9890836"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5df77dd63f6b3bf8df71f96db9890836">&#9670;&nbsp;</a></span>registerEventHandler()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -199,13 +199,13 @@ Public Member Functions</h2></td></tr>
           <td class="memname">virtual void PocuterButtons::registerEventHandler </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="../../df/d44/class_pocuter_buttons.html#a6c5b7fdf3cc0ad575834e6c9507a6fc8">buttonEventHandler</a> *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>e</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">void *&#160;</td>
-          <td class="paramname">&#160;</td>
+          <td class="paramname"><em>u</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -224,8 +224,8 @@ Public Member Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>the event handler is called every time an button was pressed or released. the PBUTTONS value is a bit matrix with all buttons. so to check if a button was pressed you can do a "if(getButtonState() &amp; PocuterButtons::BUTTON_1) {...}" for example</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">buttonEventHandler</td><td>a pointer to the callback function </td></tr>
-    <tr><td class="paramname">void</td><td>a pointer to user data sent to the event handler on each event </td></tr>
+    <tr><td class="paramname">e</td><td>a pointer to the callback function </td></tr>
+    <tr><td class="paramname">u</td><td>a pointer to user data sent to the event handler on each event </td></tr>
   </table>
   </dd>
 </dl>

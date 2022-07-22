@@ -9,8 +9,8 @@ var searchData=
   ['channel_31',['channel',['../d9/d60/struct_pocuter_w_i_f_i_1_1ap_info.html#a3fbacf0338673b4531d1cc40ccea39a3',1,'PocuterWIFI::apInfo']]],
   ['checknewestappversion_32',['checkNewestAppVersion',['../dd/d45/class_pocuter_server.html#af6d61f02c4bc372e8e4bcd5807d012bd',1,'PocuterServer']]],
   ['clearscreen_33',['clearScreen',['../dd/d08/class_pocuter_display.html#a9595ebbcc7869ba6724779397b756762',1,'PocuterDisplay']]],
-  ['clearwindow_34',['clearWindow',['../dd/d08/class_pocuter_display.html#a1b9e1a4e2647192ad1505d252c228195',1,'PocuterDisplay']]],
+  ['clearwindow_34',['clearWindow',['../dd/d08/class_pocuter_display.html#a2e3e518ef962d117193e7acf4d8a55e4',1,'PocuterDisplay']]],
   ['cmakelists_2etxt_35',['CMakeLists.txt',['../dd/d68/_c_make_lists_8txt.html',1,'']]],
-  ['connect_36',['connect',['../da/d85/class_pocuter_w_i_f_i.html#ac835a57bda65cc2038542177bb6e8673',1,'PocuterWIFI::connect()=0'],['../da/d85/class_pocuter_w_i_f_i.html#ad7e31781c0c4cb3ed0ca1ee2568e1796',1,'PocuterWIFI::connect(const wifiCredentials *)=0']]],
+  ['connect_36',['connect',['../da/d85/class_pocuter_w_i_f_i.html#ac835a57bda65cc2038542177bb6e8673',1,'PocuterWIFI::connect()=0'],['../da/d85/class_pocuter_w_i_f_i.html#a1c281b806a8b1cc310b8748b8bb9cf7b',1,'PocuterWIFI::connect(const wifiCredentials *c)=0']]],
   ['continuousscreenupdate_37',['continuousScreenUpdate',['../dd/d08/class_pocuter_display.html#ac8a0b4c8cc31642c44f35bf4906a394e',1,'PocuterDisplay']]]
 ];

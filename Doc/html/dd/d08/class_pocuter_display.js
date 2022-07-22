@@ -5,7 +5,7 @@ var class_pocuter_display =
       [ "BUFFER_MODE_DOUBLE_BUFFER", "dd/d08/class_pocuter_display.html#a82acc006080c021c32e9f8235788e7d9a1a18ef1861c204cd04a1493afc602ec3", null ]
     ] ],
     [ "clearScreen", "dd/d08/class_pocuter_display.html#a9595ebbcc7869ba6724779397b756762", null ],
-    [ "clearWindow", "dd/d08/class_pocuter_display.html#a1b9e1a4e2647192ad1505d252c228195", null ],
+    [ "clearWindow", "dd/d08/class_pocuter_display.html#a2e3e518ef962d117193e7acf4d8a55e4", null ],
     [ "continuousScreenUpdate", "dd/d08/class_pocuter_display.html#ac8a0b4c8cc31642c44f35bf4906a394e", null ],
     [ "draw16BitScanLine", "dd/d08/class_pocuter_display.html#ad0d7a9f8adcdf31f595de5ffadcd367a", null ],
     [ "drawLine", "dd/d08/class_pocuter_display.html#ac2d7a21322ae8d17ce9d8e0a8f4e720a", null ],

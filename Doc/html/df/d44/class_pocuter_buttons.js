@@ -7,6 +7,6 @@ var class_pocuter_buttons =
       [ "BUTTON_3", "df/d44/class_pocuter_buttons.html#a002933b0d8c25fc1bc7b03dea2ca83caa43cd99cdfeef846e5fafd038c7e3df8e", null ]
     ] ],
     [ "getButtonState", "df/d44/class_pocuter_buttons.html#a3aa47c794bde683f4a8e3e291f9a4dc5", null ],
-    [ "registerEventHandler", "df/d44/class_pocuter_buttons.html#a83282e42029291244301c17ede78c9d6", null ],
+    [ "registerEventHandler", "df/d44/class_pocuter_buttons.html#a5df77dd63f6b3bf8df71f96db9890836", null ],
     [ "unregisterEventHandler", "df/d44/class_pocuter_buttons.html#a3c06f58e7a0323ad75786aad36bff65f", null ]
 ];

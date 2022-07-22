@@ -104,7 +104,7 @@ public:
     * @param section the section designation
     * @param name the name
     * @param result the resulting data blob. The memory has to be allocated before calling this function.
-    * @param maxLengththe size of the buffer
+    * @param maxLength size of the buffer
     * @param decrypt (optional)does it need to be decrypted?
     * 
     * @return bool - true if it was successfully loaded 
@@ -120,7 +120,7 @@ public:
     * @param name the name
     * @param value the data blob
     * @param valueLength the size of the data blob
-    * @param  decrypt (optional)should it be encrypted?
+    * @param encrypt (optional)should it be encrypted?
     * 
     * @return bool - true if it was successfully saved 
     */

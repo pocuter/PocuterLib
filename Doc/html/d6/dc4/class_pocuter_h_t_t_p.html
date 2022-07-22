@@ -17,7 +17,7 @@
 <script type="text/javascript" src="../../search/searchdata.js"></script>
 <script type="text/javascript" src="../../search/search.js"></script>
 <link href="../../doxygen.css" rel="stylesheet" type="text/css" />
-<link href="../../doxygen-style.css" rel="stylesheet" type="text/css"/>
+<link href="../../doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -113,8 +113,10 @@ Public Types</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae8a6ff33381c6c99558d9773d6c10bff"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d6/dc4/class_pocuter_h_t_t_p.html#ac55d9f750eb748036c5010b0004ccfe3">HTTPERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/dc4/class_pocuter_h_t_t_p.html#ae8a6ff33381c6c99558d9773d6c10bff">downloadFile</a> (const uint8_t *url, const uint8_t *destination, bool stepwise, uint8_t *percent, const uint8_t *PEMcert=NULL)=0</td></tr>
+<tr class="memdesc:ae8a6ff33381c6c99558d9773d6c10bff"><td class="mdescLeft">&#160;</td><td class="mdescRight">download a file from web  <a href="../../d6/dc4/class_pocuter_h_t_t_p.html#ae8a6ff33381c6c99558d9773d6c10bff">More...</a><br /></td></tr>
 <tr class="separator:ae8a6ff33381c6c99558d9773d6c10bff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac316d8323f1c29de728f9933c90d51bc"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d6/dc4/class_pocuter_h_t_t_p.html#ac55d9f750eb748036c5010b0004ccfe3">HTTPERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/dc4/class_pocuter_h_t_t_p.html#ac316d8323f1c29de728f9933c90d51bc">getResponse</a> (const uint8_t *url, uint8_t *response, size_t maxSize, const uint8_t *PEMcert=NULL)=0</td></tr>
+<tr class="memdesc:ac316d8323f1c29de728f9933c90d51bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">sends a get request to a server  <a href="../../d6/dc4/class_pocuter_h_t_t_p.html#ac316d8323f1c29de728f9933c90d51bc">More...</a><br /></td></tr>
 <tr class="separator:ac316d8323f1c29de728f9933c90d51bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Enumeration Documentation</h2>
@@ -194,6 +196,18 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>download a file from web </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">url</td><td>the url to the file </td></tr>
+    <tr><td class="paramname">destination</td><td>the destination on the sd card (beginning with the value you get from <a class="el" href="../../d1/dea/class_pocuter_s_d_card.html#ab391f97dcc375c70769327eaa8640da2" title="get the mountpoint of the SDCard as zero terminated c string">PocuterSDCard::getMountPoint()</a> ) </td></tr>
+    <tr><td class="paramname">stepwise</td><td>If true download a file step by step instead of downloading everything at once. This way you can realize a progress bar for example. </td></tr>
+    <tr><td class="paramname">percent</td><td>(out) Shows how much percent of the file has been downloaded so far. Is always 100 if stepwise=false. This is only available if the http header contains "content-length" </td></tr>
+    <tr><td class="paramname">PEMcert</td><td>(optional) if it is an https address, you need to add the root certificate to trust the server. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="ac316d8323f1c29de728f9933c90d51bc"></a>
@@ -241,6 +255,17 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>sends a get request to a server </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">url</td><td>the url for the get request </td></tr>
+    <tr><td class="paramname">response</td><td>the response text. You must allocate enough memory for the response. </td></tr>
+    <tr><td class="paramname">maxSize</td><td>the max size you can hold in the response </td></tr>
+    <tr><td class="paramname">PEMcert</td><td>(optional) if it is an https address, you need to add the root certificate to trust the server. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

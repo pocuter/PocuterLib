@@ -25,8 +25,8 @@ var class_pocuter_microphone =
       [ "SAMLE_RATE_44100", "d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a0bf4fe7f14a439ba1eb9500a1c92ca68", null ],
       [ "SAMLE_RATE_48000", "d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a65c099b7d12e040d08d4a102b9624222", null ]
     ] ],
-    [ "registerEventHandler", "d5/d3f/class_pocuter_microphone.html#a128a0f645e3ce3e9f2b563a8ccf6ccb1", null ],
-    [ "startRecording", "d5/d3f/class_pocuter_microphone.html#ac4f50e338b4bcb8db5a0d13f63d9613e", null ],
+    [ "registerEventHandler", "d5/d3f/class_pocuter_microphone.html#aae1bc783759a21dc821e1a4c4c66a119", null ],
+    [ "startRecording", "d5/d3f/class_pocuter_microphone.html#a0a3ccc14d4bd6efd00fa8efe9cdd6cf3", null ],
     [ "stopRecording", "d5/d3f/class_pocuter_microphone.html#ac0097a842461a6fe7dd2138541deb88d", null ],
     [ "unregisterEventHandler", "d5/d3f/class_pocuter_microphone.html#ad6a4d41a828a67c4a7f0f4dbe31b3422", null ]
 ];

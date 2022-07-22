@@ -11,6 +11,6 @@ var class_pocuter_light_sensor =
       [ "LIGHT_TOLLERANCE_CHANGED", "d1/d48/class_pocuter_light_sensor.html#ac6c79457465e286d42e00a0052a6abfeadfe213d8eba2d36dbf7955e754727b35", null ]
     ] ],
     [ "getValue", "d1/d48/class_pocuter_light_sensor.html#abca771cb2c489e2322ccc555fdd63afa", null ],
-    [ "registerEventHandler", "d1/d48/class_pocuter_light_sensor.html#a3ecf27440def987a0c1b419e116bbff3", null ],
+    [ "registerEventHandler", "d1/d48/class_pocuter_light_sensor.html#ab81f405a9f8ceea4cd3f67044e860d81", null ],
     [ "unregisterEventHandler", "d1/d48/class_pocuter_light_sensor.html#ae84478425d18568cabf5cabbf2f6204c", null ]
 ];

@@ -28,7 +28,7 @@ namespace PocuterLib {
                 void updateScreen();
                 
                 void setBrightness(uint8_t brightness);
-                void clearWindow(int8_t x, int8_t y, uint8_t width, uint8_t height);
+                void clearWindow(int16_t x, int16_t y, int16_t width, int16_t height);
                 void clearScreen();
                 
                 

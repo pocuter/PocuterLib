@@ -32,14 +32,14 @@ class PocuterAccelerometer {
         * 
         * @note the event handler is called every time an ACCEVENT occurred.
         * 
-        * @param accEventHandler a pointer to the callback function
-        * @param void a pointer to user data sent to the event handler on each event
+        * @param e a pointer to the callback function
+        * @param u a pointer to user data sent to the event handler on each event
         * 
         * @return 
         *     - ACCERROR_OK everything works well
         *     - ACCERROR_OFFLINE can not add an event handler now
         */
-       virtual ACCERROR registerEventHandler(accEventHandler*, void*) = 0;
+       virtual ACCERROR registerEventHandler(accEventHandler* e, void* u) = 0;
        
        /**
         * @brief unregister the event handler
@@ -56,13 +56,13 @@ class PocuterAccelerometer {
        /**
         * @brief get the current position of the accelerometer in space.
         * 
-        * @param State the state struct
+        * @param state the state struct
         *
         * @return   ACCERROR_OK everything works well
         *           ACCERROR_OFFLINE no accelerometer found
         *           ACCERROR_COMMUNICATION_FAILED an communication error the the accelerometer occurred
         */
-       virtual ACCERROR getState(State*) = 0;
+       virtual ACCERROR getState(State* state) = 0;
 
        /**
         * @brief set the accelerometer scale.

@@ -142,7 +142,7 @@ void SSD1131_Display::clearScreen() {
     clearWindow(0,0,DISPLAY_X, DISPLAY_Y);
     
 }
-void SSD1131_Display::clearWindow(int8_t x, int8_t y, uint8_t width, uint8_t height) {
+void SSD1131_Display::clearWindow(int16_t x, int16_t y, int16_t width, int16_t height) {
     if (x > DISPLAY_X || y > DISPLAY_Y)
         return;
     int16_t x2 = x + width - 1;

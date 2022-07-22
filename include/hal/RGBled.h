@@ -14,9 +14,10 @@ class RGBled {
         /**
         * @brief Setting Status LED
         *
-        * @param red value
-        * @param green value
-        * @param blue value
+        * @param ledNumber the led id
+        * @param r value
+        * @param g value
+        * @param b value
         *
         * @return
         *     - LEDERROR_OK Success

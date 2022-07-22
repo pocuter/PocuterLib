@@ -484,18 +484,114 @@ class PocuterTime {
             { .name = "Etc/Zulu", .timezoneString = "UTC0" }
            
        };
+        /**
+        * @brief changes the time zone
+        * 
+        * @param tz a pointer to the timezone you want to use
+        * @param save (optional) if true, the time zone is stored on the SDCard. Therefore it will still be set after a reboot.
+        * 
+        * @return 
+        *     - TIMEERROR_OK everything works well
+        *     - TIMEERROR_FAILED could not set the timezone
+        */
+       virtual TIMEERROR setTimezone(const pocuterTimezone* tz, bool save = true) = 0;
        
-       virtual TIMEERROR setTimezone(const pocuterTimezone*, bool save = true) = 0;
-       virtual TIMEERROR getLocalTime(tm*) = 0;
-       virtual TIMEERROR getGMTTime(tm*) = 0;
-       virtual TIMEERROR setLocalTime(tm*) = 0;
+       
+       /**
+        * @brief get the local time as tm struct.
+        * 
+        * @param time (out) a pointer to the time struct 
+        * 
+        * @return 
+        *     - TIMEERROR_OK everything works well
+        *     - TIMEERROR_FAILED could not set the timezone
+        */
+       virtual TIMEERROR getLocalTime(tm* time) = 0;
+       
+       /**
+        * @brief get the gmt time as tm struct.
+        * 
+        * @param time (out) a pointer to the time struct 
+        * 
+        * @return 
+        *     - TIMEERROR_OK everything works well
+        *     - TIMEERROR_FAILED could not set the timezone
+        */
+       virtual TIMEERROR getGMTTime(tm* time) = 0;
+       
+       /**
+        * @brief set the local time
+        * 
+        * @param time a pointer to the time struct with the local time
+        * 
+        * @return 
+        *     - TIMEERROR_OK everything works well
+        *     - TIMEERROR_FAILED could not set the timezone
+        */
+       virtual TIMEERROR setLocalTime(tm* time) = 0;
+       
+       /**
+        * @brief get the current time zone
+        * 
+        * @return 
+        *     - const char* a zero terminated string, the name of the timezone
+        */
        virtual const char* getCurrentTimezone() = 0;
        
+       /**
+        * @brief set the address of the time server
+        * 
+        * @param timeServer a string with the timeserver ( "pool.ntp.org" for example )
+        * 
+        * @return 
+        *     - TIMEERROR_OK everything works well
+        *     - TIMEERROR_FAILED could not set the timezone
+        */
        virtual TIMEERROR setTimeServer(const char* timeServer) = 0;
+       
+        /**
+        * @brief activate / deactivate the timeserver connection
+        * 
+        * @param on activate / deactivate the timeserver connection
+        * 
+        * @return 
+        *     - TIMEERROR_OK everything works well
+        *     - TIMEERROR_FAILED could not set the timezone
+        */
        virtual TIMEERROR setTimeServer(bool on) = 0;
+       
+       
+       /**
+        * @brief request if a timeserver connection was activated
+        * 
+        * 
+        * @return 
+        *     true / false
+        *     
+        */
        virtual bool isTimeServer() = 0;
+       
+        /**
+        * @brief get the current time server address
+        * 
+        * 
+        * @return 
+        *      - const char* a zero terminated string, the name of the timezone
+        *     
+        */
+       
        virtual const char* getTimeServer() = 0;
             
+       /**
+        * @brief get all available timezones
+        * 
+        * @param tz (out) a pointer to an array. You must not allocate memory for this.
+        * @param count (out) a pointer to an uint16_t. The number of array elements will be set here.
+        * 
+        * @return 
+        *      TIMEERROR_OK
+        *     
+        */
        
        TIMEERROR getAllTimezones(const pocuterTimezone** tz, uint16_t* count) {
            *tz = c_tz;

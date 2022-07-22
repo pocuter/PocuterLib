@@ -8,13 +8,13 @@ var class_pocuter_time =
     ] ],
     [ "getAllTimezones", "d8/dac/class_pocuter_time.html#a4bbb69edc65f2ab480b5c0b9ff5c03f5", null ],
     [ "getCurrentTimezone", "d8/dac/class_pocuter_time.html#a90c9abc66f51d094bae63bf393a4b007", null ],
-    [ "getGMTTime", "d8/dac/class_pocuter_time.html#a3f2fab8d66718e86957349a7f4f3fe94", null ],
-    [ "getLocalTime", "d8/dac/class_pocuter_time.html#a5c314181655a4594fd52a0308904c007", null ],
+    [ "getGMTTime", "d8/dac/class_pocuter_time.html#ac72c12c8c475687bc837e4bc8aecae47", null ],
+    [ "getLocalTime", "d8/dac/class_pocuter_time.html#a8a357b44161ae8104f19250ed48c3cce", null ],
     [ "getTimeServer", "d8/dac/class_pocuter_time.html#ac1988e3de62f0d4ead9c7a1b956c4c35", null ],
     [ "isTimeServer", "d8/dac/class_pocuter_time.html#a71445aa57c87cfab12c466133eaf9e89", null ],
-    [ "setLocalTime", "d8/dac/class_pocuter_time.html#a34b31438064a8625846acf48c4b0619b", null ],
+    [ "setLocalTime", "d8/dac/class_pocuter_time.html#a37e7bf46045af295d60eebef6003301c", null ],
     [ "setTimeServer", "d8/dac/class_pocuter_time.html#ab35ecfd6bfdf86682e2397ece6a3a9d6", null ],
     [ "setTimeServer", "d8/dac/class_pocuter_time.html#af22ef1642eff679a14abb708086c19d3", null ],
-    [ "setTimezone", "d8/dac/class_pocuter_time.html#ad78b8165ff56ab491ab74337d8097dc4", null ],
+    [ "setTimezone", "d8/dac/class_pocuter_time.html#a0a02b59e098948df15a50231334abc29", null ],
     [ "c_tz", "d8/dac/class_pocuter_time.html#aae61077589c0c918578b4489adb3bb04", null ]
 ];

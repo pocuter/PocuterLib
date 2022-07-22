@@ -23,6 +23,7 @@ for the JavaScript code in this file
 var NAVTREE =
 [
   [ "libPocuter", "index.html", [
+    [ "README", "d3/dcc/md__r_e_a_d_m_e.html", null ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -48,7 +49,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"df/d44/class_pocuter_buttons.html#a002933b0d8c25fc1bc7b03dea2ca83caa45b1024b59fad3ec4883b30004483e9b"
+"df/d44/class_pocuter_buttons.html#a002933b0d8c25fc1bc7b03dea2ca83caa43cd99cdfeef846e5fafd038c7e3df8e"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

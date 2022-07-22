@@ -41,11 +41,11 @@ var class_pocuter_w_i_f_i =
       [ "WIFIEVENT_WPS_FAILED", "da/d85/class_pocuter_w_i_f_i.html#a963e59775ee4127aaad5cf36420870cba697c5065abbdd00a470bd857ed4cd061", null ]
     ] ],
     [ "connect", "da/d85/class_pocuter_w_i_f_i.html#ac835a57bda65cc2038542177bb6e8673", null ],
-    [ "connect", "da/d85/class_pocuter_w_i_f_i.html#ad7e31781c0c4cb3ed0ca1ee2568e1796", null ],
-    [ "getCredentials", "da/d85/class_pocuter_w_i_f_i.html#a599fb41b9f03d161ea03a73e3796923a", null ],
+    [ "connect", "da/d85/class_pocuter_w_i_f_i.html#a1c281b806a8b1cc310b8748b8bb9cf7b", null ],
+    [ "getCredentials", "da/d85/class_pocuter_w_i_f_i.html#ad68396af160b6458551573983268ea78", null ],
     [ "getState", "da/d85/class_pocuter_w_i_f_i.html#a16010542631f619b40a2368d9904a8bb", null ],
-    [ "registerEventHandler", "da/d85/class_pocuter_w_i_f_i.html#a6722b8636be70cde151ca937977f21c1", null ],
-    [ "scanAPs", "da/d85/class_pocuter_w_i_f_i.html#a67082f655e4105e02fc35fbb0bc739fa", null ],
+    [ "registerEventHandler", "da/d85/class_pocuter_w_i_f_i.html#ab0dc89c32098fb8ffb90bbfb40c3f30e", null ],
+    [ "scanAPs", "da/d85/class_pocuter_w_i_f_i.html#aba98770e1db34bf5c4967445befba36a", null ],
     [ "startAccessPoint", "da/d85/class_pocuter_w_i_f_i.html#a8a839dea2a43a216b5d410121850f688", null ],
     [ "startWPS", "da/d85/class_pocuter_w_i_f_i.html#a0cbc4460a762cbd4f1b780455cbb67d2", null ]
 ];

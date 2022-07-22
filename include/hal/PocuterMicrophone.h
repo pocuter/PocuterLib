@@ -43,14 +43,14 @@ class PocuterMicrophone {
         * 
         * @note the event handler is called every time a new data package is ready. You can only have one event handler at a time.
         * 
-        * @param micEventHandler a pointer to the callback function
-        * @param void a pointer to user data sent to the event handler on each event
+        * @param h a pointer to the callback function
+        * @param u a pointer to user data sent to the event handler on each event
         * 
         * @return 
         *     - MICERROR_OK everything works well
         *     - MICERROR_RESOURCE_NOT_AVAILABLE can not add an event handler now
         */
-        virtual MICERROR registerEventHandler(micEventHandler*, void*) = 0;
+        virtual MICERROR registerEventHandler(micEventHandler* h, void* u) = 0;
 
         /**
         * @brief unregister the event handler
@@ -63,14 +63,14 @@ class PocuterMicrophone {
         * 
         * @note after starting the event handler will be calls periodically, when a data package is ready.
         * 
-        * @param SAMLE_RATE_HZ the sample rate
-        * @param NOICE_REDUCTION_LEVEL the noice reduction level, or raw data
+        * @param s the sample rate
+        * @param n the noice reduction level, or raw data
         * 
         * @return 
         *     - MICERROR_OK everything works well
         *     - MICERROR_RESOURCE_NOT_AVAILABLE cannot start recording
         */
-        virtual MICERROR startRecording(SAMLE_RATE_HZ, NOICE_REDUCTION_LEVEL) = 0;
+        virtual MICERROR startRecording(SAMLE_RATE_HZ s, NOICE_REDUCTION_LEVEL n) = 0;
         
         /**
         * @brief stop the recording

@@ -17,7 +17,7 @@
 <script type="text/javascript" src="../../search/searchdata.js"></script>
 <script type="text/javascript" src="../../search/search.js"></script>
 <link href="../../doxygen.css" rel="stylesheet" type="text/css" />
-<link href="../../doxygen-style.css" rel="stylesheet" type="text/css"/>
+<link href="../../doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -111,11 +111,14 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3ecf27440def987a0c1b419e116bbff3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d1/d48/class_pocuter_light_sensor.html#a315729d520e84c8ec341e3425ca553e1">LIGHTERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d48/class_pocuter_light_sensor.html#a3ecf27440def987a0c1b419e116bbff3">registerEventHandler</a> (<a class="el" href="../../d1/d48/class_pocuter_light_sensor.html#ac061454cec5b2997ff1865809e396eb1">lightEventHandler</a> *, uint16_t limit, uint16_t tollerance, void *)=0</td></tr>
-<tr class="separator:a3ecf27440def987a0c1b419e116bbff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab81f405a9f8ceea4cd3f67044e860d81"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d1/d48/class_pocuter_light_sensor.html#a315729d520e84c8ec341e3425ca553e1">LIGHTERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d48/class_pocuter_light_sensor.html#ab81f405a9f8ceea4cd3f67044e860d81">registerEventHandler</a> (<a class="el" href="../../d1/d48/class_pocuter_light_sensor.html#ac061454cec5b2997ff1865809e396eb1">lightEventHandler</a> *h, uint16_t limit, uint16_t tollerance, void *u)=0</td></tr>
+<tr class="memdesc:ab81f405a9f8ceea4cd3f67044e860d81"><td class="mdescLeft">&#160;</td><td class="mdescRight">register an event callback  <a href="../../d1/d48/class_pocuter_light_sensor.html#ab81f405a9f8ceea4cd3f67044e860d81">More...</a><br /></td></tr>
+<tr class="separator:ab81f405a9f8ceea4cd3f67044e860d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae84478425d18568cabf5cabbf2f6204c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d48/class_pocuter_light_sensor.html#ae84478425d18568cabf5cabbf2f6204c">unregisterEventHandler</a> ()=0</td></tr>
+<tr class="memdesc:ae84478425d18568cabf5cabbf2f6204c"><td class="mdescLeft">&#160;</td><td class="mdescRight">unregister the event handler  <a href="../../d1/d48/class_pocuter_light_sensor.html#ae84478425d18568cabf5cabbf2f6204c">More...</a><br /></td></tr>
 <tr class="separator:ae84478425d18568cabf5cabbf2f6204c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abca771cb2c489e2322ccc555fdd63afa"><td class="memItemLeft" align="right" valign="top">virtual uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d48/class_pocuter_light_sensor.html#abca771cb2c489e2322ccc555fdd63afa">getValue</a> ()=0</td></tr>
+<tr class="memdesc:abca771cb2c489e2322ccc555fdd63afa"><td class="mdescLeft">&#160;</td><td class="mdescRight">poll the light value  <a href="../../d1/d48/class_pocuter_light_sensor.html#abca771cb2c489e2322ccc555fdd63afa">More...</a><br /></td></tr>
 <tr class="separator:abca771cb2c489e2322ccc555fdd63afa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
@@ -195,10 +198,13 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>poll the light value </p>
+<dl class="section return"><dt>Returns</dt><dd>current light value </dd></dl>
+
 </div>
 </div>
-<a id="a3ecf27440def987a0c1b419e116bbff3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3ecf27440def987a0c1b419e116bbff3">&#9670;&nbsp;</a></span>registerEventHandler()</h2>
+<a id="ab81f405a9f8ceea4cd3f67044e860d81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab81f405a9f8ceea4cd3f67044e860d81">&#9670;&nbsp;</a></span>registerEventHandler()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -210,7 +216,7 @@ Public Member Functions</h2></td></tr>
           <td class="memname">virtual <a class="el" href="../../d1/d48/class_pocuter_light_sensor.html#a315729d520e84c8ec341e3425ca553e1">LIGHTERROR</a> PocuterLightSensor::registerEventHandler </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="../../d1/d48/class_pocuter_light_sensor.html#ac061454cec5b2997ff1865809e396eb1">lightEventHandler</a> *&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>h</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -228,7 +234,7 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">void *&#160;</td>
-          <td class="paramname">&#160;</td>
+          <td class="paramname"><em>u</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -242,6 +248,19 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>register an event callback </p>
+<dl class="section note"><dt>Note</dt><dd>the event handler is called every time a limit has been under or exceeded</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">h</td><td>a pointer to the callback function </td></tr>
+    <tr><td class="paramname">limit</td><td>the limit to call the eventhandler </td></tr>
+    <tr><td class="paramname">tollerance</td><td>a tollerance for debouncing event handler requests. </td></tr>
+    <tr><td class="paramname">u</td><td>a pointer to user data</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>LIGHTERROR_OK </dd></dl>
 
 </div>
 </div>
@@ -267,6 +286,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>unregister the event handler </p>
 
 </div>
 </div>
