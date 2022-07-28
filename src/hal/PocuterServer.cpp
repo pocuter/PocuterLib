@@ -64,7 +64,7 @@ const uint8_t* PocuterServer::checkNewestAppVersion(uint64_t appId) {
     char* response = new char[1024];
     snprintf(buf, 64, "https://psus.live/%s/%" PRIu64 "/%d.%d.%d", (char*)chipID, appId, major, minor, patch);
     bool haveDownload = false;
-    if (m_pHTTP->getResponse((uint8_t*)buf, (uint8_t*)response, 1024, (const uint8_t*)letsEncryptRootCA) == PocuterHTTP::HTTPERROR_OK) {
+    if (m_pHTTP->getResponse((uint8_t*)buf, (uint8_t*)response, 1024, 3000, (const uint8_t*)letsEncryptRootCA) == PocuterHTTP::HTTPERROR_OK) {
         json_t mem[32];
         json_t const* json = json_create( response, mem, sizeof mem / sizeof *mem );
         if ( json ) {

@@ -25,7 +25,7 @@ esp_err_t esp32_c3_HTTP::fileDownloadEventHandler(esp_http_client_event_t *evt) 
     
     return ESP_OK;
 }
-PocuterHTTP::HTTPERROR esp32_c3_HTTP::getResponse(const uint8_t* url, uint8_t* response, size_t maxSize, const uint8_t* PEMcert) {
+PocuterHTTP::HTTPERROR esp32_c3_HTTP::getResponse(const uint8_t* url, uint8_t* response, size_t maxSize, uint16_t timeout, const uint8_t* PEMcert) {
     esp_err_t err;
     if (maxSize < 2) return HTTPERROR_NO_MEMORY;
     
@@ -33,8 +33,10 @@ PocuterHTTP::HTTPERROR esp32_c3_HTTP::getResponse(const uint8_t* url, uint8_t* r
             .url = (const char*) url,
             .cert_pem = (const char*)PEMcert,
             .cert_len = 0,
+            .timeout_ms = timeout,
             .disable_auto_redirect = true,
-            .event_handler = fileDownloadEventHandler,
+            .event_handler = fileDownloadEventHandler
+            
            
     };
     response[0] = 0;

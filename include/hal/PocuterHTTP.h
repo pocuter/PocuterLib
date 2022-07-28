@@ -33,9 +33,10 @@ class PocuterHTTP {
         * @param url the url for the get request
         * @param response the response text. You must allocate enough memory for the response.
         * @param maxSize the max size you can hold in the response
+        * @param timeout (optional) timeout in ms
         * @param PEMcert (optional) if it is an https address, you need to add the root certificate to trust the server.
         */
-        virtual HTTPERROR getResponse(const uint8_t* url, uint8_t* response, size_t maxSize, const uint8_t* PEMcert = NULL) = 0;
+        virtual HTTPERROR getResponse(const uint8_t* url, uint8_t* response, size_t maxSize, uint16_t timeout = 5000, const uint8_t* PEMcert = NULL) = 0;
     private:
 
 };

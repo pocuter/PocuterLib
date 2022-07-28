@@ -12,7 +12,7 @@ namespace PocuterLib {
             virtual ~esp32_c3_HTTP();
             
             HTTPERROR downloadFile(const uint8_t* url, const uint8_t* destination, bool stepwise, uint8_t *percent, const uint8_t* PEMcert = NULL);
-            HTTPERROR getResponse(const uint8_t* url, uint8_t* response, size_t maxSize, const uint8_t* PEMcert = NULL);
+            HTTPERROR getResponse(const uint8_t* url, uint8_t* response, size_t maxSize, uint16_t timeout = 5000, const uint8_t* PEMcert = NULL);
             
         private:
             static esp_err_t fileDownloadEventHandler(esp_http_client_event_t *evt) ;
