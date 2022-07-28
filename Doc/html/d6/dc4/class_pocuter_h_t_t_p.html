@@ -115,9 +115,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae8a6ff33381c6c99558d9773d6c10bff"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d6/dc4/class_pocuter_h_t_t_p.html#ac55d9f750eb748036c5010b0004ccfe3">HTTPERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/dc4/class_pocuter_h_t_t_p.html#ae8a6ff33381c6c99558d9773d6c10bff">downloadFile</a> (const uint8_t *url, const uint8_t *destination, bool stepwise, uint8_t *percent, const uint8_t *PEMcert=NULL)=0</td></tr>
 <tr class="memdesc:ae8a6ff33381c6c99558d9773d6c10bff"><td class="mdescLeft">&#160;</td><td class="mdescRight">download a file from web  <a href="../../d6/dc4/class_pocuter_h_t_t_p.html#ae8a6ff33381c6c99558d9773d6c10bff">More...</a><br /></td></tr>
 <tr class="separator:ae8a6ff33381c6c99558d9773d6c10bff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac316d8323f1c29de728f9933c90d51bc"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d6/dc4/class_pocuter_h_t_t_p.html#ac55d9f750eb748036c5010b0004ccfe3">HTTPERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/dc4/class_pocuter_h_t_t_p.html#ac316d8323f1c29de728f9933c90d51bc">getResponse</a> (const uint8_t *url, uint8_t *response, size_t maxSize, const uint8_t *PEMcert=NULL)=0</td></tr>
-<tr class="memdesc:ac316d8323f1c29de728f9933c90d51bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">sends a get request to a server  <a href="../../d6/dc4/class_pocuter_h_t_t_p.html#ac316d8323f1c29de728f9933c90d51bc">More...</a><br /></td></tr>
-<tr class="separator:ac316d8323f1c29de728f9933c90d51bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7aa4eb27ffad09e8c50cf1e65e7595bb"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d6/dc4/class_pocuter_h_t_t_p.html#ac55d9f750eb748036c5010b0004ccfe3">HTTPERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/dc4/class_pocuter_h_t_t_p.html#a7aa4eb27ffad09e8c50cf1e65e7595bb">getResponse</a> (const uint8_t *url, uint8_t *response, size_t maxSize, uint16_t timeout=5000, const uint8_t *PEMcert=NULL)=0</td></tr>
+<tr class="memdesc:a7aa4eb27ffad09e8c50cf1e65e7595bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">sends a get request to a server  <a href="../../d6/dc4/class_pocuter_h_t_t_p.html#a7aa4eb27ffad09e8c50cf1e65e7595bb">More...</a><br /></td></tr>
+<tr class="separator:a7aa4eb27ffad09e8c50cf1e65e7595bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="ac55d9f750eb748036c5010b0004ccfe3"></a>
@@ -210,8 +210,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ac316d8323f1c29de728f9933c90d51bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac316d8323f1c29de728f9933c90d51bc">&#9670;&nbsp;</a></span>getResponse()</h2>
+<a id="a7aa4eb27ffad09e8c50cf1e65e7595bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7aa4eb27ffad09e8c50cf1e65e7595bb">&#9670;&nbsp;</a></span>getResponse()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -240,6 +240,12 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>5000</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const uint8_t *&#160;</td>
           <td class="paramname"><em>PEMcert</em> = <code>NULL</code>&#160;</td>
         </tr>
@@ -262,6 +268,7 @@ Public Member Functions</h2></td></tr>
     <tr><td class="paramname">url</td><td>the url for the get request </td></tr>
     <tr><td class="paramname">response</td><td>the response text. You must allocate enough memory for the response. </td></tr>
     <tr><td class="paramname">maxSize</td><td>the max size you can hold in the response </td></tr>
+    <tr><td class="paramname">timeout</td><td>(optional) timeout in ms </td></tr>
     <tr><td class="paramname">PEMcert</td><td>(optional) if it is an https address, you need to add the root certificate to trust the server. </td></tr>
   </table>
   </dd>
