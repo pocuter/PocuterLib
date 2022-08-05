@@ -13,6 +13,7 @@ public:
     const uint8_t* checkNewestAppVersion(uint64_t appId);
     const uint8_t* getServerRootCa();
     static const char* letsEncryptRootCA;
+    static const char* globalSignRootCA;
 private:
     PocuterHMAC* m_HMAC;
     PocuterOTA* m_pOTA;
