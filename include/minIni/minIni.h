@@ -75,6 +75,21 @@ int  ini_browse(INI_CALLBACK Callback, void *UserData, const mTCHAR *Filename);
 #else
   #include <string>
 
+  
+  class scopedMalloc
+  {
+  private:
+      char* buffer;
+  public:
+      scopedMalloc(char** buf, size_t size) {
+          buffer = new char[size];
+          *buf = buffer;
+      }
+      ~scopedMalloc() {
+          delete[] buffer;
+      }
+  };
+  
   /* The C++ class in minIni.h was contributed by Steven Van Ingelgem. */
   class minIni
   {
