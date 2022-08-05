@@ -392,10 +392,14 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect() {
 }
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::startAccessPoint() {
     if (m_state == WIFI_WAITING_AP) return WIFIERROR_OK; //already started
-    uint16_t aps;
+    uint16_t aps = 0;
     if (m_apInfos == NULL) m_apInfos = new apInfo[10]; // this memory will be killed at reboot
     m_apInfosSize = 10;
     scanAPs(m_apInfos, &m_apInfosSize, &aps);
+    if (aps == 0) {
+        scanAPs(m_apInfos, &m_apInfosSize, &aps); // ugly, but sometimes we have to do one retry
+    }
+    
     xSemaphoreTake(m_wifiSemaphore, portMAX_DELAY);
     wifiDeInit();
     
