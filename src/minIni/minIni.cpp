@@ -229,8 +229,8 @@ static int getkeystring(INI_FILETYPE *fp, const TCHAR *Section, const TCHAR *Key
   TCHAR *sp, *ep;
   int len, idx;
   enum quote_option quotes;
-  TCHAR LocalBuffer[INI_BUFFERSIZE];
-
+  TCHAR* LocalBuffer;scopedMalloc m(&LocalBuffer, INI_BUFFERSIZE);
+  
   assert(fp != NULL);
   /* Move through file 1 line at a time until a section is matched or EOF. If
    * parameter Section is NULL, only look at keys above the first section. If
@@ -508,7 +508,7 @@ int ini_haskey(const mTCHAR *Section, const mTCHAR *Key, const mTCHAR *Filename)
  */
 int ini_browse(INI_CALLBACK Callback, void *UserData, const TCHAR *Filename)
 {
-  TCHAR LocalBuffer[INI_BUFFERSIZE];
+  TCHAR* LocalBuffer;scopedMalloc m(&LocalBuffer, INI_BUFFERSIZE);
   int lenSec, lenKey;
   enum quote_option quotes;
   INI_FILETYPE fp;
@@ -683,7 +683,7 @@ int ini_puts(const TCHAR *Section, const TCHAR *Key, const TCHAR *Value, const T
   INI_FILEPOS mark;
   INI_FILEPOS head, tail;
   TCHAR *sp, *ep;
-  TCHAR LocalBuffer[INI_BUFFERSIZE];
+  TCHAR* LocalBuffer;scopedMalloc m(&LocalBuffer, INI_BUFFERSIZE);
   int len, match, flag, cachelen;
 
   assert(Filename != NULL);
