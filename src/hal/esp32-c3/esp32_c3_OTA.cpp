@@ -85,7 +85,7 @@ PocuterOTA::OTAERROR esp32_c3_OTA::getApps(std::vector<uint64_t>* apps, int maxL
                 
                 char* end;
                 uint64_t appID = strtoull(dir->d_name, &end, 10);
-                if (appID > 0) {
+                if (appID > 1) {
                     if (offset <= currAppNum++) {
                         if (++currLimit > maxLength) break;
                         apps->push_back(appID);
