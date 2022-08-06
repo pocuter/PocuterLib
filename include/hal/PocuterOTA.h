@@ -34,7 +34,7 @@ class PocuterOTA {
         virtual OTAERROR restart() = 0;
 
         virtual OTAERROR verifyPartition(POCUTER_PARTITION partition) = 0; 
-
+        virtual OTAERROR forceBootloaderToReflashApp() = 0; 
         
 
     private:

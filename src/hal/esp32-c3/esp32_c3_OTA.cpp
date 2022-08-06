@@ -122,6 +122,12 @@ PocuterOTA::OTAERROR esp32_c3_OTA::getAppVersion(uint64_t appID, uint8_t* major,
     }
     return err;  
 }
+PocuterOTA::OTAERROR esp32_c3_OTA::forceBootloaderToReflashApp() {
+    char* buff = new char[256];
+    snprintf(buff, 256, "/sd/apps/1/%s_last.txt", s_HMAC->getChipID());
+    remove(buff);
+    return OTAERROR_OK;
+}
 PocuterOTA::OTAERROR esp32_c3_OTA::setNextAppID(uint64_t appID) {
     // we have a problem with the NVM, so also save this on SD until we found a solution for this
     if (m_SDCard->cardIsMounted()) {

@@ -23,7 +23,7 @@ namespace PocuterLib {
             POCUTER_PARTITION getCurrentPartition();
             OTAERROR restart();
             OTAERROR verifyPartition(POCUTER_PARTITION partition);
-            
+            OTAERROR forceBootloaderToReflashApp(); 
             static POCUTER_PARTITION getCurrentPartitionStatic();
             static uint64_t getCurrentAppID();
             
