@@ -17,12 +17,12 @@
 #define RTC_SLOW_MEM_POCUTER ((uint32_t*) (0x50000000)+ 1024 * 7)       /*!< RTC slow memory, 8k size, Pocuter Data at the end*/
 using namespace PocuterLib::HAL;
 
-
+PocuterHMAC* esp32_c3_OTA::s_HMAC = NULL;
 
 
 esp32_c3_OTA::esp32_c3_OTA(PocuterSDCard* SDCard, PocuterHMAC* HMAC) {
     m_SDCard = SDCard;
-    m_HMAC = HMAC;
+    s_HMAC = HMAC;
     m_buffer = NULL;
     m_deflatebuffer = NULL;
     m_fp = NULL;
@@ -127,7 +127,7 @@ PocuterOTA::OTAERROR esp32_c3_OTA::setNextAppID(uint64_t appID) {
     if (m_SDCard->cardIsMounted()) {
         FILE *fp;
         char* buff = new char[255];
-        snprintf(buff, 255, "/sd/apps/1/%s.txt", m_HMAC->getChipID());
+        snprintf(buff, 255, "/sd/apps/1/%s.txt", s_HMAC->getChipID());
 
       fp = fopen(buff, "w");
       if (fp) {
@@ -295,6 +295,21 @@ uint64_t esp32_c3_OTA::getCurrentAppID() {
         nvs_close(nvsHandle);
     }
     
+    if (s_HMAC != NULL) {
+        FILE* fp;
+        char* buff = new char[256];
+        snprintf(buff, 256, "/sd/apps/1/%s_last.txt", s_HMAC->getChipID());
+        fp = fopen(buff, "r");
+        if (fp) {
+            fgets(buff, 256, fp);
+            char *end;
+            currentAPP = strtoull(buff, &end, 10);
+            fclose(fp);
+
+        }
+        delete[] buff;
+    }
+  
     
     return currentAPP;
 }

@@ -62,7 +62,7 @@ namespace PocuterLib {
             size_t m_fileSize;
             esp_ota_handle_t m_update_handle;
             const esp_partition_t *m_update_partition;
-            PocuterHMAC* m_HMAC;
+            static PocuterHMAC* s_HMAC;
             
         };
     }
