@@ -60,7 +60,7 @@ uint32_t esp32_c3_OTA::getAppsCount() {
             if (dir->d_type == DT_DIR) {// 
                 char* end;
                 uint64_t appID = strtoull(dir->d_name, &end, 10);
-                if (appID > 0) {
+                if (appID > 1) {
                     c++;
                 }
             }
