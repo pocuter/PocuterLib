@@ -143,7 +143,7 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
 #ifndef POCUTER_DISABLE_SD_CARD     
    SDCard = new esp32_c3_SDCard();
    
-   OTA = new esp32_c3_OTA(SDCard);
+   OTA = new esp32_c3_OTA(SDCard, HMAC);
 #endif  
    
 #ifndef POCUTER_DISABLE_WIFI 

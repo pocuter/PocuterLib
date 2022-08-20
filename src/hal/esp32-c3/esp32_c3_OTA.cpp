@@ -10,6 +10,7 @@
 #include "nvs_flash.h"
 #include "nvs.h"
 #include <dirent.h> 
+#include <inttypes.h>
 
 #define FILE_BUFFER_SIZE 1024*40
 #define DEFLATE_BUFFER_SIZE 1024*40
@@ -19,8 +20,9 @@ using namespace PocuterLib::HAL;
 
 
 
-esp32_c3_OTA::esp32_c3_OTA(PocuterSDCard* SDCard) {
+esp32_c3_OTA::esp32_c3_OTA(PocuterSDCard* SDCard, PocuterHMAC* HMAC) {
     m_SDCard = SDCard;
+    m_HMAC = HMAC;
     m_buffer = NULL;
     m_deflatebuffer = NULL;
     m_fp = NULL;
@@ -121,6 +123,21 @@ PocuterOTA::OTAERROR esp32_c3_OTA::getAppVersion(uint64_t appID, uint8_t* major,
     return err;  
 }
 PocuterOTA::OTAERROR esp32_c3_OTA::setNextAppID(uint64_t appID) {
+    // we have a problem with the NVM, so also save this on SD until we found a solution for this
+    if (m_SDCard->cardIsMounted()) {
+        FILE *fp;
+        char* buff = new char[255];
+        snprintf(buff, 255, "/sd/apps/1/%s.txt", m_HMAC->getChipID());
+
+      fp = fopen(buff, "w");
+      if (fp) {
+          snprintf(buff, 255, "%" PRIu64, appID);
+          fputs(buff, (FILE*)fp);
+          fclose(fp);
+      }
+      delete[] buff;
+      return OTAERROR_OK;
+    }
     
     nvs_handle_t nvsHandle;
     esp_err_t err = -1;
@@ -225,7 +242,14 @@ PocuterOTA::OTAERROR esp32_c3_OTA::flashFromSDCard(uint64_t appID, POCUTER_PARTI
     
 }
 PocuterOTA::OTAERROR esp32_c3_OTA::bootPartition(PocuterOTA::POCUTER_PARTITION partition) {
-    // there are Problems with Arduino yet. The bootloader will load the other Partitilon
+    const esp_partition_t *bootPartition = esp_partition_find_first(ESP_PARTITION_TYPE_APP, (esp_partition_subtype_t)(ESP_PARTITION_SUBTYPE_APP_OTA_MIN + partition), NULL);
+
+    if (bootPartition == NULL) return OTAERROR_PATITION_NOT_AVAILABLE;
+
+    esp_err_t err = esp_ota_set_boot_partition(bootPartition);
+
+    if (err != ESP_OK) return OTAERROR_UNKNOWN;
+
     return OTAERROR_OK;
 }
 PocuterOTA::POCUTER_PARTITION esp32_c3_OTA::getCurrentPartition() {
@@ -270,6 +294,8 @@ uint64_t esp32_c3_OTA::getCurrentAppID() {
         err = nvs_get_u64(nvsHandle, "startApp", &currentAPP);
         nvs_close(nvsHandle);
     }
+    
+    
     return currentAPP;
 }
 

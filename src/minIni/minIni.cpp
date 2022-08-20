@@ -91,7 +91,7 @@
 #endif
 
 #if !defined sizearray
-  #define sizearray(a)    (sizeof(a) / sizeof((a)[0]))
+  #define sizearray(a)    (INI_BUFFERSIZE / sizeof((a)[0]))
 #endif
 
 enum quote_option {

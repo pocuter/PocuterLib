@@ -2,6 +2,7 @@
 #define ESP32_C3_OTA_H
 #include "include/hal/PocuterSDCard.h"
 #include "include/hal/PocuterOTA.h"
+#include "include/hal/PocuterHMAC.h"
 #include "esp_ota_ops.h"
 #include <stdint.h>
 #include <stddef.h>
@@ -11,7 +12,7 @@ namespace PocuterLib {
         class esp32_c3_OTA : public PocuterOTA {
         public:
            
-            esp32_c3_OTA(PocuterSDCard* SDCard);
+            esp32_c3_OTA(PocuterSDCard* SDCard, PocuterHMAC* HMAC);
             OTAERROR setNextAppID(uint64_t appID);
             OTAERROR getApps(std::vector<uint64_t>* apps, int maxLength, int offset);
             uint32_t getAppsCount();
@@ -61,6 +62,7 @@ namespace PocuterLib {
             size_t m_fileSize;
             esp_ota_handle_t m_update_handle;
             const esp_partition_t *m_update_partition;
+            PocuterHMAC* m_HMAC;
             
         };
     }
