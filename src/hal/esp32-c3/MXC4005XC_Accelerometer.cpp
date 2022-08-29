@@ -75,9 +75,9 @@ PocuterAccelerometer::ACCERROR MXC4005XC_Accelerometer::getState(State* st) {
     if (! m_online) return ACCERROR_OFFLINE;
     uint8_t buffer[6] = {0};
     if (! m_i2cBus->read(I2C_ACC_ADDR, REGISTER_X_AXIS_MSB, buffer, 6)) return ACCERROR_COMMUNICATION_FAILED;
-    st->x = (((buffer[0] << 8) | (buffer[1])) >> 0) / 182;
-    st->y = (((buffer[2] << 8) | (buffer[3])) >> 0) / 182;
-    st->z = (((buffer[4] << 8) | (buffer[5])) >> 0) / 182;
+    st->x = (((buffer[0] << 8) | (buffer[1])) >> 0);
+    st->y = (((buffer[2] << 8) | (buffer[3])) >> 0);
+    st->z = (((buffer[4] << 8) | (buffer[5])) >> 0);
     
     return ACCERROR_OK;
     

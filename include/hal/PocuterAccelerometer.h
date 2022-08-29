@@ -17,9 +17,9 @@ class PocuterAccelerometer {
             G8 = 2      /*!< Accelerometer scale factor 2 */
         };
         struct State {
-            uint16_t x; /*!< Accelerometer position in space, x axis*/
-            uint16_t y; /*!< Accelerometer position in space, y axis*/
-            uint16_t z; /*!< Accelerometer position in space, z axis*/
+            int16_t x; /*!< Accelerometer position in space, x axis*/
+            int16_t y; /*!< Accelerometer position in space, y axis*/
+            int16_t z; /*!< Accelerometer position in space, z axis*/
         };
         enum ACCEVENT {
             ACC_ORIENTATION,    /*!< Accelerometer event, orientation has changed */
