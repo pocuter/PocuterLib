@@ -1,1 +1,1 @@
-https://pocuter.gitlab.io/library/
+https://pocuter.github.io/PocuterLib/
