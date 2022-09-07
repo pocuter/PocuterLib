@@ -18,6 +18,7 @@ var class_pocuter_o_t_a =
     ] ],
     [ "bootPartition", "d0/d1f/class_pocuter_o_t_a.html#a04e285de2d9ca7486d0f9a266d27ad55", null ],
     [ "flashFromSDCard", "d0/d1f/class_pocuter_o_t_a.html#a3e2836d888c79a77f937cd131649c634", null ],
+    [ "forceBootloaderToReflashApp", "d0/d1f/class_pocuter_o_t_a.html#a03e231fe9b396f4de0b9109253cd0f44", null ],
     [ "getApps", "d0/d1f/class_pocuter_o_t_a.html#a4702e596c493f0842ae9fb0c32ddda76", null ],
     [ "getAppsCount", "d0/d1f/class_pocuter_o_t_a.html#a850deb079610212dd7be4741c0039c01", null ],
     [ "getAppVersion", "d0/d1f/class_pocuter_o_t_a.html#abdaded12146e88651609e9bb32d56833", null ],

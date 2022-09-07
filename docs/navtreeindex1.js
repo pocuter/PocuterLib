@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"df/d44/class_pocuter_buttons.html#a002933b0d8c25fc1bc7b03dea2ca83ca":[1,0,2,1],
 "df/d44/class_pocuter_buttons.html#a002933b0d8c25fc1bc7b03dea2ca83caa43cd99cdfeef846e5fafd038c7e3df8e":[1,0,2,1,2],
 "df/d44/class_pocuter_buttons.html#a002933b0d8c25fc1bc7b03dea2ca83caa45b1024b59fad3ec4883b30004483e9b":[1,0,2,1,1],
 "df/d44/class_pocuter_buttons.html#a002933b0d8c25fc1bc7b03dea2ca83caac239144ea294a392cb6241021812f3af":[1,0,2,1,0],
@@ -28,9 +29,9 @@ var NAVTREEINDEX1 =
 "df/dad/class_pocuter_accelerometer.html#afe467f8f0fa644c6b8366c93e4dbe915aa28f3bf4718f02bb623a3809cc249c31":[1,0,1,3,0],
 "df/dad/class_pocuter_accelerometer.html#afe467f8f0fa644c6b8366c93e4dbe915ae899c2f7ef6e49dfc42f8f64b1f3fb1f":[1,0,1,3,1],
 "df/db4/struct_pocuter_accelerometer_1_1_state.html":[1,0,1,0],
-"df/db4/struct_pocuter_accelerometer_1_1_state.html#a19ab61517909b0b4caedb25011ed1567":[1,0,1,0,2],
-"df/db4/struct_pocuter_accelerometer_1_1_state.html#a2dcfff67e567192592a081f9d0645ec1":[1,0,1,0,1],
-"df/db4/struct_pocuter_accelerometer_1_1_state.html#a31cc484c9b12c5af9ff9aa49cce6a2be":[1,0,1,0,0],
+"df/db4/struct_pocuter_accelerometer_1_1_state.html#a22b6d2b0849044582cef577ee5b254c8":[1,0,1,0,2],
+"df/db4/struct_pocuter_accelerometer_1_1_state.html#a31d9c1cb77242e68d036e5d439a3f648":[1,0,1,0,1],
+"df/db4/struct_pocuter_accelerometer_1_1_state.html#ab627d7417bfa7508102fcdf9a136fa72":[1,0,1,0,0],
 "dir_a413b7f902cba5167b433a6fe834d5bd.html":[2,0,0,0],
 "dir_d44c64559bbebec7f509842c48db8b23.html":[2,0,0],
 "files.html":[2,0],

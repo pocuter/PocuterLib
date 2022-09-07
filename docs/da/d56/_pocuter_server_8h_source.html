@@ -103,16 +103,17 @@ $(document).ready(function(){initNavTree('da/d56/_pocuter_server_8h_source.html'
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keyword">const</span> uint8_t* <a class="code" href="../../dd/d45/class_pocuter_server.html#af6d61f02c4bc372e8e4bcd5807d012bd">checkNewestAppVersion</a>(uint64_t appId);</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keyword">const</span> uint8_t* <a class="code" href="../../dd/d45/class_pocuter_server.html#a8bac5826c28f7da0f066930e8e634544">getServerRootCa</a>();</div>
 <div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="../../dd/d45/class_pocuter_server.html#ab03eeebd14b70c705158cedc7af3be32">   15</a></span>&#160;    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="../../dd/d45/class_pocuter_server.html#ab03eeebd14b70c705158cedc7af3be32">letsEncryptRootCA</a>;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <a class="code" href="../../d4/d79/class_pocuter_h_m_a_c.html">PocuterHMAC</a>* m_HMAC;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="../../d0/d1f/class_pocuter_o_t_a.html">PocuterOTA</a>* m_pOTA;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="../../d6/dc4/class_pocuter_h_t_t_p.html">PocuterHTTP</a>* m_pHTTP;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    uint8_t m_buffer[64];</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;};</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* POCUTERSERVER_H */</span><span class="preprocessor"></span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="../../dd/d45/class_pocuter_server.html#afe15240f3823c8c852315d0f1e1cf76d">   16</a></span>&#160;    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="../../dd/d45/class_pocuter_server.html#afe15240f3823c8c852315d0f1e1cf76d">globalSignRootCA</a>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="../../d4/d79/class_pocuter_h_m_a_c.html">PocuterHMAC</a>* m_HMAC;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="../../d0/d1f/class_pocuter_o_t_a.html">PocuterOTA</a>* m_pOTA;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <a class="code" href="../../d6/dc4/class_pocuter_h_t_t_p.html">PocuterHTTP</a>* m_pHTTP;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    uint8_t m_buffer[64];</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;};</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* POCUTERSERVER_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="a_pocuter_h_t_t_p_8h_html"><div class="ttname"><a href="../../dd/dfc/_pocuter_h_t_t_p_8h.html">PocuterHTTP.h</a></div></div>
@@ -123,6 +124,7 @@ $(document).ready(function(){initNavTree('da/d56/_pocuter_server_8h_source.html'
 <div class="ttc" id="a_pocuter_o_t_a_8h_html"><div class="ttname"><a href="../../d7/da1/_pocuter_o_t_a_8h.html">PocuterOTA.h</a></div></div>
 <div class="ttc" id="aclass_pocuter_o_t_a_html"><div class="ttname"><a href="../../d0/d1f/class_pocuter_o_t_a.html">PocuterOTA</a></div><div class="ttdef"><b>Definition:</b> PocuterOTA.h:7</div></div>
 <div class="ttc" id="aclass_pocuter_server_html"><div class="ttname"><a href="../../dd/d45/class_pocuter_server.html">PocuterServer</a></div><div class="ttdef"><b>Definition:</b> PocuterServer.h:8</div></div>
+<div class="ttc" id="aclass_pocuter_server_html_afe15240f3823c8c852315d0f1e1cf76d"><div class="ttname"><a href="../../dd/d45/class_pocuter_server.html#afe15240f3823c8c852315d0f1e1cf76d">PocuterServer::globalSignRootCA</a></div><div class="ttdeci">static const char * globalSignRootCA</div><div class="ttdef"><b>Definition:</b> PocuterServer.h:16</div></div>
 <div class="ttc" id="a_pocuter_h_m_a_c_8h_html"><div class="ttname"><a href="../../d5/dd0/_pocuter_h_m_a_c_8h.html">PocuterHMAC.h</a></div></div>
 <div class="ttc" id="aclass_pocuter_server_html_af6d61f02c4bc372e8e4bcd5807d012bd"><div class="ttname"><a href="../../dd/d45/class_pocuter_server.html#af6d61f02c4bc372e8e4bcd5807d012bd">PocuterServer::checkNewestAppVersion</a></div><div class="ttdeci">const uint8_t * checkNewestAppVersion(uint64_t appId)</div></div>
 <div class="ttc" id="aclass_pocuter_h_m_a_c_html"><div class="ttname"><a href="../../d4/d79/class_pocuter_h_m_a_c.html">PocuterHMAC</a></div><div class="ttdef"><b>Definition:</b> PocuterHMAC.h:5</div></div>
