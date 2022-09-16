@@ -31,6 +31,9 @@ var dir_a413b7f902cba5167b433a6fe834d5bd =
     [ "PocuterOTA.h", "d7/da1/_pocuter_o_t_a_8h.html", [
       [ "PocuterOTA", "d0/d1f/class_pocuter_o_t_a.html", "d0/d1f/class_pocuter_o_t_a" ]
     ] ],
+    [ "PocuterPorts.h", "d3/d49/_pocuter_ports_8h.html", [
+      [ "PocuterPorts", "d4/d9b/class_pocuter_ports.html", "d4/d9b/class_pocuter_ports" ]
+    ] ],
     [ "PocuterSDCard.h", "dd/d6e/_pocuter_s_d_card_8h.html", [
       [ "PocuterSDCard", "d1/dea/class_pocuter_s_d_card.html", "d1/dea/class_pocuter_s_d_card" ]
     ] ],
