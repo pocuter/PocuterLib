@@ -73,7 +73,7 @@ class PocuterPorts {
         *     - PORTSERROR_NOT_INITIALIZED the port wasn't initialized
         */
        
-       virtual PORTSERROR deinitPort(PORT_NUMBER) = 0;
+       virtual PORTSERROR deinitPort(PORT_NUMBER n) = 0;
        
        
        
@@ -100,7 +100,7 @@ class PocuterPorts {
         *     - PORTSERROR_OK everything works well
         *     - PORTSERROR_NOT_INITIALIZED the port wasn't initialized
         */
-       virtual PORTSERROR getValue(PORT_NUMBER, bool* value);
+       virtual PORTSERROR getValue(PORT_NUMBER n, bool* value);
        
         /**
         * @brief set a binary port 
@@ -113,9 +113,9 @@ class PocuterPorts {
         *     - PORTSERROR_NOT_INITIALIZED the port wasn't initialized
         */
                
-       virtual PORTSERROR setValue(PORT_NUMBER, bool value); 
+       virtual PORTSERROR setValue(PORT_NUMBER n, bool value); 
        
-       typedef void (portEventHandler)(PORT_NUMBER, bool portValue, void*); /*!< type definition of the event callback function */
+       typedef void (portEventHandler)(PORT_NUMBER n, bool portValue, void*); /*!< type definition of the event callback function */
        
        
        /**
@@ -124,12 +124,13 @@ class PocuterPorts {
         * @note this is olny available for binary ports 
         * @note the event handler is called every time the value of a binary port changed. 
         * 
-        * @param e a pointer to the callback function
+        * @param n the port number
+        * @param h a pointer to the callback function
         * @param u a pointer to user data sent to the event handler on each event
         * 
         * 
         */
-       virtual PORTSERROR registerEventHandler(PORT_NUMBER, portEventHandler* h, void* u) = 0;
+       virtual PORTSERROR registerEventHandler(PORT_NUMBER n, portEventHandler* h, void* u) = 0;
        
        
 
