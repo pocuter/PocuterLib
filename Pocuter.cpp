@@ -23,5 +23,6 @@
 #include "src/hal/esp32-c3/esp32_c3_HTTP.cpp"
 #include "src/hal/esp32-c3/esp32_c3_CaptivePortalDNS.cpp"
 #include "src/hal/esp32-c3/esp32_c3_Time.cpp"
+#include "src/hal/esp32-c3/esp32_c3_Ports.cpp"
 #include "src/hal/PocuterConfig.cpp"
 #include "src/hal/PocuterServer.cpp"

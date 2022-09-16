@@ -55,7 +55,9 @@
 #include "include/hal/PocuterServer.h"
 #endif
 
-
+#ifndef POCUTER_DISABLE_PORTS
+#include "include/hal/esp32-c3/esp32_c3_Ports.h"
+#endif
 
 #include <string.h>
 
@@ -77,6 +79,10 @@ PocuterI2C* Pocuter::I2C = NULL;
 PocuterDisplay* Pocuter::Display = NULL; 
 UGUI* Pocuter::ugui = NULL; 
 UG_GUI Pocuter::uGUI;
+#endif
+
+#ifndef POCUTER_DISABLE_PORTS
+PocuterPorts* Pocuter::Ports = NULL; 
 #endif
 
 #ifndef POCUTER_DISABLE_BUTTONS
@@ -137,7 +143,9 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
 #ifndef POCUTER_DISABLE_BUTTONS   
    Buttons = new esp32_c3_Buttons();
 #endif
-   
+ #ifndef POCUTER_DISABLE_PORTS
+   Ports = new esp32_c3_Ports();
+#endif
    HMAC = new esp32_c3_hmac();
    
 #ifndef POCUTER_DISABLE_SD_CARD     

@@ -48,6 +48,7 @@
 #include "include/hal/PocuterHTTP.h"
 #include "include/hal/PocuterTime.h"
 #include "include/hal/PocuterServer.h"
+#include "include/hal/PocuterPorts.h"
 
 class Pocuter {
 public:
@@ -113,7 +114,9 @@ public:
 #ifndef POCUTER_DISABLE_BUTTONS    
     static PocuterButtons* Buttons;             /*!< PocuterButtons Class Acccess */
 #endif
-    
+#ifndef POCUTER_DISABLE_PORTS    
+    static PocuterPorts* Ports  ;             /*!< PocuterPorts Class Acccess */
+#endif   
     static PocuterHMAC* HMAC;                   /*!< PocuterHMAC Class Acccess */
     
 #ifndef POCUTER_DISABLE_SD_CARD      
