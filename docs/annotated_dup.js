@@ -11,6 +11,7 @@ var annotated_dup =
     [ "PocuterLightSensor", "d1/d48/class_pocuter_light_sensor.html", "d1/d48/class_pocuter_light_sensor" ],
     [ "PocuterMicrophone", "d5/d3f/class_pocuter_microphone.html", "d5/d3f/class_pocuter_microphone" ],
     [ "PocuterOTA", "d0/d1f/class_pocuter_o_t_a.html", "d0/d1f/class_pocuter_o_t_a" ],
+    [ "PocuterPorts", "d4/d9b/class_pocuter_ports.html", "d4/d9b/class_pocuter_ports" ],
     [ "PocuterSDCard", "d1/dea/class_pocuter_s_d_card.html", "d1/dea/class_pocuter_s_d_card" ],
     [ "PocuterServer", "dd/d45/class_pocuter_server.html", "dd/d45/class_pocuter_server" ],
     [ "PocuterTime", "d8/dac/class_pocuter_time.html", "d8/dac/class_pocuter_time" ],

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ipinfo_262',['ipInfo',['../dc/d6d/struct_pocuter_w_i_f_i_1_1ip_info.html',1,'PocuterWIFI']]]
+  ['ipinfo_290',['ipInfo',['../dc/d6d/struct_pocuter_w_i_f_i_1_1ip_info.html',1,'PocuterWIFI']]]
 ];
