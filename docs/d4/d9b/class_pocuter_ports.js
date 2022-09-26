@@ -31,6 +31,8 @@ var class_pocuter_ports =
     [ "getValue", "d4/d9b/class_pocuter_ports.html#af8d9c264e177a232891db5ff1693bad9", null ],
     [ "getValue", "d4/d9b/class_pocuter_ports.html#a6d0d9f4b64baf8cdcead093ae1275fff", null ],
     [ "initPort", "d4/d9b/class_pocuter_ports.html#a8bac3b5bd5b481ebb56cd59dbb8cc58b", null ],
+    [ "pauseInterruptHandler", "d4/d9b/class_pocuter_ports.html#ae271e10ca0fd7b70269d33c270aa9798", null ],
     [ "registerEventHandler", "d4/d9b/class_pocuter_ports.html#ae064397d79fe38c806bac1e32a827c0d", null ],
+    [ "resumeInterruptHandler", "d4/d9b/class_pocuter_ports.html#a28209fd33fa8eb0c20712a91681d5376", null ],
     [ "setValue", "d4/d9b/class_pocuter_ports.html#a99f16561dd2354ccaabba376b699efbf", null ]
 ];

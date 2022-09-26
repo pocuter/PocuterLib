@@ -92,24 +92,25 @@ $(document).ready(function(){initNavTree('d1/d24/_pocuter_i2_c_8h_source.html','
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#ifndef POCUTERI2C_H</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#define POCUTERI2C_H</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno"><a class="line" href="../../db/d72/class_pocuter_i2_c.html">    5</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../db/d72/class_pocuter_i2_c.html">PocuterI2C</a> {</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="../../db/d72/class_pocuter_i2_c.html#ab3fa81d2d0828d42ecc4c77a7e0073e4">write</a>(uint8_t i2c_addr, uint8_t i2c_reg, uint8_t* data_wr, <span class="keywordtype">size_t</span> size) = 0;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="../../db/d72/class_pocuter_i2_c.html#ab3fa81d2d0828d42ecc4c77a7e0073e4">write</a>(uint8_t i2c_addr, uint8_t i2c_reg, uint8_t data_wr) = 0;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;            </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="../../db/d72/class_pocuter_i2_c.html#ac98809cf11bd3efc0c94e72fbdd5e8cd">read</a>(uint8_t i2c_addr, uint8_t i2c_reg, uint8_t* data_rd, <span class="keywordtype">size_t</span> size) = 0;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="../../db/d72/class_pocuter_i2_c.html#ac98809cf11bd3efc0c94e72fbdd5e8cd">read</a>(uint8_t i2c_addr, uint8_t i2c_reg) = 0;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;};</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* POCUTERI2C_H */</span><span class="preprocessor"></span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
+<div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="../../db/d72/class_pocuter_i2_c.html">    9</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../db/d72/class_pocuter_i2_c.html">PocuterI2C</a> {</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="../../db/d72/class_pocuter_i2_c.html#ab3fa81d2d0828d42ecc4c77a7e0073e4">write</a>(uint8_t i2c_addr, uint8_t i2c_reg, uint8_t* data_wr, <span class="keywordtype">size_t</span> size) = 0;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="../../db/d72/class_pocuter_i2_c.html#ab3fa81d2d0828d42ecc4c77a7e0073e4">write</a>(uint8_t i2c_addr, uint8_t i2c_reg, uint8_t data_wr) = 0;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;            </div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="../../db/d72/class_pocuter_i2_c.html#ac98809cf11bd3efc0c94e72fbdd5e8cd">read</a>(uint8_t i2c_addr, uint8_t i2c_reg, uint8_t* data_rd, <span class="keywordtype">size_t</span> size) = 0;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;        <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="../../db/d72/class_pocuter_i2_c.html#ac98809cf11bd3efc0c94e72fbdd5e8cd">read</a>(uint8_t i2c_addr, uint8_t i2c_reg) = 0;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;};</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* POCUTERI2C_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aclass_pocuter_i2_c_html_ac98809cf11bd3efc0c94e72fbdd5e8cd"><div class="ttname"><a href="../../db/d72/class_pocuter_i2_c.html#ac98809cf11bd3efc0c94e72fbdd5e8cd">PocuterI2C::read</a></div><div class="ttdeci">virtual int read(uint8_t i2c_addr, uint8_t i2c_reg, uint8_t *data_rd, size_t size)=0</div></div>
-<div class="ttc" id="aclass_pocuter_i2_c_html"><div class="ttname"><a href="../../db/d72/class_pocuter_i2_c.html">PocuterI2C</a></div><div class="ttdef"><b>Definition:</b> PocuterI2C.h:5</div></div>
+<div class="ttc" id="aclass_pocuter_i2_c_html"><div class="ttname"><a href="../../db/d72/class_pocuter_i2_c.html">PocuterI2C</a></div><div class="ttdoc">I2C Interface.</div><div class="ttdef"><b>Definition:</b> PocuterI2C.h:9</div></div>
 <div class="ttc" id="aclass_pocuter_i2_c_html_ab3fa81d2d0828d42ecc4c77a7e0073e4"><div class="ttname"><a href="../../db/d72/class_pocuter_i2_c.html#ab3fa81d2d0828d42ecc4c77a7e0073e4">PocuterI2C::write</a></div><div class="ttdeci">virtual int write(uint8_t i2c_addr, uint8_t i2c_reg, uint8_t *data_wr, size_t size)=0</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

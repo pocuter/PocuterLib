@@ -94,6 +94,9 @@ $(document).ready(function(){initNavTree('df/dad/class_pocuter_accelerometer.htm
 </div><!--header-->
 <div class="contents">
 
+<p>options to access the <a class="el" href="../../d2/dca/class_pocuter.html">Pocuter</a> accelerometer  
+ <a href="../../df/dad/class_pocuter_accelerometer.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="../../d6/d31/_pocuter_accelerometer_8h_source.html">PocuterAccelerometer.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -141,8 +144,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad9b3519c5e84abb499314ce80b04b912"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../df/dad/class_pocuter_accelerometer.html#a6f8f1c1eba16607e472b513a6b4db951">ACCERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/dad/class_pocuter_accelerometer.html#ad9b3519c5e84abb499314ce80b04b912">getTemperature</a> (int8_t *)=0</td></tr>
 <tr class="memdesc:ad9b3519c5e84abb499314ce80b04b912"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the current sensor temperature  <a href="../../df/dad/class_pocuter_accelerometer.html#ad9b3519c5e84abb499314ce80b04b912">More...</a><br /></td></tr>
 <tr class="separator:ad9b3519c5e84abb499314ce80b04b912"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0bf0cbb113ac2ae14c433226befd794"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../df/dad/class_pocuter_accelerometer.html#a6f8f1c1eba16607e472b513a6b4db951">ACCERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/dad/class_pocuter_accelerometer.html#af0bf0cbb113ac2ae14c433226befd794">pauseInterruptHandler</a> ()=0</td></tr>
+<tr class="memdesc:af0bf0cbb113ac2ae14c433226befd794"><td class="mdescLeft">&#160;</td><td class="mdescRight">pause the eventhandler  <a href="../../df/dad/class_pocuter_accelerometer.html#af0bf0cbb113ac2ae14c433226befd794">More...</a><br /></td></tr>
+<tr class="separator:af0bf0cbb113ac2ae14c433226befd794"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0bd243e76fae0653be7e5018f9ce435"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../df/dad/class_pocuter_accelerometer.html#a6f8f1c1eba16607e472b513a6b4db951">ACCERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/dad/class_pocuter_accelerometer.html#aa0bd243e76fae0653be7e5018f9ce435">resumeInterruptHandler</a> ()=0</td></tr>
+<tr class="memdesc:aa0bd243e76fae0653be7e5018f9ce435"><td class="mdescLeft">&#160;</td><td class="mdescRight">resume the eventhandler  <a href="../../df/dad/class_pocuter_accelerometer.html#aa0bd243e76fae0653be7e5018f9ce435">More...</a><br /></td></tr>
+<tr class="separator:aa0bd243e76fae0653be7e5018f9ce435"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>options to access the <a class="el" href="../../d2/dca/class_pocuter.html">Pocuter</a> accelerometer </p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a0cb327733db4b3ff1193849d8ed70575"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0cb327733db4b3ff1193849d8ed70575">&#9670;&nbsp;</a></span>accEventHandler</h2>
 
@@ -318,6 +329,33 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="af0bf0cbb113ac2ae14c433226befd794"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0bf0cbb113ac2ae14c433226befd794">&#9670;&nbsp;</a></span>pauseInterruptHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="../../df/dad/class_pocuter_accelerometer.html#a6f8f1c1eba16607e472b513a6b4db951">ACCERROR</a> PocuterAccelerometer::pauseInterruptHandler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>pause the eventhandler </p>
+
+</div>
+</div>
 <a id="a80c972f6430295acfb9ce98961cff6ac"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a80c972f6430295acfb9ce98961cff6ac">&#9670;&nbsp;</a></span>registerEventHandler()</h2>
 
@@ -366,6 +404,33 @@ Public Member Functions</h2></td></tr>
 <li>ACCERROR_OFFLINE can not add an event handler now </li>
 </ul>
 </dd></dl>
+
+</div>
+</div>
+<a id="aa0bd243e76fae0653be7e5018f9ce435"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0bd243e76fae0653be7e5018f9ce435">&#9670;&nbsp;</a></span>resumeInterruptHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="../../df/dad/class_pocuter_accelerometer.html#a6f8f1c1eba16607e472b513a6b4db951">ACCERROR</a> PocuterAccelerometer::resumeInterruptHandler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>resume the eventhandler </p>
 
 </div>
 </div>

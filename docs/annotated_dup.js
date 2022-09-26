@@ -14,6 +14,7 @@ var annotated_dup =
     [ "PocuterPorts", "d4/d9b/class_pocuter_ports.html", "d4/d9b/class_pocuter_ports" ],
     [ "PocuterSDCard", "d1/dea/class_pocuter_s_d_card.html", "d1/dea/class_pocuter_s_d_card" ],
     [ "PocuterServer", "dd/d45/class_pocuter_server.html", "dd/d45/class_pocuter_server" ],
+    [ "PocuterSleep", "d4/d00/class_pocuter_sleep.html", "d4/d00/class_pocuter_sleep" ],
     [ "PocuterTime", "d8/dac/class_pocuter_time.html", "d8/dac/class_pocuter_time" ],
     [ "PocuterWIFI", "da/d85/class_pocuter_w_i_f_i.html", "da/d85/class_pocuter_w_i_f_i" ],
     [ "RGBled", "d6/d2a/class_r_g_bled.html", "d6/d2a/class_r_g_bled" ]
