@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "include/hal/esp32-c3/MXC4005XC_Accelerometer.h"
 #include "driver/gpio.h"
-
+#include "include/hal/esp32-c3/esp32_c3_sleep.h"
 using namespace PocuterLib::HAL;
 
 QueueHandle_t MXC4005XC_Accelerometer::m_InterruptQueue;
@@ -71,6 +71,23 @@ MXC4005XC_Accelerometer::MXC4005XC_Accelerometer(PocuterI2C* bus) {
     
    
 }
+PocuterAccelerometer::ACCERROR MXC4005XC_Accelerometer::pauseInterruptHandler() {
+    gpio_isr_handler_remove(ACC_INT_PIN);
+    m_i2cBus->write(I2C_ACC_ADDR, REGISTER_SHAKE_MASK, 0x0F);
+    uint8_t a = m_i2cBus->read(I2C_ACC_ADDR, REGISTER_SHAKE_INT);
+    m_i2cBus->write(I2C_ACC_ADDR, REGISTER_SHAKE_INT, a);
+    return ACCERROR_OK;
+}
+PocuterAccelerometer::ACCERROR MXC4005XC_Accelerometer::resumeInterruptHandler() {
+    m_i2cBus->write(I2C_ACC_ADDR, REGISTER_SHAKE_MASK, 0xCF);
+    uint8_t a = m_i2cBus->read(I2C_ACC_ADDR, REGISTER_SHAKE_INT);
+    m_i2cBus->write(I2C_ACC_ADDR, REGISTER_SHAKE_INT, a);
+    
+    gpio_set_intr_type(ACC_INT_PIN, GPIO_INTR_NEGEDGE);
+    gpio_isr_handler_add(ACC_INT_PIN, &interruptHandler, (void*)ACC_INT_PIN);
+    return ACCERROR_OK;
+}
+
 PocuterAccelerometer::ACCERROR MXC4005XC_Accelerometer::getState(State* st) {
     if (! m_online) return ACCERROR_OFFLINE;
     uint8_t buffer[6] = {0};
@@ -120,6 +137,7 @@ void MXC4005XC_Accelerometer::intTask(void *arg)
             
             uint8_t a = myself->m_i2cBus->read(I2C_ACC_ADDR, REGISTER_SHAKE_INT);
             if (a & 0x0F) {
+                esp32_c3_sleep::resetSleepTimer(esp32_c3_sleep::SLEEPTIMER_INTERRUPT_BY_SHAKE);
                 if (myself->m_accEventHandler) myself->m_accEventHandler(ACC_SHAKE, myself->m_accEventHandlerUserData);
             }
             if (a & 0xC0) {

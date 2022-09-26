@@ -2,6 +2,10 @@
 #ifndef POCUTERHMAC_H
 #define POCUTERHMAC_H
 
+/**
+* @brief HMAC encryption operations
+*  
+*/
 class PocuterHMAC {
     public:
         virtual bool isEncryptionKeySet() = 0;

@@ -2,6 +2,10 @@
 #define POCUTERLIGHTSENSOR_H
 #include <stdint.h>
 
+/**
+* @brief options to access the Pocuter light sensor
+*  
+*/
 class PocuterLightSensor {
     public:
         enum LIGHTERROR {

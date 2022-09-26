@@ -1,7 +1,10 @@
 
 #ifndef POCUTERSDCARD_H
 #define POCUTERSDCARD_H
-
+/**
+* @brief informations about the sd card 
+*  
+*/
 class PocuterSDCard {
     public:
         /**

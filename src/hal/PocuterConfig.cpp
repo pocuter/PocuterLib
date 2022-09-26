@@ -15,9 +15,12 @@
 PocuterConfig::PocuterConfig(const uint8_t* configName, uint64_t* pappID) {
    uint64_t appID = 1;
    if (pappID != NULL) {
-       appID = *pappID;
+       
+        appID = *pappID;
    } else {
-       appID = PocuterLib::HAL::esp32_c3_OTA::getCurrentAppID();
+       #ifndef POCUTER_DISABLE_SD_CARD 
+           appID = PocuterLib::HAL::esp32_c3_OTA::getCurrentAppID();
+       #endif
    }
    
    m_configFile =  (uint8_t *)malloc(128);

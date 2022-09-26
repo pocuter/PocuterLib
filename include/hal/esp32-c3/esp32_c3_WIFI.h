@@ -30,6 +30,7 @@ namespace PocuterLib {
             
             WIFIERROR getCredentials(PocuterWIFI::wifiCredentials*);
             WIFI_STATE getState();
+            const ipInfo* getIpInfo();
             
             static esp_err_t http_get_handler(httpd_req_t *req);
             static esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err);
@@ -67,6 +68,8 @@ namespace PocuterLib {
             
             apInfo* m_apInfos; 
             uint16_t m_apInfosSize;
+            
+            static ipInfo s_info;
           
             
         };

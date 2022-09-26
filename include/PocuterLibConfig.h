@@ -12,8 +12,11 @@
 /* Dont use SD-Card functions. This includes OTA */
 // #define POCUTER_DISABLE_SD_CARD
 
+/* Don't use Server */
+//#define POCUTER_DISABLE_SERVER
+
 /* Dont use WIFI functions */
-// #define POCUTER_DISABLE_WIFI
+ //#define POCUTER_DISABLE_WIFI
 
 /* Don't include the RGBled function */
 // #define POCUTER_DISABLE_RGBled
@@ -65,6 +68,9 @@
 
 #endif /* POCUTER_SWITCH_SDA_SCL */
 
+#ifdef POCUTER_DISABLE_SD_CARD
+#define POCUTER_DISABLE_SERVER
+#endif
 
 
 #ifdef POCUTER_DISABLE_EXPANDER

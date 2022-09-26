@@ -35,6 +35,9 @@ namespace PocuterLib {
             uint8_t readPort(uint8_t port);
             
             void registerInterruptPin(uint8_t port, uint8_t pin);
+            
+            void pauseInterruptHandler();
+            void resumeInterruptHandler();
         private:
             static QueueHandle_t m_InterruptQueue;
             static esp32_c3_Expander* m_pInstance;

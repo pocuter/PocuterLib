@@ -2,6 +2,11 @@
 #define POCUTERWIFI_H
 #include <stdint.h>
 
+/**
+* @brief Pocuter WIFI configurations
+*  
+*/
+
 class PocuterWIFI {
     public:
         struct wifiCredentials {
@@ -165,6 +170,18 @@ class PocuterWIFI {
         *           WIFIERROR_INIT_FAILED could not init WIFI
         */
        virtual WIFIERROR scanAPs(apInfo* i, uint16_t* size, uint16_t* totalAPs) = 0;
+       
+       /**
+        * @brief get ipInfo
+        * 
+        * @note you will only get an ipInfo if you are connected. Otherwise you will get NULL.
+        * 
+        * @return 
+        *           ipInfo the ipInfo struct
+        *           NULL if you are not connected
+        */
+       virtual const ipInfo* getIpInfo() = 0;
+       
     private:
 
 };

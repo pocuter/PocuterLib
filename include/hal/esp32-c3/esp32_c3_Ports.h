@@ -25,6 +25,8 @@ namespace PocuterLib  {
             
             PORTSERROR registerEventHandler(PORT_NUMBER, portEventHandler* h, void* u);
             
+            PORTSERROR pauseInterruptHandler();
+            PORTSERROR resumeInterruptHandler();
             
             
         private:

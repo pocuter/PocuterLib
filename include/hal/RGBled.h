@@ -4,6 +4,12 @@
 #ifndef POCUTER_RGBLED_H
 #define POCUTER_RGBLED_H
 
+
+/**
+* @brief Pocuter status LED
+*  
+*/
+
 class RGBled {
     public:
         enum LEDERROR {

@@ -25,6 +25,8 @@ namespace PocuterLib {
             void sendCommand(const uint8_t* cmd, uint8_t size);
             void sendScanLine(const uint8_t* line, uint32_t size, bool noCopy = false);
             void sendCommandList(const uint8_t cmd, ...);
+            
+            void waitEmptyMessageQueue();
         private:
             
              struct TRANS_USER{

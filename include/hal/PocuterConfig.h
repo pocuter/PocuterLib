@@ -2,6 +2,11 @@
 #define POCUTERCONFIG_H
 #include <stdint.h>
 #include <stddef.h>
+
+/**
+* @brief save configuration on the SD Card or get app specific configuration data
+*  
+*/
 class PocuterConfig {
 public:
     /**
