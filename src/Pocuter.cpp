@@ -59,6 +59,10 @@
 #include "include/hal/esp32-c3/esp32_c3_Ports.h"
 #endif
 
+#ifndef POCUTER_DISABLE_BATTERY
+#include "include/hal/esp32-c3/esp32_c3_Battery.h"
+#endif
+
 #include <string.h>
 
 
@@ -83,6 +87,10 @@ UG_GUI Pocuter::uGUI;
 
 #ifndef POCUTER_DISABLE_PORTS
 PocuterPorts* Pocuter::Ports = NULL; 
+#endif
+
+#ifndef POCUTER_DISABLE_BATTERY
+PocuterBattery* Pocuter::Battery = NULL; 
 #endif
 
 #ifndef POCUTER_DISABLE_BUTTONS
@@ -145,6 +153,9 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
 #endif
  #ifndef POCUTER_DISABLE_PORTS
    Ports = new esp32_c3_Ports();
+#endif
+ #ifndef POCUTER_DISABLE_BATTERY
+   Battery = new esp32_c3_Battery();
 #endif
    HMAC = new esp32_c3_hmac();
    
