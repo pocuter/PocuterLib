@@ -2,6 +2,10 @@
 #include <stddef.h>
 #ifndef POCUTERI2C_H
 #define POCUTERI2C_H
+/**
+* @brief I2C Interface
+*  
+*/
 class PocuterI2C {
     public:
         virtual int write(uint8_t i2c_addr, uint8_t i2c_reg, uint8_t* data_wr, size_t size) = 0;

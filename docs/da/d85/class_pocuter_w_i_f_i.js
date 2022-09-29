@@ -43,6 +43,7 @@ var class_pocuter_w_i_f_i =
     [ "connect", "da/d85/class_pocuter_w_i_f_i.html#ac835a57bda65cc2038542177bb6e8673", null ],
     [ "connect", "da/d85/class_pocuter_w_i_f_i.html#a1c281b806a8b1cc310b8748b8bb9cf7b", null ],
     [ "getCredentials", "da/d85/class_pocuter_w_i_f_i.html#ad68396af160b6458551573983268ea78", null ],
+    [ "getIpInfo", "da/d85/class_pocuter_w_i_f_i.html#adeb85a97c18160101d72499ce432df72", null ],
     [ "getState", "da/d85/class_pocuter_w_i_f_i.html#a16010542631f619b40a2368d9904a8bb", null ],
     [ "registerEventHandler", "da/d85/class_pocuter_w_i_f_i.html#ab0dc89c32098fb8ffb90bbfb40c3f30e", null ],
     [ "scanAPs", "da/d85/class_pocuter_w_i_f_i.html#aba98770e1db34bf5c4967445befba36a", null ],

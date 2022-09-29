@@ -3,7 +3,10 @@
 #define POCUTERTIME_H
 #include <time.h>
 #define TIME_ZONES_COUNT 461
-
+/**
+* @brief access the Pocuter real time clock
+*  
+*/
 class PocuterTime {
     public:
         enum TIMEERROR {

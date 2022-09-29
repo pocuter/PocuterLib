@@ -123,16 +123,24 @@ void esp32_c3_Expander::registerI2Cbus(PocuterI2C* bus) {
         
     xTaskCreate(&intTask, "intTaskEXP", 4000, this, 10, NULL);
     
-    gpio_set_intr_type(EXPANDER_INT_PIN, GPIO_INTR_NEGEDGE);
+    
     
     gpio_install_isr_service(0);
-    gpio_isr_handler_add(EXPANDER_INT_PIN, &interruptHandler, (void*)EXPANDER_INT_PIN);
+    resumeInterruptHandler();
    
     
     xQueueSendFromISR(m_InterruptQueue, &m_P0_Int, NULL);
     
 }
-
+void esp32_c3_Expander::pauseInterruptHandler() {
+    gpio_isr_handler_remove(EXPANDER_INT_PIN);
+}
+void esp32_c3_Expander::resumeInterruptHandler() {
+    readPin(0,6); // read one pin to rise the EXPANDER_INT_PIN again, if it is in LOW state (this is a pin from a button)
+    gpio_set_intr_type(EXPANDER_INT_PIN, GPIO_INTR_NEGEDGE);
+    gpio_isr_handler_add(EXPANDER_INT_PIN, &interruptHandler, (void*)EXPANDER_INT_PIN);
+    
+}
 esp32_c3_Expander::~esp32_c3_Expander() {
     
 }

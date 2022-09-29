@@ -1,10 +1,24 @@
 var searchData=
 [
-  ['samle_5frate_5f11025_542',['SAMLE_RATE_11025',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531ae507a85a80fac9a9e09872e814922b96',1,'PocuterMicrophone']]],
-  ['samle_5frate_5f16000_543',['SAMLE_RATE_16000',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a0868124a3c82403c8d1216cf736e7920',1,'PocuterMicrophone']]],
-  ['samle_5frate_5f22050_544',['SAMLE_RATE_22050',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a14c608c8786dd9a6e70b6fd918c6788a',1,'PocuterMicrophone']]],
-  ['samle_5frate_5f32000_545',['SAMLE_RATE_32000',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a5499899e081c173485e5e4f453026c69',1,'PocuterMicrophone']]],
-  ['samle_5frate_5f44100_546',['SAMLE_RATE_44100',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a0bf4fe7f14a439ba1eb9500a1c92ca68',1,'PocuterMicrophone']]],
-  ['samle_5frate_5f48000_547',['SAMLE_RATE_48000',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a65c099b7d12e040d08d4a102b9624222',1,'PocuterMicrophone']]],
-  ['samle_5frate_5f8000_548',['SAMLE_RATE_8000',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a763a334887709cad769f1339ead7f541',1,'PocuterMicrophone']]]
+  ['samle_5frate_5f11025_615',['SAMLE_RATE_11025',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531ae507a85a80fac9a9e09872e814922b96',1,'PocuterMicrophone']]],
+  ['samle_5frate_5f16000_616',['SAMLE_RATE_16000',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a0868124a3c82403c8d1216cf736e7920',1,'PocuterMicrophone']]],
+  ['samle_5frate_5f22050_617',['SAMLE_RATE_22050',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a14c608c8786dd9a6e70b6fd918c6788a',1,'PocuterMicrophone']]],
+  ['samle_5frate_5f32000_618',['SAMLE_RATE_32000',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a5499899e081c173485e5e4f453026c69',1,'PocuterMicrophone']]],
+  ['samle_5frate_5f44100_619',['SAMLE_RATE_44100',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a0bf4fe7f14a439ba1eb9500a1c92ca68',1,'PocuterMicrophone']]],
+  ['samle_5frate_5f48000_620',['SAMLE_RATE_48000',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a65c099b7d12e040d08d4a102b9624222',1,'PocuterMicrophone']]],
+  ['samle_5frate_5f8000_621',['SAMLE_RATE_8000',['../d5/d3f/class_pocuter_microphone.html#a129e0cb548be57c7e9719d3f0a79f531a763a334887709cad769f1339ead7f541',1,'PocuterMicrophone']]],
+  ['sleep_5fevent_5fenter_5fsleep_622',['SLEEP_EVENT_ENTER_SLEEP',['../d4/d00/class_pocuter_sleep.html#a079a6a43eb77f36a9e0e3a439e239878a1791617685f514f30306756adcc990d2',1,'PocuterSleep']]],
+  ['sleep_5fevent_5fwakeup_623',['SLEEP_EVENT_WAKEUP',['../d4/d00/class_pocuter_sleep.html#a079a6a43eb77f36a9e0e3a439e239878acba7ed286dfe74fec33f1bc772be6eec',1,'PocuterSleep']]],
+  ['sleep_5fmode_5fdeep_624',['SLEEP_MODE_DEEP',['../d4/d00/class_pocuter_sleep.html#ac3dd4dadf370fb7c01a8a3795c5aa4a9ab3db1ef4fc8c8cbaaa14eb947cbf176f',1,'PocuterSleep']]],
+  ['sleep_5fmode_5flight_625',['SLEEP_MODE_LIGHT',['../d4/d00/class_pocuter_sleep.html#ac3dd4dadf370fb7c01a8a3795c5aa4a9a325b5c03b06305b1568b4d44635fd19a',1,'PocuterSleep']]],
+  ['sleeperror_5fcould_5fnot_5fset_5fgpio_5fwakeup_626',['SLEEPERROR_COULD_NOT_SET_GPIO_WAKEUP',['../d4/d00/class_pocuter_sleep.html#a98faaa78f4f08c1f1442c92c607ad628ab92b551a2455486561072729138f10ab',1,'PocuterSleep']]],
+  ['sleeperror_5fcould_5fnot_5fset_5ftimer_5fwakeup_627',['SLEEPERROR_COULD_NOT_SET_TIMER_WAKEUP',['../d4/d00/class_pocuter_sleep.html#a98faaa78f4f08c1f1442c92c607ad628a615213dd92bb7626cd2905727db82637',1,'PocuterSleep']]],
+  ['sleeperror_5fcould_5fnot_5fset_5fwlan_5fwakeup_628',['SLEEPERROR_COULD_NOT_SET_WLAN_WAKEUP',['../d4/d00/class_pocuter_sleep.html#a98faaa78f4f08c1f1442c92c607ad628a4671e62a2714648cba0b8e1b119f0020',1,'PocuterSleep']]],
+  ['sleeperror_5fmode_5fnot_5fpossible_629',['SLEEPERROR_MODE_NOT_POSSIBLE',['../d4/d00/class_pocuter_sleep.html#a98faaa78f4f08c1f1442c92c607ad628a6f06aa2de572611a5667b1abab957b6b',1,'PocuterSleep']]],
+  ['sleeperror_5fmode_5ftimer_5fnot_5fset_630',['SLEEPERROR_MODE_TIMER_NOT_SET',['../d4/d00/class_pocuter_sleep.html#a98faaa78f4f08c1f1442c92c607ad628a48d4421b476f8a4dc97990bae9efcde3',1,'PocuterSleep']]],
+  ['sleeperror_5fok_631',['SLEEPERROR_OK',['../d4/d00/class_pocuter_sleep.html#a98faaa78f4f08c1f1442c92c607ad628ad2c22d81e0772bc007e753875bf02d95',1,'PocuterSleep']]],
+  ['sleeperror_5fsleep_5finterrupted_632',['SLEEPERROR_SLEEP_INTERRUPTED',['../d4/d00/class_pocuter_sleep.html#a98faaa78f4f08c1f1442c92c607ad628ad4a8f558037a893374a21c5727a76fd1',1,'PocuterSleep']]],
+  ['sleeperror_5funknown_633',['SLEEPERROR_UNKNOWN',['../d4/d00/class_pocuter_sleep.html#a98faaa78f4f08c1f1442c92c607ad628ae7ec661fa998c646882c1b8fb921c46f',1,'PocuterSleep']]],
+  ['sleeptimer_5finterrupt_5fby_5fbutton_634',['SLEEPTIMER_INTERRUPT_BY_BUTTON',['../d4/d00/class_pocuter_sleep.html#aaf9364c28d1fac5ffea56d3d14e07d0badccd5835b815ec98c15bead958e73b53',1,'PocuterSleep']]],
+  ['sleeptimer_5finterrupt_5fby_5fshake_635',['SLEEPTIMER_INTERRUPT_BY_SHAKE',['../d4/d00/class_pocuter_sleep.html#aaf9364c28d1fac5ffea56d3d14e07d0ba4c11d77630e0e1a06b2f65f12c65493a',1,'PocuterSleep']]]
 ];

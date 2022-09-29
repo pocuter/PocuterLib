@@ -1,6 +1,12 @@
 #ifndef POCUTERBUTTONS_H
 #define POCUTERBUTTONS_H
 
+
+/**
+* @brief options to access the Pocuter buttons
+*  
+*/
+
 class PocuterButtons {
     public:
         enum PBUTTONS {

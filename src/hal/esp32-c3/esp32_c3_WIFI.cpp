@@ -18,7 +18,7 @@
 
 
 using namespace PocuterLib::HAL;
-
+esp32_c3_WIFI::ipInfo esp32_c3_WIFI::s_info;
 
 static httpd_uri_t uri_get = {
     .uri       = "/",
@@ -30,7 +30,7 @@ static httpd_uri_t uri_get = {
 
 
 esp32_c3_WIFI::esp32_c3_WIFI() {
-    /* Initialize NVS — it is used to store PHY calibration data */
+    
     m_didWifiInit = false;
     m_sta_netif = NULL;
     m_state = WIFI_STATE_INIT_FAILED;
@@ -38,6 +38,8 @@ esp32_c3_WIFI::esp32_c3_WIFI() {
     m_dns = NULL;
     m_apInfos = NULL;
     m_wifiSemaphore = xSemaphoreCreateBinary();
+    memset(&s_info, 0, sizeof(ipInfo));
+    
     if (!m_wifiSemaphore) abort();
     xSemaphoreGive(m_wifiSemaphore);
     
@@ -79,7 +81,7 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::wifiInit() {
     
     
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    
+    cfg.nvs_enable= false;
     
     ret = esp_wifi_init(&cfg);
     if (ret != ESP_OK) return WIFIERROR_INIT_FAILED;
@@ -318,14 +320,14 @@ esp_err_t esp32_c3_WIFI::http_get_handler(httpd_req_t *req) {
 }
 
 void esp32_c3_WIFI::got_ip_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
-    static ipInfo info;
+    
     esp32_c3_WIFI* myself = (esp32_c3_WIFI*) arg;
     ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
-    info.ipV4 = (uint32_t)event->ip_info.ip.addr;
-    info.gw = event->ip_info.gw.addr;
-    info.netmask = event->ip_info.netmask.addr;
+    s_info.ipV4 = (uint32_t)event->ip_info.ip.addr;
+    s_info.gw = event->ip_info.gw.addr;
+    s_info.netmask = event->ip_info.netmask.addr;
     
-    if (myself->m_wifiEventHandler) myself->m_wifiEventHandler(WIFIEVENT_GOT_IP, &info, myself->m_wifiEventHandler_userData);
+    if (myself->m_wifiEventHandler) myself->m_wifiEventHandler(WIFIEVENT_GOT_IP, &s_info, myself->m_wifiEventHandler_userData);
    
 }
 void esp32_c3_WIFI::registerEventHandler(PocuterWIFI::wifiEventHandler* h, void* u) {
@@ -338,7 +340,8 @@ void esp32_c3_WIFI::registerEventHandler(PocuterWIFI::wifiEventHandler* h, void*
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect(const PocuterWIFI::wifiCredentials* c) {
     xSemaphoreTake(m_wifiSemaphore, portMAX_DELAY);
     wifiDeInit();
-    wifiInit();
+    PocuterWIFI::WIFIERROR ie = wifiInit();
+    if (ie != WIFIERROR_OK) return ie;
     esp_err_t ret = esp_wifi_set_mode(WIFI_MODE_STA);
     if (ret != ESP_OK){ xSemaphoreGive(m_wifiSemaphore); return WIFIERROR_COULD_NOT_SET_WIFI_MODE; }
     wifi_config_t wifi_config = {
@@ -372,13 +375,16 @@ PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect(const PocuterWIFI::wifiCredentials
 PocuterWIFI::WIFIERROR esp32_c3_WIFI::connect() {
     xSemaphoreTake(m_wifiSemaphore, portMAX_DELAY);
     wifiDeInit();
-    wifiInit();
+    PocuterWIFI::WIFIERROR ie = wifiInit();
+    if (ie != WIFIERROR_OK) return ie;
     esp_err_t ret = esp_wifi_set_mode(WIFI_MODE_STA);
     if (ret == ESP_OK) {
         wifi_config_t wifi_config;
         if (loadConfigFromSDCard(&wifi_config) == WIFIERROR_OK) {
+
             esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
         }
+        
         ret = esp_wifi_start();
         if (ret == ESP_OK) {
             ret = esp_wifi_connect();
@@ -526,6 +532,13 @@ esp32_c3_WIFI::~esp32_c3_WIFI() {
     esp_wifi_stop();
     esp_wifi_deinit();
 }
+
+
+const esp32_c3_WIFI::ipInfo* esp32_c3_WIFI::getIpInfo() {
+    if (m_state != WIFI_STATE_CONNECTED) return NULL;
+    return &s_info;
+}
+
 
 #pragma GCC diagnostic pop 
 

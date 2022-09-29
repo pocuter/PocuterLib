@@ -50,6 +50,9 @@
 #include "include/hal/PocuterServer.h"
 #include "include/hal/PocuterPorts.h"
 #include "include/hal/PocuterBattery.h"
+#include "include/hal/PocuterSleep.h"
+
+#define DEEP_SLEEP_MEMORY _SECTION_ATTR_IMPL(".rtc.data", __COUNTER__)
 
 class Pocuter {
 public:
@@ -118,9 +121,15 @@ public:
 #ifndef POCUTER_DISABLE_PORTS    
     static PocuterPorts* Ports  ;             /*!< PocuterPorts Class Acccess */
 #endif   
+<<<<<<< HEAD
 #ifndef POCUTER_DISABLE_BATTERY
     static PocuterBattery* Battery  ;             /*!< PocuterPorts Class Acccess */
 #endif   
+=======
+#ifndef POCUTER_DISABLE_PORTS    
+    static PocuterSleep* Sleep  ;             /*!< PocuterSleep Class Acccess */
+#endif  
+>>>>>>> master
     static PocuterHMAC* HMAC;                   /*!< PocuterHMAC Class Acccess */
     
 #ifndef POCUTER_DISABLE_SD_CARD      

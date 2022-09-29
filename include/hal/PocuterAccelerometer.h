@@ -2,7 +2,10 @@
 #ifndef POCUTERACCELEROMETER_H
 #define POCUTERACCELEROMETER_H
 
-
+/**
+* @brief options to access the Pocuter accelerometer
+*  
+*/
 class PocuterAccelerometer {
     public:
         enum ACCERROR {
@@ -84,6 +87,21 @@ class PocuterAccelerometer {
         */
        
        virtual ACCERROR getTemperature(int8_t*) = 0;
+       
+       /**
+        * @brief pause the eventhandler
+        * 
+        * 
+        */
+        virtual ACCERROR pauseInterruptHandler() = 0;
+       
+       /**
+        * @brief resume the eventhandler
+        * 
+        * 
+        */
+       virtual ACCERROR resumeInterruptHandler() = 0;
+            
        
     private:
         

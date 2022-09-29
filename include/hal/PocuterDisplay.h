@@ -141,6 +141,21 @@ class PocuterDisplay {
         */                
         virtual BUFFER_MODE getBufferMode() = 0;
         
+        
+        /**
+        * @brief let the display sleep
+        *
+        */                
+        virtual void doSleep() = 0;
+        
+        /**
+        * @brief wake up the display 
+        *
+        */                
+        virtual void doWakeUp() = 0;
+
+        
+        
     private:
 
 };

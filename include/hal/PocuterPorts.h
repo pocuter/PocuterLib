@@ -1,7 +1,10 @@
 
 #ifndef POCUTERPORTS_H
 #define POCUTERPORTS_H
-
+/**
+* @brief options to access the Pocuter user ports (Port0 - Port5)
+*  
+*/
 class PocuterPorts {
     public:
        enum PORT_NUMBER {
@@ -132,7 +135,19 @@ class PocuterPorts {
         */
        virtual PORTSERROR registerEventHandler(PORT_NUMBER n, portEventHandler* h, void* u) = 0;
        
+       /**
+        * @brief pause the eventhandler
+        * 
+        * 
+        */
+       virtual PORTSERROR pauseInterruptHandler() = 0;
        
+       /**
+        * @brief resume the eventhandler
+        * 
+        * 
+        */
+       virtual PORTSERROR resumeInterruptHandler() = 0;
 
     private:
 

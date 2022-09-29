@@ -20,7 +20,9 @@ var class_pocuter_accelerometer =
     [ "getState", "df/dad/class_pocuter_accelerometer.html#a74caadf5c47dbf0fc185062c6ec8bfa5", null ],
     [ "getTemperature", "df/dad/class_pocuter_accelerometer.html#ad9b3519c5e84abb499314ce80b04b912", null ],
     [ "isOnline", "df/dad/class_pocuter_accelerometer.html#a066e2e6c1804c46b30d9ed8421b87169", null ],
+    [ "pauseInterruptHandler", "df/dad/class_pocuter_accelerometer.html#af0bf0cbb113ac2ae14c433226befd794", null ],
     [ "registerEventHandler", "df/dad/class_pocuter_accelerometer.html#a80c972f6430295acfb9ce98961cff6ac", null ],
+    [ "resumeInterruptHandler", "df/dad/class_pocuter_accelerometer.html#aa0bd243e76fae0653be7e5018f9ce435", null ],
     [ "setScale", "df/dad/class_pocuter_accelerometer.html#a1da9066f272562b288d25045df522d65", null ],
     [ "unregisterEventHandler", "df/dad/class_pocuter_accelerometer.html#a5586bf402311d1892db736317dc63aeb", null ]
 ];

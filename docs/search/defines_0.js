@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['time_5fzones_5fcount_580',['TIME_ZONES_COUNT',['../df/d04/_pocuter_time_8h.html#a05b5f2bd02ccd175608c7af471a2a0a8',1,'TIME_ZONES_COUNT():&#160;PocuterTime.h'],['../df/d04/_pocuter_time_8h.html#a05b5f2bd02ccd175608c7af471a2a0a8',1,'TIME_ZONES_COUNT():&#160;PocuterTime.h']]]
+  ['deep_5fsleep_5fmemory_679',['DEEP_SLEEP_MEMORY',['../db/ddf/_pocuter_8h.html#a1be229eac10b327b68e1b8c1f846ad9c',1,'Pocuter.h']]]
 ];

@@ -1,19 +1,20 @@
 <map id="Pocuter" name="Pocuter">
-<area shape="rect" id="node1" title=" " alt="" coords="624,369,695,396"/>
-<area shape="rect" id="node2" href="$d1/dea/class_pocuter_s_d_card.html" title=" " alt="" coords="333,15,452,41"/>
-<area shape="rect" id="node3" href="$d5/d3f/class_pocuter_microphone.html" title=" " alt="" coords="319,65,466,92"/>
-<area shape="rect" id="node4" href="$df/d44/class_pocuter_buttons.html" title=" " alt="" coords="332,116,453,143"/>
-<area shape="rect" id="node5" href="$d4/d9b/class_pocuter_ports.html" title=" " alt="" coords="341,167,445,193"/>
+<area shape="rect" id="node1" title=" " alt="" coords="624,395,695,421"/>
+<area shape="rect" id="node2" href="$d1/dea/class_pocuter_s_d_card.html" title="informations about the sd card" alt="" coords="333,15,452,41"/>
+<area shape="rect" id="node3" href="$d5/d3f/class_pocuter_microphone.html" title="options to access the Pocuter microphone" alt="" coords="319,65,466,92"/>
+<area shape="rect" id="node4" href="$df/d44/class_pocuter_buttons.html" title="options to access the Pocuter buttons" alt="" coords="332,116,453,143"/>
+<area shape="rect" id="node5" href="$d4/d9b/class_pocuter_ports.html" title="options to access the Pocuter user ports (Port0 &#45; Port5)" alt="" coords="341,167,445,193"/>
 <area shape="rect" id="node6" href="$dd/d45/class_pocuter_server.html" title=" " alt="" coords="336,217,449,244"/>
-<area shape="rect" id="node7" href="$d6/dc4/class_pocuter_h_t_t_p.html" title=" " alt="" coords="340,268,445,295"/>
+<area shape="rect" id="node7" href="$d6/dc4/class_pocuter_h_t_t_p.html" title="HTTP(S) download." alt="" coords="340,268,445,295"/>
 <area shape="rect" id="node8" href="$d0/d1f/class_pocuter_o_t_a.html" title=" " alt="" coords="344,319,441,345"/>
-<area shape="rect" id="node9" href="$d1/d48/class_pocuter_light_sensor.html" title=" " alt="" coords="319,369,466,396"/>
+<area shape="rect" id="node9" href="$d1/d48/class_pocuter_light_sensor.html" title="options to access the Pocuter light sensor" alt="" coords="319,369,466,396"/>
 <area shape="rect" id="node10" href="$dd/d08/class_pocuter_display.html" title="this class has basic display operations only. If you want to write a GUI, consider to use ugui instea..." alt="" coords="333,420,453,447"/>
-<area shape="rect" id="node11" href="$db/d72/class_pocuter_i2_c.html" title=" " alt="" coords="347,471,439,497"/>
-<area shape="rect" id="node12" href="$d6/d2a/class_r_g_bled.html" title=" " alt="" coords="357,521,428,548"/>
-<area shape="rect" id="node13" href="$da/d85/class_pocuter_w_i_f_i.html" title=" " alt="" coords="343,572,443,599"/>
-<area shape="rect" id="node14" href="$d4/d79/class_pocuter_h_m_a_c.html" title=" " alt="" coords="337,623,448,649"/>
-<area shape="rect" id="node15" href="$df/dad/class_pocuter_accelerometer.html" title=" " alt="" coords="309,673,476,700"/>
-<area shape="rect" id="node16" href="$d8/dac/class_pocuter_time.html" title=" " alt="" coords="341,724,445,751"/>
-<area shape="rect" id="node17" href="$dc/d6c/struct_pocuter_time_1_1pocuter_timezone.html" title=" " alt="" coords="5,724,231,751"/>
+<area shape="rect" id="node11" href="$db/d72/class_pocuter_i2_c.html" title="I2C Interface." alt="" coords="347,471,439,497"/>
+<area shape="rect" id="node12" href="$d6/d2a/class_r_g_bled.html" title="Pocuter status LED." alt="" coords="357,521,428,548"/>
+<area shape="rect" id="node13" href="$da/d85/class_pocuter_w_i_f_i.html" title="Pocuter WIFI configurations." alt="" coords="343,572,443,599"/>
+<area shape="rect" id="node14" href="$d4/d79/class_pocuter_h_m_a_c.html" title="HMAC encryption operations." alt="" coords="337,623,448,649"/>
+<area shape="rect" id="node15" href="$df/dad/class_pocuter_accelerometer.html" title="options to access the Pocuter accelerometer" alt="" coords="309,673,476,700"/>
+<area shape="rect" id="node16" href="$d4/d00/class_pocuter_sleep.html" title="Pocuter Sleep settings." alt="" coords="339,724,446,751"/>
+<area shape="rect" id="node17" href="$d8/dac/class_pocuter_time.html" title="access the Pocuter real time clock" alt="" coords="341,775,445,801"/>
+<area shape="rect" id="node18" href="$dc/d6c/struct_pocuter_time_1_1pocuter_timezone.html" title=" " alt="" coords="5,775,231,801"/>
 </map>

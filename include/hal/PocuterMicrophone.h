@@ -3,6 +3,10 @@
 #define POCUTERMICROPHONE_H
 #include <stddef.h>
 
+/**
+* @brief options to access the Pocuter microphone
+*  
+*/
 class PocuterMicrophone {
     public:
         enum MICERROR {

@@ -40,6 +40,9 @@ var dir_a413b7f902cba5167b433a6fe834d5bd =
     [ "PocuterServer.h", "da/d56/_pocuter_server_8h.html", [
       [ "PocuterServer", "dd/d45/class_pocuter_server.html", "dd/d45/class_pocuter_server" ]
     ] ],
+    [ "PocuterSleep.h", "d0/d0c/_pocuter_sleep_8h.html", [
+      [ "PocuterSleep", "d4/d00/class_pocuter_sleep.html", "d4/d00/class_pocuter_sleep" ]
+    ] ],
     [ "PocuterTime.h", "df/d04/_pocuter_time_8h.html", "df/d04/_pocuter_time_8h" ],
     [ "PocuterWIFI.h", "db/d6d/_pocuter_w_i_f_i_8h.html", [
       [ "PocuterWIFI", "da/d85/class_pocuter_w_i_f_i.html", "da/d85/class_pocuter_w_i_f_i" ],

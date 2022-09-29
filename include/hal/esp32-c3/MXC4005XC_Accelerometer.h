@@ -22,6 +22,10 @@ namespace PocuterLib {
             ACCERROR setScale(ACCSCALE);
             ACCERROR getTemperature(int8_t*);
             virtual ~MXC4005XC_Accelerometer();
+            
+            ACCERROR pauseInterruptHandler();
+            ACCERROR resumeInterruptHandler();
+            
         private:
             static void interruptHandler(void*);
             static void intTask(void *arg);

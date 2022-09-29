@@ -3,6 +3,7 @@
 
 #include "include/hal/esp32-c3/esp32_c3_Buttons.h"
 #include "include/hal/esp32-c3/esp32_c3_WIFI.h"
+#include "include/hal/esp32-c3/esp32_c3_sleep.h"
 #include "Pocuter.h"
 
 #define EXP_PORT_BTN1 0
@@ -63,6 +64,7 @@ void esp32_c3_Buttons::expEventHandler(uint8_t a, uint8_t b, void* dat) {
     if (!(port & (1 << EXP_PIN_BTN3))) buttons |= BUTTON_3;
     
     if (buttons != myself->m_currentButtonStates) {
+        esp32_c3_sleep::resetSleepTimer(esp32_c3_sleep::SLEEPTIMER_INTERRUPT_BY_BUTTON);
         myself->checkCeatCodes(buttons);
         
         myself->m_currentButtonStates = buttons;

@@ -94,6 +94,9 @@ $(document).ready(function(){initNavTree('da/d85/class_pocuter_w_i_f_i.html','..
 </div><!--header-->
 <div class="contents">
 
+<p><a class="el" href="../../d2/dca/class_pocuter.html">Pocuter</a> WIFI configurations.  
+ <a href="../../da/d85/class_pocuter_w_i_f_i.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="../../db/d6d/_pocuter_w_i_f_i_8h_source.html">PocuterWIFI.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -186,8 +189,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aba98770e1db34bf5c4967445befba36a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../da/d85/class_pocuter_w_i_f_i.html#a9328c12687dc2df7e2e688f24f289bfb">WIFIERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d85/class_pocuter_w_i_f_i.html#aba98770e1db34bf5c4967445befba36a">scanAPs</a> (<a class="el" href="../../d9/d60/struct_pocuter_w_i_f_i_1_1ap_info.html">apInfo</a> *i, uint16_t *size, uint16_t *totalAPs)=0</td></tr>
 <tr class="memdesc:aba98770e1db34bf5c4967445befba36a"><td class="mdescLeft">&#160;</td><td class="mdescRight">scan for access points  <a href="../../da/d85/class_pocuter_w_i_f_i.html#aba98770e1db34bf5c4967445befba36a">More...</a><br /></td></tr>
 <tr class="separator:aba98770e1db34bf5c4967445befba36a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adeb85a97c18160101d72499ce432df72"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="../../dc/d6d/struct_pocuter_w_i_f_i_1_1ip_info.html">ipInfo</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d85/class_pocuter_w_i_f_i.html#adeb85a97c18160101d72499ce432df72">getIpInfo</a> ()=0</td></tr>
+<tr class="memdesc:adeb85a97c18160101d72499ce432df72"><td class="mdescLeft">&#160;</td><td class="mdescRight">get <a class="el" href="../../dc/d6d/struct_pocuter_w_i_f_i_1_1ip_info.html">ipInfo</a>  <a href="../../da/d85/class_pocuter_w_i_f_i.html#adeb85a97c18160101d72499ce432df72">More...</a><br /></td></tr>
+<tr class="separator:adeb85a97c18160101d72499ce432df72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p><a class="el" href="../../d2/dca/class_pocuter.html">Pocuter</a> WIFI configurations. </p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a16c7fb525391ecd2210038134ff4c2bf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a16c7fb525391ecd2210038134ff4c2bf">&#9670;&nbsp;</a></span>wifiEventHandler</h2>
 
@@ -412,6 +420,35 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>WIFIERROR_OK the access point is available </dd></dl>
+
+</div>
+</div>
+<a id="adeb85a97c18160101d72499ce432df72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adeb85a97c18160101d72499ce432df72">&#9670;&nbsp;</a></span>getIpInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="../../dc/d6d/struct_pocuter_w_i_f_i_1_1ip_info.html">ipInfo</a>* PocuterWIFI::getIpInfo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>get <a class="el" href="../../dc/d6d/struct_pocuter_w_i_f_i_1_1ip_info.html">ipInfo</a> </p>
+<dl class="section note"><dt>Note</dt><dd>you will only get an <a class="el" href="../../dc/d6d/struct_pocuter_w_i_f_i_1_1ip_info.html">ipInfo</a> if you are connected. Otherwise you will get NULL.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="../../dc/d6d/struct_pocuter_w_i_f_i_1_1ip_info.html">ipInfo</a> the <a class="el" href="../../dc/d6d/struct_pocuter_w_i_f_i_1_1ip_info.html">ipInfo</a> struct NULL if you are not connected </dd></dl>
 
 </div>
 </div>

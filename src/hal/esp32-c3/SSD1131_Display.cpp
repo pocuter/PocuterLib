@@ -46,7 +46,7 @@ SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
    m_spi = new esp32_c3_SPI();
    m_expander = esp32_c3_Expander::Instance();
    m_bm = bm;
-   
+
     g_displaySemaphore = xSemaphoreCreateBinary();
     if (!g_displaySemaphore) abort();
     xSemaphoreGive(g_displaySemaphore);
@@ -138,6 +138,25 @@ void SSD1131_Display::continuousScreenUpdate(bool on) {
 PocuterDisplay::BUFFER_MODE SSD1131_Display::getBufferMode() {
     return m_bm;
 }
+void SSD1131_Display::doSleep() {
+    
+    m_continuouseScreenUpdateBeforeSleep = g_continuouseScreenUpdate;
+    if (g_continuouseScreenUpdate) continuousScreenUpdate(false);
+    m_spi->waitEmptyMessageQueue();
+    
+    xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
+    m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 0);
+    xSemaphoreGive(g_displaySemaphore);
+}
+void SSD1131_Display::doWakeUp() {
+    xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
+    m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 1);
+    xSemaphoreGive(g_displaySemaphore);
+    if (m_continuouseScreenUpdateBeforeSleep) continuousScreenUpdate(m_continuouseScreenUpdateBeforeSleep);
+    
+    
+    
+}
 void SSD1131_Display::clearScreen() {
     clearWindow(0,0,DISPLAY_X, DISPLAY_Y);
     
@@ -162,7 +181,8 @@ void SSD1131_Display::clearWindow(int16_t x, int16_t y, int16_t width, int16_t h
 
 void SSD1131_Display::setBrightness(uint8_t brightness) {
     if (brightness > 15)
-        brightness = 15;    
+        brightness = 15;  
+
     m_spi->sendCommand(COMMAND_MASTER_CURRENT, brightness);
    
     

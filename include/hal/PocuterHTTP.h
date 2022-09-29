@@ -2,6 +2,10 @@
 #ifndef POCUTERHTTP_H
 #define POCUTERHTTP_H
 
+/**
+* @brief HTTP(S) download
+*  
+*/
 class PocuterHTTP {
     public:
         enum HTTPERROR {

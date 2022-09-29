@@ -132,6 +132,12 @@ spi_transaction_t* esp32_c3_SPI::spiGetTransaction()
     t->user = userData;
     return t;
 }
+void esp32_c3_SPI::waitEmptyMessageQueue()
+{
+    while(uxQueueMessagesWaiting(m_spiQueueFree)){
+        vTaskDelay(0);
+    }
+}
 
 void esp32_c3_SPI::spiPutTransaction(spi_transaction_t* t)
 {

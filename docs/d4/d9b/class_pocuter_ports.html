@@ -93,6 +93,9 @@ $(document).ready(function(){initNavTree('d4/d9b/class_pocuter_ports.html','../.
 </div><!--header-->
 <div class="contents">
 
+<p>options to access the <a class="el" href="../../d2/dca/class_pocuter.html">Pocuter</a> user ports (Port0 - Port5)  
+ <a href="../../d4/d9b/class_pocuter_ports.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="../../d3/d49/_pocuter_ports_8h_source.html">PocuterPorts.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
@@ -149,8 +152,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae064397d79fe38c806bac1e32a827c0d"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d4/d9b/class_pocuter_ports.html#a64b75bfc46424faa41726966006fcaa5">PORTSERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d9b/class_pocuter_ports.html#ae064397d79fe38c806bac1e32a827c0d">registerEventHandler</a> (<a class="el" href="../../d4/d9b/class_pocuter_ports.html#adeec09272f955ffbb96448e35a4fb9fc">PORT_NUMBER</a> n, <a class="el" href="../../d4/d9b/class_pocuter_ports.html#a86ffc78329d7c8b604bdcdd792a98fd5">portEventHandler</a> *h, void *u)=0</td></tr>
 <tr class="memdesc:ae064397d79fe38c806bac1e32a827c0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">register an event callback  <a href="../../d4/d9b/class_pocuter_ports.html#ae064397d79fe38c806bac1e32a827c0d">More...</a><br /></td></tr>
 <tr class="separator:ae064397d79fe38c806bac1e32a827c0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae271e10ca0fd7b70269d33c270aa9798"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d4/d9b/class_pocuter_ports.html#a64b75bfc46424faa41726966006fcaa5">PORTSERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d9b/class_pocuter_ports.html#ae271e10ca0fd7b70269d33c270aa9798">pauseInterruptHandler</a> ()=0</td></tr>
+<tr class="memdesc:ae271e10ca0fd7b70269d33c270aa9798"><td class="mdescLeft">&#160;</td><td class="mdescRight">pause the eventhandler  <a href="../../d4/d9b/class_pocuter_ports.html#ae271e10ca0fd7b70269d33c270aa9798">More...</a><br /></td></tr>
+<tr class="separator:ae271e10ca0fd7b70269d33c270aa9798"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28209fd33fa8eb0c20712a91681d5376"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d4/d9b/class_pocuter_ports.html#a64b75bfc46424faa41726966006fcaa5">PORTSERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d9b/class_pocuter_ports.html#a28209fd33fa8eb0c20712a91681d5376">resumeInterruptHandler</a> ()=0</td></tr>
+<tr class="memdesc:a28209fd33fa8eb0c20712a91681d5376"><td class="mdescLeft">&#160;</td><td class="mdescRight">resume the eventhandler  <a href="../../d4/d9b/class_pocuter_ports.html#a28209fd33fa8eb0c20712a91681d5376">More...</a><br /></td></tr>
+<tr class="separator:a28209fd33fa8eb0c20712a91681d5376"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>options to access the <a class="el" href="../../d2/dca/class_pocuter.html">Pocuter</a> user ports (Port0 - Port5) </p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a86ffc78329d7c8b604bdcdd792a98fd5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a86ffc78329d7c8b604bdcdd792a98fd5">&#9670;&nbsp;</a></span>portEventHandler</h2>
 
@@ -470,6 +481,33 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ae271e10ca0fd7b70269d33c270aa9798"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae271e10ca0fd7b70269d33c270aa9798">&#9670;&nbsp;</a></span>pauseInterruptHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="../../d4/d9b/class_pocuter_ports.html#a64b75bfc46424faa41726966006fcaa5">PORTSERROR</a> PocuterPorts::pauseInterruptHandler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>pause the eventhandler </p>
+
+</div>
+</div>
 <a id="ae064397d79fe38c806bac1e32a827c0d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae064397d79fe38c806bac1e32a827c0d">&#9670;&nbsp;</a></span>registerEventHandler()</h2>
 
@@ -522,6 +560,33 @@ the event handler is called every time the value of a binary port changed.</dd><
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a28209fd33fa8eb0c20712a91681d5376"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28209fd33fa8eb0c20712a91681d5376">&#9670;&nbsp;</a></span>resumeInterruptHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="../../d4/d9b/class_pocuter_ports.html#a64b75bfc46424faa41726966006fcaa5">PORTSERROR</a> PocuterPorts::resumeInterruptHandler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>resume the eventhandler </p>
 
 </div>
 </div>

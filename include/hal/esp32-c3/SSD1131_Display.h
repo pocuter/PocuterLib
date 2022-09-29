@@ -31,6 +31,8 @@ namespace PocuterLib {
                 void clearWindow(int16_t x, int16_t y, int16_t width, int16_t height);
                 void clearScreen();
                 
+                void doSleep();
+                void doWakeUp();
                 
                 BUFFER_MODE getBufferMode();
                 
@@ -51,6 +53,8 @@ namespace PocuterLib {
                 static SemaphoreHandle_t g_displayPauseSemaphore;
                 static bool g_initializing;
                 uint16_t color24to16(uint32_t color);
+
+                bool m_continuouseScreenUpdateBeforeSleep;
                 
                
         };

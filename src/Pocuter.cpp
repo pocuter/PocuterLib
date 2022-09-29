@@ -63,6 +63,10 @@
 #include "include/hal/esp32-c3/esp32_c3_Battery.h"
 #endif
 
+#ifndef POCUTER_DISABLE_SLEEP
+#include "include/hal/esp32-c3/esp32_c3_sleep.h"
+#endif
+
 #include <string.h>
 
 
@@ -89,8 +93,13 @@ UG_GUI Pocuter::uGUI;
 PocuterPorts* Pocuter::Ports = NULL; 
 #endif
 
+<<<<<<< HEAD
 #ifndef POCUTER_DISABLE_BATTERY
 PocuterBattery* Pocuter::Battery = NULL; 
+=======
+#ifndef POCUTER_DISABLE_SLEEP
+PocuterSleep* Pocuter::Sleep = NULL; 
+>>>>>>> master
 #endif
 
 #ifndef POCUTER_DISABLE_BUTTONS
@@ -154,10 +163,37 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
  #ifndef POCUTER_DISABLE_PORTS
    Ports = new esp32_c3_Ports();
 #endif
+<<<<<<< HEAD
  #ifndef POCUTER_DISABLE_BATTERY
    Battery = new esp32_c3_Battery();
 #endif
    HMAC = new esp32_c3_hmac();
+=======
+#ifndef POCUTER_DISABLE_ACC   
+   Accelerometer = new MXC4005XC_Accelerometer(I2C);
+#endif
+
+#ifndef POCUTER_DISABLE_SLEEP
+    #ifndef POCUTER_DISABLE_PORTS
+       #ifndef POCUTER_DISABLE_DISPLAY  
+            Sleep = new esp32_c3_sleep(Display, Ports, Accelerometer);
+       #else
+           Sleep = new esp32_c3_sleep(NULL, Ports);
+       #endif
+    #else
+       #ifndef POCUTER_DISABLE_DISPLAY  
+            Sleep = new esp32_c3_sleep(Display, NULL);
+       #else
+           Sleep = new esp32_c3_sleep(NULL, NULL);
+       #endif
+    #endif
+   
+#endif
+
+       
+       
+    HMAC = new esp32_c3_hmac();
+>>>>>>> master
    
 #ifndef POCUTER_DISABLE_SD_CARD     
    SDCard = new esp32_c3_SDCard();
@@ -173,9 +209,7 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
    HTTP = new esp32_c3_HTTP();
 #endif
 
-#ifndef POCUTER_DISABLE_ACC   
-   Accelerometer = new MXC4005XC_Accelerometer(I2C);
-#endif
+
 #ifndef POCUTER_DISABLE_LIGHTSENSOR 
     LightSensor = new esp32_c3_LightSensor();
 #endif
@@ -202,7 +236,20 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
    ugui->UG_DriverRegister(DRIVER_FILL_AREA,  (void*)&Pocuter::driver_fillFrame);
    ugui->UG_DriverRegister(DRIVER_DRAW_SCANLINE,  (void*)&Pocuter::driver_drawScanLine);
 #endif     
- 
+#ifndef POCUTER_DISABLE_SLEEP
+#ifndef POCUTER_DISABLE_SD_CARD  
+   //set sleep standard
+    uint64_t appId = 1;
+    PocuterConfig* config = new PocuterConfig((const uint8_t*)"INACT_SLEEP", &appId);
+    uint32_t sec = config->get((const uint8_t*)"SLEEP", (const uint8_t*)"timeout");
+    delete(config);
+    if (sec == 0) sec = 30;
+        
+    Sleep->setSleepMode(PocuterSleep::SLEEP_MODE_LIGHT);
+    Sleep->setWakeUpModes(PocuterSleep::WAKEUP_MODE_ANY_BUTTON | PocuterSleep::WAKEUP_MODE_SHAKE); 
+    Sleep->setInactivitySleep(sec, PocuterSleep::SLEEPTIMER_INTERRUPT_BY_BUTTON);
+#endif    
+#endif   
     
 }
 

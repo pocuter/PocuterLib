@@ -255,6 +255,26 @@ void esp32_c3_Ports::expEventHandler(uint8_t a, uint8_t b, void* m) {
         }
     }
 }
+PocuterPorts::PORTSERROR esp32_c3_Ports::pauseInterruptHandler() {
+    for (int i = 0; i <= PORT_5; i++) {
+        if (m_portConfigurations[i].isInitialized && m_portConfigurations[i].event && ! s_ports[i].isExpander) {
+            gpio_isr_handler_remove((gpio_num_t)s_ports[i].pin);
+        }
+    }
+    return PORTSERROR_OK;
+}
+PocuterPorts::PORTSERROR esp32_c3_Ports::resumeInterruptHandler() {
+    for (int i = 0; i <= PORT_5; i++) {
+        if (m_portConfigurations[i].isInitialized && m_portConfigurations[i].event && ! s_ports[i].isExpander) {
+           uint32_t pin = s_ports[i].pin;
+           m_portConfigurations[i].lastState = gpio_get_level((gpio_num_t)s_ports[i].pin);
+           gpio_set_intr_type((gpio_num_t)s_ports[i].pin, GPIO_INTR_ANYEDGE);
+           gpio_isr_handler_add((gpio_num_t)s_ports[i].pin, &esp32_c3_Ports::interruptHandler, (void*)pin);
+        }
+    }
+    return PORTSERROR_OK;
+}
+
 PocuterPorts::PORTSERROR esp32_c3_Ports::registerEventHandler(PORT_NUMBER n, portEventHandler* h, void* u){
     if (n > PORT_5) return PORTSERROR_NOT_SUPPORTED;
     if (! m_portConfigurations[n].isInitialized) return PORTSERROR_NOT_INITIALIZED;
