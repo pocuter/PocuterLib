@@ -93,13 +93,12 @@ UG_GUI Pocuter::uGUI;
 PocuterPorts* Pocuter::Ports = NULL; 
 #endif
 
-<<<<<<< HEAD
 #ifndef POCUTER_DISABLE_BATTERY
 PocuterBattery* Pocuter::Battery = NULL; 
-=======
+#endif
+
 #ifndef POCUTER_DISABLE_SLEEP
 PocuterSleep* Pocuter::Sleep = NULL; 
->>>>>>> master
 #endif
 
 #ifndef POCUTER_DISABLE_BUTTONS
@@ -163,12 +162,12 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
  #ifndef POCUTER_DISABLE_PORTS
    Ports = new esp32_c3_Ports();
 #endif
-<<<<<<< HEAD
+
  #ifndef POCUTER_DISABLE_BATTERY
    Battery = new esp32_c3_Battery();
 #endif
    HMAC = new esp32_c3_hmac();
-=======
+   
 #ifndef POCUTER_DISABLE_ACC   
    Accelerometer = new MXC4005XC_Accelerometer(I2C);
 #endif
@@ -190,10 +189,6 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
    
 #endif
 
-       
-       
-    HMAC = new esp32_c3_hmac();
->>>>>>> master
    
 #ifndef POCUTER_DISABLE_SD_CARD     
    SDCard = new esp32_c3_SDCard();
