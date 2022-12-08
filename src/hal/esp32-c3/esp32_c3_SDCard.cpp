@@ -18,12 +18,28 @@ using namespace PocuterLib::HAL;
 
 #define MOUNT_POUNT "/sd" 
 esp32_c3_SDCard::esp32_c3_SDCard() {
-  
     m_sdcardMounted = false;
-    
     esp32_c3_Expander::Instance()->pinMode(SD_PORT_CARDDETECT, SD_PIN_CARDDETECT, EXPANDER_IN);
-    if (! cardInSlot()){
-        return;
+    mount();
+}
+
+esp32_c3_SDCard::~esp32_c3_SDCard() {
+    unmount();
+}
+
+bool esp32_c3_SDCard::cardInSlot() {
+    return (! esp32_c3_Expander::Instance()->readPin(SD_PORT_CARDDETECT, SD_PIN_CARDDETECT));
+}
+bool esp32_c3_SDCard::cardIsMounted() {
+    return m_sdcardMounted;
+}
+const char* esp32_c3_SDCard::getMountPoint() {
+    return MOUNT_POUNT;
+}
+
+bool esp32_c3_SDCard::mount() {
+    if (!cardInSlot() || m_sdcardMounted ){
+        return false;
     }
     
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
@@ -37,25 +53,17 @@ esp32_c3_SDCard::esp32_c3_SDCard() {
     mount_config.format_if_mount_failed = false;
     mount_config.max_files = 5;
     
-    
     esp_err_t err = esp_vfs_fat_sdspi_mount(MOUNT_POUNT, &host, &slot_config, &mount_config, &m_card);
     if (err == ESP_OK) m_sdcardMounted = true;
-   
-}
 
-esp32_c3_SDCard::~esp32_c3_SDCard() {
-    if (m_sdcardMounted) {
-        esp_vfs_fat_sdcard_unmount(MOUNT_POUNT, m_card);
-    }
-}
-
-bool esp32_c3_SDCard::cardInSlot() {
-    return (! esp32_c3_Expander::Instance()->readPin(SD_PORT_CARDDETECT, SD_PIN_CARDDETECT));
-}
-bool esp32_c3_SDCard::cardIsMounted() {
     return m_sdcardMounted;
 }
-const char* esp32_c3_SDCard::getMountPoint() {
-    return MOUNT_POUNT;
+
+void esp32_c3_SDCard::unmount() {
+    if (m_sdcardMounted) {
+        esp_vfs_fat_sdcard_unmount(MOUNT_POUNT, m_card);
+        m_sdcardMounted = false;
+    }    
 }
+
 #endif
