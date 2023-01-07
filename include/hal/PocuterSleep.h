@@ -146,7 +146,7 @@ class PocuterSleep {
         * @brief disable sleep timer
         * 
         * @note internally call setInactivitySleep with a timeout of 0 and all interrupt flags
-        * @note there is a race condition between the initialization of the Pocuter object and the creation of the sleep time. There needs to be a suitable delay ~50ms between creating the Pocuter object and calling pocuter->Sleep->disable()
+        * @note there is a race condition between the initialization of the Pocuter object and the creation of the sleep timer. There needs to be a suitable delay ~50ms between creating the Pocuter object and calling pocuter->Sleep->disable()
         * 
         * @return
         *     - SLEEPERROR_OK 
