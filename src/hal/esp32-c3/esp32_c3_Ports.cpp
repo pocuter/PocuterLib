@@ -3,7 +3,7 @@
 #include "include/hal/esp32-c3/esp32_c3_Ports.h"
 #include "include/hal/esp32-c3/esp32_c3_Expander.h"
 #include "include/hal/esp32-c3/esp32_c3_ADC.h"
-
+#include "include/hal/PocuterDeviceType.h"
 using namespace PocuterLib::HAL;
 
 QueueHandle_t esp32_c3_Ports::m_InterruptQueue;
@@ -67,6 +67,7 @@ const esp32_c3_Ports::PORT_WIRE esp32_c3_Ports::s_ports[6] = {
 
 
 esp32_c3_Ports::esp32_c3_Ports() {
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) return;
     for (int i = 0; i <= PORT_5; i++) {
         m_portConfigurations[i].isInitialized = false;
         m_portConfigurations[i].event = NULL;
@@ -85,6 +86,7 @@ esp32_c3_Ports::~esp32_c3_Ports() {
 }
 
 PocuterPorts::PORTSERROR esp32_c3_Ports::initPort(PORT_NUMBER n, PORT_DIRECTION d, PORT_MODE m, PORT_PULLUP p) {
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) return PORTSERROR_NOT_SUPPORTED;
     if (n > PORT_5) return PORTSERROR_NOT_SUPPORTED;
     
     PORT_WIRE port = s_ports[n];
@@ -143,6 +145,7 @@ PocuterPorts::PORTSERROR esp32_c3_Ports::initPort(PORT_NUMBER n, PORT_DIRECTION 
 }
 
 PocuterPorts::PORTSERROR esp32_c3_Ports::getValue(PORT_NUMBER n, bool* value) {
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) return PORTSERROR_NOT_SUPPORTED;
     if (n > PORT_5) return PORTSERROR_NOT_SUPPORTED;
     if (! m_portConfigurations[n].isInitialized) return PORTSERROR_NOT_INITIALIZED;
     if (m_portConfigurations[n].d != PORT_DIRECTION_IN) return PORTSERROR_NOT_SUPPORTED;
@@ -159,6 +162,7 @@ PocuterPorts::PORTSERROR esp32_c3_Ports::getValue(PORT_NUMBER n, bool* value) {
     return PORTSERROR_NOT_SUPPORTED;
 }
 PocuterPorts::PORTSERROR esp32_c3_Ports::setValue(PORT_NUMBER n, bool value) {
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) return PORTSERROR_NOT_SUPPORTED;
     if (n > PORT_5) return PORTSERROR_NOT_SUPPORTED;
     if (! m_portConfigurations[n].isInitialized) return PORTSERROR_NOT_INITIALIZED;
     if (m_portConfigurations[n].d != PORT_DIRECTION_OUT) return PORTSERROR_NOT_SUPPORTED;
@@ -178,6 +182,7 @@ PocuterPorts::PORTSERROR esp32_c3_Ports::setValue(PORT_NUMBER n, bool value) {
 
 
 PocuterPorts::PORTSERROR esp32_c3_Ports::deinitPort(PORT_NUMBER n){
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) return PORTSERROR_NOT_SUPPORTED;
     if (n > PORT_5) return PORTSERROR_NOT_SUPPORTED;
     if (! m_portConfigurations[n].isInitialized) return PORTSERROR_NOT_INITIALIZED;
     m_portConfigurations[n].isInitialized = false;
@@ -191,6 +196,7 @@ PocuterPorts::PORTSERROR esp32_c3_Ports::deinitPort(PORT_NUMBER n){
 
 
 PocuterPorts::PORTSERROR esp32_c3_Ports::getValue(PORT_NUMBER n, uint16_t* value){
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) return PORTSERROR_NOT_SUPPORTED;
     if (n > PORT_5) return PORTSERROR_NOT_SUPPORTED;
     if (! m_portConfigurations[n].isInitialized) return PORTSERROR_NOT_INITIALIZED;
     if (m_portConfigurations[n].d != PORT_DIRECTION_IN) return PORTSERROR_NOT_SUPPORTED;
@@ -256,6 +262,7 @@ void esp32_c3_Ports::expEventHandler(uint8_t a, uint8_t b, void* m) {
     }
 }
 PocuterPorts::PORTSERROR esp32_c3_Ports::pauseInterruptHandler() {
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) return PORTSERROR_NOT_SUPPORTED;
     for (int i = 0; i <= PORT_5; i++) {
         if (m_portConfigurations[i].isInitialized && m_portConfigurations[i].event && ! s_ports[i].isExpander) {
             gpio_isr_handler_remove((gpio_num_t)s_ports[i].pin);
@@ -264,6 +271,7 @@ PocuterPorts::PORTSERROR esp32_c3_Ports::pauseInterruptHandler() {
     return PORTSERROR_OK;
 }
 PocuterPorts::PORTSERROR esp32_c3_Ports::resumeInterruptHandler() {
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) return PORTSERROR_NOT_SUPPORTED;
     for (int i = 0; i <= PORT_5; i++) {
         if (m_portConfigurations[i].isInitialized && m_portConfigurations[i].event && ! s_ports[i].isExpander) {
            uint32_t pin = s_ports[i].pin;
@@ -276,6 +284,7 @@ PocuterPorts::PORTSERROR esp32_c3_Ports::resumeInterruptHandler() {
 }
 
 PocuterPorts::PORTSERROR esp32_c3_Ports::registerEventHandler(PORT_NUMBER n, portEventHandler* h, void* u){
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) return PORTSERROR_NOT_SUPPORTED;
     if (n > PORT_5) return PORTSERROR_NOT_SUPPORTED;
     if (! m_portConfigurations[n].isInitialized) return PORTSERROR_NOT_INITIALIZED;
     if (m_portConfigurations[n].d != PORT_DIRECTION_IN) return PORTSERROR_NOT_SUPPORTED;

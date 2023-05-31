@@ -20,7 +20,7 @@ class PocuterSDCard {
         /**
         * @brief Cheks if a SDCard is mounted
         * 
-        * @note The Pocuter automatically mounts FAT32 formatted cards to getMountPoint()
+        * @note The Pocuter automatically mounts FAT32 formatted cars to getMountPoint()
         *
         * @return
         *     - true if a card is detected
@@ -39,22 +39,6 @@ class PocuterSDCard {
         *     
         */
         virtual const char* getMountPoint() = 0;
-
-        /**
-        * @brief mount a card if there is an unmounted card present in the slot
-        *
-        * @return
-        *     - true card has been mounted or is already mounted
-        *     - false no card present
-        *     
-        */
-        virtual bool mount();
-
-        /**
-        * @brief unmount card if there is a mounted card
-        */
-        virtual void unmount();
-
     private:
 
 };

@@ -130,6 +130,7 @@ class PocuterDisplay {
         *
         */          
         virtual void updateScreen() = 0;
+        virtual void updateScreen(uint16_t *buffer) = 0;
         
         
         /**
@@ -146,15 +147,16 @@ class PocuterDisplay {
         * @brief let the display sleep
         *
         */                
-        virtual void doSleep() = 0;
+        virtual void doSleep(bool deep = false) = 0;
         
         /**
         * @brief wake up the display 
-        *
+        * 
+        * @param deep sets display into deep sleep
         */                
         virtual void doWakeUp() = 0;
 
-        
+        virtual uint16_t* getBackBuffer() = 0;
         
     private:
 

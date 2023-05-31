@@ -2,7 +2,18 @@
 
 #ifndef POCUTER_DISABLE_DISPLAY   
 #include "include/hal/esp32-c3/SSD1131_Display.h"
+#include "include/hal/PocuterDeviceType.h"
+
 #include <string.h>
+
+
+#define OLED_SHDN_PORT_POCKET  0
+#define OLED_SHDN_PIN_POCKET   0
+#define OLED_DC_GPIO_POCKET   20
+#define OLED_RST_PORT_POCKET   0
+#define OLED_RST_PIN_POCKET    1
+#define OLED_CS_GPIO_POCKET   21
+
 
 #define OLED_SHDN_PORT  0
 #define OLED_SHDN_PIN   2
@@ -36,7 +47,7 @@
 
 using namespace PocuterLib::HAL;
 bool SSD1131_Display::g_runUpdateTask = false;
-bool SSD1131_Display::g_continuouseScreenUpdate = true;
+bool SSD1131_Display::g_continuouseScreenUpdate = false;
 SemaphoreHandle_t SSD1131_Display::g_displaySemaphore;
 SemaphoreHandle_t SSD1131_Display::g_displayPauseSemaphore;
 bool SSD1131_Display::g_initializing = true;
@@ -45,8 +56,10 @@ SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
    
    m_spi = new esp32_c3_SPI();
    m_expander = esp32_c3_Expander::Instance();
+   m_noExternalScreenUpdate = false;
    m_bm = bm;
-
+   m_appScreenUpdated = false;
+   
     g_displaySemaphore = xSemaphoreCreateBinary();
     if (!g_displaySemaphore) abort();
     xSemaphoreGive(g_displaySemaphore);
@@ -70,14 +83,29 @@ SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
        }
    }
 
-    m_expander->pinMode(OLED_SHDN_PORT, OLED_SHDN_PIN, EXPANDER_OUT);
-   m_expander->pinMode(OLED_DC_PORT, OLED_DC_PIN, EXPANDER_OUT);
-   m_expander->pinMode(OLED_CS_PORT, OLED_CS_PIN, EXPANDER_OUT);
-   m_expander->pinMode(OLED_RST_PORT, OLED_RST_PIN, EXPANDER_OUT);
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCUTER_1) {
+       m_expander->pinMode(OLED_SHDN_PORT, OLED_SHDN_PIN, EXPANDER_OUT);
+       m_expander->pinMode(OLED_DC_PORT, OLED_DC_PIN, EXPANDER_OUT);
+       m_expander->pinMode(OLED_CS_PORT, OLED_CS_PIN, EXPANDER_OUT);
+       m_expander->pinMode(OLED_RST_PORT, OLED_RST_PIN, EXPANDER_OUT);
+
+       m_expander->setPin(OLED_DC_PORT, OLED_DC_PIN, 0);
+       m_expander->setPin(OLED_CS_PORT, OLED_CS_PIN, 0);
+       m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 1);
+    } else {
+        m_expander->pinMode(OLED_SHDN_PORT_POCKET, OLED_SHDN_PIN_POCKET, EXPANDER_OUT);
+        m_expander->pinMode(OLED_RST_PORT_POCKET, OLED_RST_PIN_POCKET, EXPANDER_OUT);
    
-   m_expander->setPin(OLED_DC_PORT, OLED_DC_PIN, 0);
-   m_expander->setPin(OLED_CS_PORT, OLED_CS_PIN, 0);
-   m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 1);
+        gpio_config_t io_conf = {};
+        io_conf.intr_type = GPIO_INTR_DISABLE;
+        io_conf.mode = GPIO_MODE_OUTPUT;
+        io_conf.pin_bit_mask = (1ULL<<OLED_DC_GPIO_POCKET);
+        io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+        io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+        gpio_config(&io_conf);
+        gpio_set_level((gpio_num_t)OLED_DC_GPIO_POCKET, false);
+   
+    }
    
    reset();
 
@@ -121,12 +149,43 @@ SSD1131_Display::SSD1131_Display(BUFFER_MODE bm) {
    }
     
 }
+void SSD1131_Display::stopExternScreenUpdate() {
+    m_noExternalScreenUpdate = true;
+} 
+void SSD1131_Display::continueExternScreenUpdate(){
+    m_noExternalScreenUpdate = false;
+}
+void SSD1131_Display::waitAppScreenUdpate() {
+    while(! m_appScreenUpdated) {
+        vTaskDelay(1);
+    }
+}
+void SSD1131_Display::internalScreenUdpate() {
+    m_appScreenUpdated = false;
+}
+                
 void SSD1131_Display::updateScreen() {
     if (g_continuouseScreenUpdate) return;
     xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
+    m_appScreenUpdated = true;
+    if (m_noExternalScreenUpdate) {
+        while(m_appScreenUpdated) {
+            vTaskDelay(1);
+        }
+    }
+    
     memcpy(m_currentFrontBuffer, m_currentBackBuffer, DISPLAY_X*DISPLAY_Y*2);
     xSemaphoreGive(g_displaySemaphore);
     xSemaphoreGive(g_displayPauseSemaphore);
+}
+void SSD1131_Display::updateScreen(uint16_t *buffer) {
+    
+    if (g_continuouseScreenUpdate) return;
+    for (int i = 0; i < DISPLAY_X*DISPLAY_Y; i++)
+        m_currentFrontBuffer[i] = swap16(buffer[i]);
+    
+    updateScreen();
+    
 }
 void SSD1131_Display::continuousScreenUpdate(bool on) {
     if (m_bm != BUFFER_MODE_DOUBLE_BUFFER) return;
@@ -138,19 +197,39 @@ void SSD1131_Display::continuousScreenUpdate(bool on) {
 PocuterDisplay::BUFFER_MODE SSD1131_Display::getBufferMode() {
     return m_bm;
 }
-void SSD1131_Display::doSleep() {
+uint16_t* SSD1131_Display::getBackBuffer() {
+    return m_currentBackBuffer;
+    
+}
+
+void SSD1131_Display::doSleep(bool deep) {
     
     m_continuouseScreenUpdateBeforeSleep = g_continuouseScreenUpdate;
     if (g_continuouseScreenUpdate) continuousScreenUpdate(false);
+    if (deep) {
+        clearScreen();
+        updateScreen();
+        
+   }
     m_spi->waitEmptyMessageQueue();
-    
     xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
-    m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 0);
+    
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCUTER_1) {
+        m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 0);
+    } else {
+        m_expander->setPin(OLED_SHDN_PORT_POCKET, OLED_SHDN_PIN_POCKET, 0);
+        
+    }
     xSemaphoreGive(g_displaySemaphore);
 }
 void SSD1131_Display::doWakeUp() {
     xSemaphoreTake(g_displaySemaphore, portMAX_DELAY);
-    m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 1);
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCUTER_1) {
+        m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 1);
+    } else {
+        m_expander->setPin(OLED_SHDN_PORT_POCKET, OLED_SHDN_PIN_POCKET, 1);
+    }
+    
     xSemaphoreGive(g_displaySemaphore);
     if (m_continuouseScreenUpdateBeforeSleep) continuousScreenUpdate(m_continuouseScreenUpdateBeforeSleep);
     
@@ -382,15 +461,27 @@ void SSD1131_Display::getDisplaySize(uint16_t& sizeX, uint16_t& sizeY) {
 }
 
 void SSD1131_Display::reset() {
-   m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 0);
-   vTaskDelay(configTICK_RATE_HZ / 10);
-   m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 1);
-   vTaskDelay(configTICK_RATE_HZ / 10);
-   m_expander->setPin(OLED_RST_PORT, OLED_RST_PIN, 1);
-   vTaskDelay(configTICK_RATE_HZ / 10);
-   m_expander->setPin(OLED_RST_PORT, OLED_RST_PIN, 0);
-   vTaskDelay(configTICK_RATE_HZ / 10);
-   m_expander->setPin(OLED_RST_PORT, OLED_RST_PIN, 1);
+   if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCUTER_1) {
+        m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 0);
+       vTaskDelay(configTICK_RATE_HZ / 10);
+       m_expander->setPin(OLED_SHDN_PORT, OLED_SHDN_PIN, 1);
+       vTaskDelay(configTICK_RATE_HZ / 10);
+       m_expander->setPin(OLED_RST_PORT, OLED_RST_PIN, 1);
+       vTaskDelay(configTICK_RATE_HZ / 10);
+       m_expander->setPin(OLED_RST_PORT, OLED_RST_PIN, 0);
+       vTaskDelay(configTICK_RATE_HZ / 10);
+       m_expander->setPin(OLED_RST_PORT, OLED_RST_PIN, 1);
+   } else {
+       m_expander->setPin(OLED_SHDN_PORT_POCKET, OLED_SHDN_PIN_POCKET, 0);
+       vTaskDelay(configTICK_RATE_HZ / 10);
+       m_expander->setPin(OLED_SHDN_PORT_POCKET, OLED_SHDN_PIN_POCKET, 1);
+       vTaskDelay(configTICK_RATE_HZ / 10);
+       m_expander->setPin(OLED_RST_PORT_POCKET, OLED_RST_PIN_POCKET, 1);
+       vTaskDelay(configTICK_RATE_HZ / 10);
+       m_expander->setPin(OLED_RST_PORT_POCKET, OLED_RST_PIN_POCKET, 0);
+       vTaskDelay(configTICK_RATE_HZ / 10);
+       m_expander->setPin(OLED_RST_PORT_POCKET, OLED_RST_PIN_POCKET, 1);
+   }
 }
 
 void SSD1131_Display::updateTask(void *arg) {
@@ -412,7 +503,7 @@ void SSD1131_Display::updateTask(void *arg) {
             myself->m_spi->sendCommand(0x15, 0, DISPLAY_X - 1);
             myself->m_spi->sendCommand(0x75, 0, DISPLAY_Y - 1);
             i = 0;
-            if (g_continuouseScreenUpdate) {
+            if (g_continuouseScreenUpdate && ! myself->m_noExternalScreenUpdate) {
                 xSemaphoreTake(myself->g_displaySemaphore, portMAX_DELAY);
                 memcpy(myself->m_currentFrontBuffer, myself->m_currentBackBuffer, DISPLAY_X*DISPLAY_Y*2);
                 xSemaphoreGive(myself->g_displaySemaphore);

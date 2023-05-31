@@ -1,4 +1,5 @@
 
+#ifndef POCUTER_DISABLE_WIFI
 #ifndef ESP32_C3_WIFI_H
 #define ESP32_C3_WIFI_H
 #include "include/hal/PocuterWIFI.h"
@@ -77,4 +78,4 @@ namespace PocuterLib {
 }
 
 #endif /* ESP32_C3_WIFI_H */
-
+#endif

@@ -26,15 +26,25 @@ namespace PocuterLib {
                 void drawRectangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint32_t color);
                 void continuousScreenUpdate(bool on);
                 void updateScreen();
+                void updateScreen(uint16_t *buffer);
                 
                 void setBrightness(uint8_t brightness);
                 void clearWindow(int16_t x, int16_t y, int16_t width, int16_t height);
                 void clearScreen();
                 
-                void doSleep();
+                void doSleep(bool deep = false);
                 void doWakeUp();
                 
+                // with this functions the lib can take over the exclusive screen update (to create an overlay)
+                void stopExternScreenUpdate(); 
+                void continueExternScreenUpdate();
+                void internalScreenUdpate();
+                void waitAppScreenUdpate();
+                
                 BUFFER_MODE getBufferMode();
+                
+                uint16_t* getBackBuffer();
+                
                 
                 
             private:
@@ -44,6 +54,7 @@ namespace PocuterLib {
 
                 uint16_t* m_currentBackBuffer;
                 uint16_t* m_currentFrontBuffer;
+                uint16_t* m_currentOverlay;
                 BUFFER_MODE m_bm;
                 static void updateTask(void *arg);
                 static bool g_runUpdateTask;
@@ -55,6 +66,10 @@ namespace PocuterLib {
                 uint16_t color24to16(uint32_t color);
 
                 bool m_continuouseScreenUpdateBeforeSleep;
+                
+                bool m_noExternalScreenUpdate;
+                bool m_appScreenUpdated;
+                        
                 
                
         };

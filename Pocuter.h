@@ -31,12 +31,14 @@
 #include <stdint.h>
 #include "include/hal/RGBled.h"
 #include "include/hal/PocuterDisplay.h"
-#include "include/ugui/UGUI.h"
 #include "include/hal/PocuterButtons.h"
+#include "include/ugui/UGUI.h"
+#include "include/gfx/GFX.h"
 #include "include/hal/PocuterHMAC.h"
 #include "include/hal/PocuterSDCard.h"
 #include "include/hal/PocuterConfig.h"
 #include "include/hal/PocuterOTA.h"
+#include "include/hal/PocuterDeviceType.h"
 
 #ifndef POCUTER_DISABLE_WIFI  
 #include "include/hal/PocuterWIFI.h"
@@ -48,11 +50,17 @@
 #include "include/hal/PocuterHTTP.h"
 #include "include/hal/PocuterTime.h"
 #include "include/hal/PocuterServer.h"
+#include "include/hal/PocketStarHighScores.h"
 #include "include/hal/PocuterPorts.h"
-#include "include/hal/PocuterBattery.h"
 #include "include/hal/PocuterSleep.h"
+#include "include/hal/PocuterSound.h"
+
 
 #define DEEP_SLEEP_MEMORY _SECTION_ATTR_IMPL(".rtc.data", __COUNTER__)
+
+#ifndef POCUTER_DISABLE_PAUSE_MENU
+class PocketStarPauseMenu;
+#endif
 
 class Pocuter {
 public:
@@ -110,7 +118,10 @@ public:
 
 #ifndef POCUTER_DISABLE_DISPLAY      
     static PocuterDisplay* Display;             /*!< PocuterDisplay Class Acccess */
+    static GFX* gfx;                            /*!< GFX Class Acccess */
+#ifndef POCUTER_DISABLE_UGUI
     static UGUI* ugui;                          /*!< UGUI Class Acccess */
+#endif
 #endif 
 #ifndef POCUTER_DISABLE_LIGHTSENSOR 
     static PocuterLightSensor* LightSensor;     /*!< PocuterLightSensor Class Acccess */
@@ -121,10 +132,7 @@ public:
 #ifndef POCUTER_DISABLE_PORTS    
     static PocuterPorts* Ports  ;             /*!< PocuterPorts Class Acccess */
 #endif   
-#ifndef POCUTER_DISABLE_BATTERY
-    static PocuterBattery* Battery  ;             /*!< PocuterPorts Class Acccess */
-#endif  
-#ifndef POCUTER_DISABLE_PORTS    
+#ifndef POCUTER_DISABLE_SLEEP    
     static PocuterSleep* Sleep  ;             /*!< PocuterSleep Class Acccess */
 #endif  
     static PocuterHMAC* HMAC;                   /*!< PocuterHMAC Class Acccess */
@@ -153,15 +161,27 @@ public:
 #ifndef POCUTER_DISABLE_SERVER
     static PocuterServer* Server;               /*!< PocuterServer Class Acccess */
 #endif
+
+#ifndef POCUTER_DISABLE_HIGH_SCORES
+    static PocketStarHighScores* HighScores;    /*!< PocuterServer Class Acccess */
+#endif
     
 #ifndef POCUTER_DISABLE_ACC       
     static PocuterAccelerometer* Accelerometer; /*!< PocuterAccelerometer Class Acccess */
 #endif
+#ifndef POCUTER_DISABLE_SOUND
+    static PocuterSound* Sound; /*!< PocuterAccelerometer Class Acccess */
+#endif    
+    
     
 private:
+#ifndef POCUTER_DISABLE_PAUSE_MENU
+    PocketStarPauseMenu* m_pauseMenu;
+#endif
+
+#ifndef POCUTER_DISABLE_UGUI
     
-   
-    static UG_GUI uGUI;
+   static UG_GUI uGUI;
     
     
     static void driver_pixelSet(UG_S16,UG_S16,UG_COLOR);
@@ -169,7 +189,10 @@ private:
     static int8_t driver_fillFrame(UG_S16 x1, UG_S16 y1, UG_S16 x2, UG_S16 y2, UG_COLOR c);
     static int8_t driver_drawScanLine(UG_S16 x, UG_S16 y, UG_S16 width, UG_COLOR* c);
     
+#endif    
 };
+
+#include "PocketStarPause.h"
 
 #endif /* POCUTER_H */
 

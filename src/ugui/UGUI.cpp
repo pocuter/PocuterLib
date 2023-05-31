@@ -1,3 +1,5 @@
+#include "include/PocuterLibConfig.h"
+#ifndef POCUTER_DISABLE_UGUI
 #ifndef POCUTER_DISABLE_DISPLAY   
 /* -------------------------------------------------------------------------------- */
 /* -- µGUI - Generic GUI module (C)Achim Döbler, 2015                            -- */
@@ -1075,7 +1077,7 @@ UG_WINDOW* UGUI::UG_WindowCreate ( uint8_t objcnt, void* (*cb)( UG_MESSAGE* ) ) 
    wnd->title.font = &gui->font;
    wnd->title.h_space = 2;
    wnd->title.v_space = 2;
-   wnd->title.align = ALIGN_CENTER_LEFT;
+   wnd->title.align = UGUI_ALIGN_CENTER_LEFT;
    wnd->title.fc = C_WHITE;
    wnd->title.bc = C_BLUE;
    wnd->title.ifc = C_WHITE;
@@ -1124,7 +1126,7 @@ UG_WINDOW* UGUI::UG_WindowCreate (UG_WINDOW* wnd, UG_OBJECT* objlst, uint8_t obj
 //   wnd->title.font = &gui->font;
    wnd->title.h_space = 2;
    wnd->title.v_space = 2;
-   wnd->title.align = ALIGN_CENTER_LEFT;
+   wnd->title.align = UGUI_ALIGN_CENTER_LEFT;
    wnd->title.fc = C_WHITE;
    wnd->title.bc = C_BLUE;
    wnd->title.ifc = C_WHITE;
@@ -1711,7 +1713,7 @@ UG_RESULT UGUI::_UG_ButtonCreate( UG_WINDOW* wnd, UG_U8 id, UG_S16 xs, UG_S16 ys
   btn->abc = wnd->bc;
   btn->afc = wnd->fc;
   btn->style = BTN_STYLE_3D;
-  btn->align = ALIGN_CENTER;
+  btn->align = UGUI_ALIGN_CENTER;
   btn->font = &gui->font;
   btn->str = const_cast<char*>(minmusStr);    //"-";
   btn->h_space = 1;
@@ -1769,7 +1771,7 @@ UG_RESULT UGUI::_UG_ButtonCreate( UG_WINDOW* wnd, UG_BUTTON* btn, UG_U8 id, UG_S
   btn->abc = wnd->bc;
   btn->afc = wnd->fc;
   btn->style = BTN_STYLE_3D;
-  btn->align = ALIGN_CENTER;
+  btn->align = UGUI_ALIGN_CENTER;
   if (gui != NULL) btn->font = &gui->font;
   else btn->font = NULL;
 //  btn->font = &gui->font;
@@ -2250,7 +2252,7 @@ UG_RESULT UGUI::_UG_TextboxCreate( UG_WINDOW* wnd, UG_U8 id, UG_S16 xs, UG_S16 y
   txb->style = 0; /* reserved */
   txb->fc = wnd->fc;
   txb->bc = wnd->bc;
-  txb->align = ALIGN_CENTER;
+  txb->align = UGUI_ALIGN_CENTER;
   txb->h_space = 1;
   txb->v_space = 2;
 
@@ -2307,7 +2309,7 @@ UG_RESULT UGUI::_UG_TextboxCreate( UG_WINDOW* wnd, UG_TEXTBOX* txb, UG_U8 id, UG
   txb->style = 0; /* reserved */
   txb->fc = wnd->fc;
   txb->bc = wnd->bc;
-  txb->align = ALIGN_CENTER;
+  txb->align = UGUI_ALIGN_CENTER;
   txb->h_space = 1;
   txb->v_space = 2;
 
@@ -3984,14 +3986,14 @@ void UGUI::_UG_PutText(UG_TEXT* txt)
    }
 
    yp = 0;
-   if ( align & (ALIGN_V_CENTER | ALIGN_V_BOTTOM) )
+   if ( align & (UGUI_ALIGN_V_CENTER | UGUI_ALIGN_V_BOTTOM) )
    {
       yp = ye - ys + 1;
       yp -= char_height*rc;
       yp -= char_v_space*(rc-1);
       if ( yp < 0 ) return;
    }
-   if ( align & ALIGN_V_CENTER ) yp >>= 1;
+   if ( align & UGUI_ALIGN_V_CENTER ) yp >>= 1;
    yp += ys;
 
    while( 1 )
@@ -4012,8 +4014,8 @@ void UGUI::_UG_PutText(UG_TEXT* txt)
       xp -= wl;
       if ( xp < 0 ) return;
 
-      if ( align & ALIGN_H_LEFT ) xp = 0;
-      else if ( align & ALIGN_H_CENTER ) xp >>= 1;
+      if ( align & UGUI_ALIGN_H_LEFT ) xp = 0;
+      else if ( align & UGUI_ALIGN_H_CENTER ) xp >>= 1;
       xp += xs;
 
       while( (*str != '\n') )
@@ -5137,4 +5139,5 @@ void* UGUI::_UG_ProgressbarUpdate(UG_WINDOW* wnd, UG_OBJECT* obj)
   return NULL;
 }
 //UGUIClass	UGUI;
+#endif
 #endif

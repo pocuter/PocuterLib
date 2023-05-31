@@ -2,6 +2,8 @@
 #include "Pocuter.h"
 #include <stdio.h>
 
+#include "include/hal/esp32-c3/esp32_c3_DeviceTypeDetection.h"
+
 #ifndef POCUTER_DISABLE_RGBled
 #include "include/hal/esp32-c3/esp32_c3_RGBled.h"
 #endif
@@ -55,19 +57,27 @@
 #include "include/hal/PocuterServer.h"
 #endif
 
-#ifndef POCUTER_DISABLE_PORTS
-#include "include/hal/esp32-c3/esp32_c3_Ports.h"
+#ifndef POCUTER_DISABLE_HIGH_SCORES
+#include "include/hal/PocketStarHighScores.h"
 #endif
 
-#ifndef POCUTER_DISABLE_BATTERY
-#include "include/hal/esp32-c3/esp32_c3_Battery.h"
+#ifndef POCUTER_DISABLE_PORTS
+#include "include/hal/esp32-c3/esp32_c3_Ports.h"
 #endif
 
 #ifndef POCUTER_DISABLE_SLEEP
 #include "include/hal/esp32-c3/esp32_c3_sleep.h"
 #endif
 
+#ifndef POCUTER_DISABLE_SOUND
+#include "include/hal/esp32-c3/esp32_c3_Sound.h"
+#endif
+
+
+
 #include <string.h>
+
+PocuterDeviceType::DEVICE_TYPES PocuterDeviceType::deviceType = PocuterDeviceType::DEVICE_TYPE_UNKNOWN;
 
 
 #define VERSION "1.0"
@@ -85,16 +95,17 @@ PocuterI2C* Pocuter::I2C = NULL;
 
 #ifndef POCUTER_DISABLE_DISPLAY  
 PocuterDisplay* Pocuter::Display = NULL; 
+GFX* Pocuter::gfx = NULL; 
+
+#ifndef POCUTER_DISABLE_UGUI
 UGUI* Pocuter::ugui = NULL; 
 UG_GUI Pocuter::uGUI;
 #endif
 
-#ifndef POCUTER_DISABLE_PORTS
-PocuterPorts* Pocuter::Ports = NULL; 
 #endif
 
-#ifndef POCUTER_DISABLE_BATTERY
-PocuterBattery* Pocuter::Battery = NULL; 
+#ifndef POCUTER_DISABLE_PORTS
+PocuterPorts* Pocuter::Ports = NULL; 
 #endif
 
 #ifndef POCUTER_DISABLE_SLEEP
@@ -136,11 +147,30 @@ PocuterTime* Pocuter::PocTime = NULL;
 PocuterServer* Pocuter::Server = NULL;
 #endif
 
+#ifndef POCUTER_DISABLE_HIGH_SCORES
+PocketStarHighScores* Pocuter::HighScores = NULL;
+#endif
+#ifndef POCUTER_DISABLE_SOUND
+PocuterSound* Pocuter::Sound = NULL; 
+#endif 
+
+
+#ifndef POCUTER_DISABLE_PAUSE_MENU
+#include "PocketStarPause.h"
+#endif
+
 Pocuter::Pocuter() {
   
     
 }
 void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
+    // get device type
+    esp32_c3_DeviceTypeDetection* dt = new esp32_c3_DeviceTypeDetection();
+    PocuterDeviceType::deviceType = dt->getDeviceType();
+    delete(dt);
+    
+    
+    
    I2C = new esp32_c3_I2C(0);
    
 #ifndef POCUTER_DISABLE_EXPANDER    
@@ -162,12 +192,6 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
  #ifndef POCUTER_DISABLE_PORTS
    Ports = new esp32_c3_Ports();
 #endif
-
- #ifndef POCUTER_DISABLE_BATTERY
-   Battery = new esp32_c3_Battery();
-#endif
-   HMAC = new esp32_c3_hmac();
-   
 #ifndef POCUTER_DISABLE_ACC   
    Accelerometer = new MXC4005XC_Accelerometer(I2C);
 #endif
@@ -175,13 +199,17 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
 #ifndef POCUTER_DISABLE_SLEEP
     #ifndef POCUTER_DISABLE_PORTS
        #ifndef POCUTER_DISABLE_DISPLAY  
-            Sleep = new esp32_c3_sleep(Display, Ports, Accelerometer);
+            #ifndef POCUTER_DISABLE_ACC 
+                Sleep = new esp32_c3_sleep(Display, Ports, Accelerometer);
+            #else
+                Sleep = new esp32_c3_sleep(Display, Ports);
+            #endif
        #else
            Sleep = new esp32_c3_sleep(NULL, Ports);
        #endif
     #else
        #ifndef POCUTER_DISABLE_DISPLAY  
-            Sleep = new esp32_c3_sleep(Display, NULL);
+            Sleep = new esp32_c3_sleep(Display, NULL, NULL);
        #else
            Sleep = new esp32_c3_sleep(NULL, NULL);
        #endif
@@ -189,6 +217,9 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
    
 #endif
 
+       
+       
+    HMAC = new esp32_c3_hmac();
    
 #ifndef POCUTER_DISABLE_SD_CARD     
    SDCard = new esp32_c3_SDCard();
@@ -218,9 +249,28 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
 #ifndef POCUTER_DISABLE_SERVER
     Server = new PocuterServer(HMAC, OTA, HTTP);
 #endif
-    
+#ifndef POCUTER_DISABLE_HIGH_SCORES
+    HighScores = new PocketStarHighScores(HMAC, OTA, HTTP);
+#endif
+#ifndef POCUTER_DISABLE_SOUND
+    Sound = new esp32_c3_Sound(); 
+#endif 
 
 #ifndef POCUTER_DISABLE_DISPLAY       
+   //uint16_t sizeX;
+   //uint16_t sizeY;
+   //Display->getDisplaySize(sizeX, sizeY);
+   gfx = new GFX();
+   gfx->Init(Display, Buttons);
+   
+   #ifndef POCUTER_DISABLE_PAUSE_MENU
+    m_pauseMenu = new PocketStarPauseMenu(this);
+   #endif
+   
+   
+   
+   
+#ifndef POCUTER_DISABLE_UGUI   
    uint16_t sizeX;
    uint16_t sizeY;
    Display->getDisplaySize(sizeX, sizeY);
@@ -230,6 +280,8 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
    ugui->UG_DriverRegister(DRIVER_DRAW_LINE,  (void*)&Pocuter::driver_drawLine);
    ugui->UG_DriverRegister(DRIVER_FILL_AREA,  (void*)&Pocuter::driver_fillFrame);
    ugui->UG_DriverRegister(DRIVER_DRAW_SCANLINE,  (void*)&Pocuter::driver_drawScanLine);
+#endif   
+   
 #endif     
 #ifndef POCUTER_DISABLE_SLEEP
 #ifndef POCUTER_DISABLE_SD_CARD  
@@ -239,10 +291,14 @@ void Pocuter::begin(PocuterDisplay::BUFFER_MODE bm) {
     uint32_t sec = config->get((const uint8_t*)"SLEEP", (const uint8_t*)"timeout");
     delete(config);
     if (sec == 0) sec = 30;
-        
-    Sleep->setSleepMode(PocuterSleep::SLEEP_MODE_LIGHT);
-    Sleep->setWakeUpModes(PocuterSleep::WAKEUP_MODE_ANY_BUTTON | PocuterSleep::WAKEUP_MODE_SHAKE); 
-    Sleep->setInactivitySleep(sec, PocuterSleep::SLEEPTIMER_INTERRUPT_BY_BUTTON);
+    if(PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCUTER_1) {   
+        Sleep->setSleepMode(PocuterSleep::SLEEP_MODE_LIGHT);
+        Sleep->setWakeUpModes(PocuterSleep::WAKEUP_MODE_ANY_BUTTON | PocuterSleep::WAKEUP_MODE_SHAKE); 
+        Sleep->setInactivitySleep(sec, PocuterSleep::SLEEPTIMER_INTERRUPT_BY_BUTTON);
+    } else {
+        Sleep->setSleepMode(PocuterSleep::SLEEP_MODE_DEEP);
+        Sleep->setInactivitySleep(sec, PocuterSleep::SLEEPTIMER_INTERRUPT_BY_BUTTON);
+    }
 #endif    
 #endif   
     
@@ -260,6 +316,7 @@ int Pocuter::setStatusLED(uint8_t r, uint8_t g, uint8_t b) {
 #endif
 
 #ifndef POCUTER_DISABLE_DISPLAY  
+#ifndef POCUTER_DISABLE_UGUI
 void Pocuter::driver_pixelSet(UG_S16 x,UG_S16 y,UG_COLOR c) {
    Display->setPixel(x,y,c);
   
@@ -276,4 +333,5 @@ int8_t Pocuter::driver_drawScanLine(UG_S16 x, UG_S16 y, UG_S16 width, UG_COLOR* 
     Display->drawScanLine(x,y,width,c);
     return UG_RESULT_OK;
 }
+#endif
 #endif

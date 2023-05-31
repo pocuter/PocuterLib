@@ -12,8 +12,21 @@ public:
     
     const uint8_t* checkNewestAppVersion(uint64_t appId);
     const uint8_t* getServerRootCa();
+    const uint8_t* checkForAppInstallRequest(uint64_t& appId);
+    bool appInstalledSuccessfully(uint64_t appId);
+    
     static const char* letsEncryptRootCA;
     static const char* globalSignRootCA;
+    
+    struct AppStoreEntry {
+        uint64_t id;
+        char name[64];
+        char author[64];
+        char version[16];
+    };
+    
+    bool getAppStoreList(AppStoreEntry *list, int *count, int offset);
+    
 private:
     PocuterHMAC* m_HMAC;
     PocuterOTA* m_pOTA;

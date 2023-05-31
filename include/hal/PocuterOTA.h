@@ -6,6 +6,8 @@
 
 class PocuterOTA {
     public:
+        typedef void* appResource;
+        
         enum POCUTER_PARTITION {
             PART_APPLOADER,
             PART_APP1,
@@ -36,6 +38,12 @@ class PocuterOTA {
         virtual OTAERROR verifyPartition(POCUTER_PARTITION partition) = 0; 
         virtual OTAERROR forceBootloaderToReflashApp() = 0; 
         
+        virtual appResource openAppResource(uint64_t appID, uint32_t resourceNumber) = 0;
+        virtual size_t readAppResource(appResource res, uint8_t* buffer, size_t size) = 0;
+        virtual size_t getResourceSize(appResource res) = 0;
+        virtual OTAERROR seekAppResource(appResource res, size_t position) = 0;
+        virtual OTAERROR closeAppResource(appResource res) = 0;
+            
 
     private:
 

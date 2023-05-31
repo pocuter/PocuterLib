@@ -5,6 +5,8 @@
 #include "driver/gpio.h"
 #include <unistd.h>
 
+#include "include/hal/PocuterDeviceType.h"
+
 
 using namespace PocuterLib::HAL;
 
@@ -22,8 +24,8 @@ QueueHandle_t esp32_c3_Expander::m_InterruptQueue;
 #define INPUT_P1              0x01
 #define EXPANDER_ID           0x10
 
-#define EXPANDER_INT_PIN   GPIO_NUM_20 
-
+#define EXPANDER_INT_PIN            GPIO_NUM_20 
+#define EXPANDER_INT_PIN_POCKET     GPIO_NUM_5
 
 esp32_c3_Expander* esp32_c3_Expander::Instance() {
     if (!m_pInstance) {
@@ -64,7 +66,6 @@ void esp32_c3_Expander::intTask(void *arg)
         {
             uint8_t port1 = myself->readPort(0);
             uint8_t port2 = myself->readPort(1);
-            
             xSemaphoreTake(myself->m_eventHandlerSemaphore, portMAX_DELAY);
             for (std::vector<eventHandlerStruct>::iterator it = myself->m_eventHandler.begin() ; it != myself->m_eventHandler.end(); ++it) {
                 ((*it).function)(port1, port2, (*it).userData);
@@ -101,7 +102,10 @@ esp32_c3_Expander::esp32_c3_Expander() {
     m_P0_Led = 0xFF;
     m_P1_Led = 0xFF;
         
-   
+    m_interruptPin = EXPANDER_INT_PIN;
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) m_interruptPin = EXPANDER_INT_PIN_POCKET;
+    
+    
     
 }
 void esp32_c3_Expander::registerI2Cbus(PocuterI2C* bus) {
@@ -123,7 +127,7 @@ void esp32_c3_Expander::registerI2Cbus(PocuterI2C* bus) {
         
     xTaskCreate(&intTask, "intTaskEXP", 4000, this, 10, NULL);
     
-    
+    gpio_set_direction(m_interruptPin, GPIO_MODE_INPUT);
     
     gpio_install_isr_service(0);
     resumeInterruptHandler();
@@ -133,12 +137,12 @@ void esp32_c3_Expander::registerI2Cbus(PocuterI2C* bus) {
     
 }
 void esp32_c3_Expander::pauseInterruptHandler() {
-    gpio_isr_handler_remove(EXPANDER_INT_PIN);
+    gpio_isr_handler_remove(m_interruptPin);
 }
 void esp32_c3_Expander::resumeInterruptHandler() {
-    readPin(0,6); // read one pin to rise the EXPANDER_INT_PIN again, if it is in LOW state (this is a pin from a button)
-    gpio_set_intr_type(EXPANDER_INT_PIN, GPIO_INTR_NEGEDGE);
-    gpio_isr_handler_add(EXPANDER_INT_PIN, &interruptHandler, (void*)EXPANDER_INT_PIN);
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) readPin(0,5); else readPin(0,6);  // read one pin to rise the EXPANDER_INT_PIN again, if it is in LOW state (this is a pin from a button)
+    gpio_set_intr_type(m_interruptPin, GPIO_INTR_NEGEDGE);
+    gpio_isr_handler_add(m_interruptPin, &interruptHandler, (void*)m_interruptPin);
     
 }
 esp32_c3_Expander::~esp32_c3_Expander() {

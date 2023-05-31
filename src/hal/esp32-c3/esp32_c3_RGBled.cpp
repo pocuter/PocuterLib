@@ -3,6 +3,7 @@
 
 #include "include/hal/esp32-c3/esp32_c3_RGBled.h"
 #include "driver/gpio.h"
+#include "include/hal/PocuterDeviceType.h"
 using namespace PocuterLib::HAL;
 
 #define LED_R_PORT      1
@@ -16,7 +17,7 @@ using namespace PocuterLib::HAL;
 
 esp32_c3_RGBled::esp32_c3_RGBled() {
     
-    
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) return;
     m_expander = esp32_c3_Expander::Instance();
        
     m_expander->ledMode(LED_R_PORT, LED_R_PIN, 0);
@@ -33,6 +34,7 @@ esp32_c3_RGBled::~esp32_c3_RGBled() {
     
 }
 RGBled::LEDERROR esp32_c3_RGBled::setRGB(uint8_t ledNumber, uint8_t r, uint8_t g, uint8_t b) {
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) return LEDERROR_FAILURE; 
     m_expander->setLed(LED_R_PORT, LED_R_PIN, r);
     m_expander->setLed(LED_G_PORT, LED_G_PIN, g);
     m_expander->setLed(LED_B_PORT, LED_B_PIN, b);

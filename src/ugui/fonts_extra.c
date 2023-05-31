@@ -1,3 +1,5 @@
+#include "include/PocuterLibConfig.h"
+#ifndef POCUTER_DISABLE_UGUI
 #include "include/ugui/ugui_config.h"
 #include "include/ugui/fonts_extra.h"
 
@@ -808,4 +810,4 @@ const UG_U8 font_pocuter_5x8_width[96]={
 
 const UG_FONT FONT_POCUTER_5X8 = {(unsigned char*)font_pocuter_5x8,FONT_TYPE_1BPP,8,13,32,127,(UG_U8*)font_pocuter_5x8_width};
 #endif
-
+#endif

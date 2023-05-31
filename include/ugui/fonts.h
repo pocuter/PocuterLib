@@ -1,3 +1,5 @@
+#include "include/PocuterLibConfig.h"
+#ifndef POCUTER_DISABLE_UGUI
 #ifndef _FONTS_H_
 #define _FONTS_H_
 
@@ -32,3 +34,4 @@ extern const UG_FONT FONT_32X53;
 
 #endif
 
+#endif //POCUTER_DISABLE_UGUI

@@ -9,6 +9,8 @@
 #define portTICK_RATE_MS              portTICK_PERIOD_MS
 #endif
 
+#include "include/hal/PocuterDeviceType.h"
+
 using namespace PocuterLib::HAL;
 
 #define WRITE_BIT                          I2C_MASTER_WRITE /*!< I2C master write */
@@ -30,13 +32,18 @@ esp32_c3_I2C::esp32_c3_I2C(int port) {
     
     i2c_config_t m_conf;
     m_conf.mode = I2C_MODE_MASTER;
-#ifndef POCUTER_SWITCH_SDA_SCL
-    m_conf.sda_io_num = PIN_I2C_SDA;
-    m_conf.scl_io_num = PIN_I2C_SCL;
-#else
-    m_conf.sda_io_num = PIN_I2C_SCL;
-    m_conf.scl_io_num = PIN_I2C_SDA;
-#endif
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCUTER_1) {
+    #ifndef POCUTER_SWITCH_SDA_SCL
+        m_conf.sda_io_num = PIN_I2C_SDA;
+        m_conf.scl_io_num = PIN_I2C_SCL;
+    #else
+        m_conf.sda_io_num = PIN_I2C_SCL;
+        m_conf.scl_io_num = PIN_I2C_SDA;
+    #endif
+    } else {
+        m_conf.sda_io_num = PIN_I2C_SDA_POCKET;
+        m_conf.scl_io_num = PIN_I2C_SCL_POCKET;
+    }
     m_conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
     m_conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
     

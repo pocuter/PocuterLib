@@ -83,4 +83,9 @@ static const uint8_t PIN_EXPOSED_3          = (PIN_MASK_EXPANDER | PIN_MASK_EXP_
 static const uint8_t PIN_EXPOSED_4          = (PIN_MASK_EXPANDER | PIN_MASK_EXP_P1 | 6);
 static const uint8_t PIN_EXPOSED_5          = (PIN_MASK_NATIVE   |  3);
 
+
+static const uint8_t PIN_I2C_SDA_POCKET            = (7);
+static const uint8_t PIN_I2C_SCL_POCKET           = (8);
+
+
 #endif // Pocuter_Pins_h

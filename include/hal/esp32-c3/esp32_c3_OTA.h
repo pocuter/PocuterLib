@@ -11,7 +11,14 @@ namespace PocuterLib {
     namespace HAL {
         class esp32_c3_OTA : public PocuterOTA {
         public:
-           
+            class appResourceClass {
+                public:
+                    FILE * fp;
+                    fpos_t start;
+                    fpos_t end;
+                    fpos_t position;
+            };
+            
             esp32_c3_OTA(PocuterSDCard* SDCard, PocuterHMAC* HMAC);
             OTAERROR setNextAppID(uint64_t appID);
             OTAERROR getApps(std::vector<uint64_t>* apps, int maxLength, int offset);
@@ -26,6 +33,12 @@ namespace PocuterLib {
             OTAERROR forceBootloaderToReflashApp(); 
             static POCUTER_PARTITION getCurrentPartitionStatic();
             static uint64_t getCurrentAppID();
+            
+            appResource openAppResource(uint64_t appID, uint32_t resourceNumber);
+            size_t readAppResource(appResource res, uint8_t* buffer, size_t size);
+            size_t getResourceSize(appResource res);
+            OTAERROR seekAppResource(appResource res, size_t position);
+            OTAERROR closeAppResource(appResource res);
             
             virtual ~esp32_c3_OTA();
             
@@ -42,7 +55,8 @@ namespace PocuterLib {
                 struct features {
                     char hasSignartur : 1;
                     char hasMetaData  : 1;
-                    char forFutureUse : 6;
+                    char hasResources : 1;
+                    char forFutureUse : 5;
                 } features;
                 uint32_t startSignatur;
                 uint32_t sizeSignatur;
@@ -50,7 +64,8 @@ namespace PocuterLib {
                 uint32_t sizeMetaFile;
                 uint32_t startFlashFile;
                 uint32_t sizeFlashFile;
-
+                uint32_t startResources;
+                uint32_t sizeResources;
             };
 
         private:

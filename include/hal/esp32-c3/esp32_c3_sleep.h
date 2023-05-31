@@ -12,7 +12,7 @@ namespace PocuterLib {
     namespace HAL {
         class esp32_c3_sleep : public PocuterSleep {
         public:
-            esp32_c3_sleep(PocuterDisplay* display, PocuterPorts* ports, PocuterAccelerometer* accl);
+            esp32_c3_sleep(PocuterDisplay* display, PocuterPorts* ports, PocuterAccelerometer* accl = NULL);
             virtual ~esp32_c3_sleep();
             void registerEventHandler(sleepEventHandler* e, void* u);
             void unregisterEventHandler();
@@ -22,10 +22,10 @@ namespace PocuterLib {
             SLEEPERROR doSleepNow();
             SLEEPERROR setInactivitySleep(uint32_t sec, SLEEPTIMER_INTERRUPTS cause, bool saveTimeout = false);
             WAKEUP_CAUSE getWakeUpCause();
-            
+            bool isShuttingDown();
             
             static void resetSleepTimer(SLEEPTIMER_INTERRUPT cause);
-            
+            static void shutDown(bool displayOnly);
         private:
             static void sleepTimerCallback(TimerHandle_t xTimer);
             SLEEP_MODE m_sm;
@@ -41,6 +41,9 @@ namespace PocuterLib {
             uint32_t m_inacTimerSec;
             
             SLEEPERROR doSleepNowEx(bool fromTimer);
+            static esp32_c3_sleep* m_instance;
+            
+            bool m_shuttingDown;
             
         };
     }

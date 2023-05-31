@@ -5,7 +5,7 @@
 #include "include/hal/esp32-c3/esp32_c3_CaptivePortalDNS.h"
 #include "include/hal/PocuterConfig.h"
 #define MAX_RETRY_ATTEMPTS     3
-#define TAG "WIFI_TEST"
+#define TAGW "WIFI_TEST"
 #ifndef PIN2STR
 #define PIN2STR(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5], (a)[6], (a)[7]
 #define PINSTR "%c%c%c%c%c%c%c%c"
@@ -244,7 +244,7 @@ esp_err_t esp32_c3_WIFI::http_get_handler(httpd_req_t *req) {
     if (buf_len > 1) {
         buf = (char*)malloc(buf_len);
         if (httpd_req_get_hdr_value_str(req, "Host", buf, buf_len) == ESP_OK) {
-            ESP_LOGI(TAG, "Found header => Host: %s", buf);
+            ESP_LOGI(TAGW, "Found header => Host: %s", buf);
         }
         free(buf);
     }
@@ -255,7 +255,7 @@ esp_err_t esp32_c3_WIFI::http_get_handler(httpd_req_t *req) {
     if (buf_len > 1) {
         buf = (char*)malloc(buf_len);
         if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
-            ESP_LOGI(TAG, "Found URL query => %s", buf);
+            ESP_LOGI(TAGW, "Found URL query => %s", buf);
             PocuterWIFI::wifiCredentials cred;
             if (httpd_query_key_value(buf, "ssid", (char*)cred.ssid, 32) == ESP_OK) {
                 if (! strcmp("dfsf34fq434fq44", (char*)cred.ssid)) {

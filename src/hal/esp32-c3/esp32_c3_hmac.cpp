@@ -7,12 +7,14 @@
 #include <esp_mac.h>
 #include <soc/esp32c3/esp_hmac.h>
 #include <string.h>
+#include <esp_efuse.h>
 
 
 using namespace PocuterLib::HAL;
 
 #define SECURE_KEY_EFUSE_BLOCK ETS_EFUSE_BLOCK_KEY5
 #define SECURE_KEY_HMAC HMAC_KEY5
+#define SECURE_KEY_EFUSE_BLK EFUSE_BLK_KEY5
 
 esp32_c3_hmac::esp32_c3_hmac() {
     
@@ -41,6 +43,7 @@ bool esp32_c3_hmac::setEfuseKey(const uint8_t* masterKey, uint8_t keyLength) {
     if (key && ets_efuse_write_key(SECURE_KEY_EFUSE_BLOCK,
                     ETS_EFUSE_KEY_PURPOSE_HMAC_UP,
                     key, 32) == ESP_OK) {
+        esp_efuse_set_read_protect(EFUSE_BLK_KEY5);
         return true;
         
     }

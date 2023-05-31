@@ -1,4 +1,5 @@
-
+#include "include/PocuterLibConfig.h"
+#ifndef POCUTER_DISABLE_UGUI
 #include "include/ugui/ugui_config.h"
 #include "include/ugui/fonts.h"
 
@@ -4510,5 +4511,5 @@ __UG_FONT_DATA unsigned char font_32x53[256][212]={
    const UG_FONT FONT_32X53 = {(unsigned char*)font_32x53,FONT_TYPE_1BPP,32,53,0,255,NULL};
 #endif
 
-
+#endif
 

@@ -9,6 +9,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
+#include <driver/gpio.h>
 
 #define EXPANDER_OUT   0
 #define EXPANDER_IN    1
@@ -68,6 +69,8 @@ namespace PocuterLib {
             };
             std::vector<eventHandlerStruct> m_eventHandler;
             SemaphoreHandle_t m_eventHandlerSemaphore;
+            
+            gpio_num_t m_interruptPin;
 
         };
     }

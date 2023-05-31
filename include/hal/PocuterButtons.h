@@ -9,40 +9,46 @@
 
 class PocuterButtons {
     public:
+        enum PBUTTON {
+            BUTTON_NUM_P1=0,
+            BUTTON_NUM_P2,
+            BUTTON_NUM_P3,
+            BUTTON_NUM_UP,    /*!< d-pad up */
+            BUTTON_NUM_DOWN,  /*!< d-pad down */
+            BUTTON_NUM_LEFT,  /*!< d-pad left */
+            BUTTON_NUM_RIGHT, /*!< d-pad right */
+            BUTTON_NUM_A,     /*!< A button */
+            BUTTON_NUM_B,     /*!< B button */
+            BUTTON_NUM_HOME   /*!< HOME button */
+           
+        };
         enum PBUTTONS {
-            BUTTON_1=0x01,  /*!< the lower right button */
-            BUTTON_2=0x02,  /*!< the upper right button */
-            BUTTON_3=0x04   /*!< the lower left button */
+            BUTTON_1=0x01,  /*!< Pocuter Button 1 */
+            BUTTON_2=0x02,  /*!< Pocuter Button 2 */
+            BUTTON_3=0x04,  /*!< Pocuter Button 3 */
+            BUTTON_UP=0x08,    /*!< d-pad up */
+            BUTTON_DOWN=0x10,  /*!< d-pad down */
+            BUTTON_LEFT=0x20,  /*!< d-pad left */
+            BUTTON_RIGHT=0x40, /*!< d-pad right */
+            BUTTON_A=0x80,     /*!< A button */
+            BUTTON_B=0x100,     /*!< B button */
+            BUTTON_HOME=0x200,     /*!< Home button */
+                    
+        };
+        enum PBACTION {
+            BUTTON_PRESSED=0x1,     /*!< button is pressed (fires once at first frame) */
+            BUTTON_RELEASED=0x2,    /*!< button is released (fires once at first frame) */
+            BUTTON_HELD=0x4,        /*!< button is held (fires continuously when pressed down) */
+            BUTTON_ACTIVATED=0x8,   /*!< button got activated (fires repeatedly in regular intervals when pressed down) */
         };
         
-        typedef void (buttonEventHandler)(PBUTTONS, void*);  /*!< type definition of the event callback function */
         
-        /**
-        * @brief register an event callback
-        * 
-        * @note the event handler is called every time an button was pressed or released. the PBUTTONS value is a bit matrix with all buttons. so to check if a button was pressed you can do a "if(getButtonState() & PocuterButtons::BUTTON_1) {...}" for example
-        * 
-        * @param e a pointer to the callback function
-        * @param u a pointer to user data sent to the event handler on each event
-        * 
-        * 
-        */
-        virtual void registerEventHandler(buttonEventHandler* e, void* u) = 0;
-        
-        /**
-        * @brief unregister the event handler
-        * 
-        */
-        
-        virtual void unregisterEventHandler() = 0;
-        /**
-        * @brief get the current state  of the buttons
-        * 
-        * @note the return value is a bit matrix with all buttons. so to check if a button was pressed you can do a "if(getButtonState() & PocuterButtons::BUTTON_1) {...}" for example
-        *  
-        * @return PBUTTONS
-        */
+       
         virtual PBUTTONS getButtonState() = 0;
+        
+        virtual void updateButtons();
+        virtual PBACTION getButtonStatus(PBUTTON button);
+        virtual bool isButtonPressedDown(PBUTTON button);
        
     private:
         

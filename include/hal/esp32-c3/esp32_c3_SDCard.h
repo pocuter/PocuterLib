@@ -12,8 +12,6 @@ namespace PocuterLib {
             bool cardInSlot();
             bool cardIsMounted();
             const char* getMountPoint();
-            bool mount();
-            void unmount();
         private:
             sdmmc_card_t *m_card;
             bool m_sdcardMounted;

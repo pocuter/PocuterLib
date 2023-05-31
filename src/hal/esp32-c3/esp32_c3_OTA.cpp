@@ -319,6 +319,79 @@ uint64_t esp32_c3_OTA::getCurrentAppID() {
     
     return currentAPP;
 }
+esp32_c3_OTA::appResource esp32_c3_OTA::openAppResource(uint64_t appID, uint32_t resourceNumber) {
+    if (! appID) appID = getCurrentAppID();
+    char fileName[64];
+    snprintf(fileName, 64, "%s/apps/%llu/%s", m_SDCard->getMountPoint(), appID, "/esp32c3.app");
+    
+    appResourceClass* res = new appResourceClass();
+    res->fp = fopen (fileName, "rb");
+    if (! res->fp) {
+        delete(res);return NULL;
+    }
+    fheader header;
+    size_t s = fread(&header, sizeof(fheader), 1, res->fp);
+    if (! s || ! header.features.hasResources) {
+        delete(res);return NULL;
+    }
+        
+    fpos_t position = header.startResources;
+    fsetpos(res->fp, &position);
+    printf("start pos: %x\n", position);
+    for (int i = 0; i <= resourceNumber; i++) {
+        fpos_t resSize = 0;
+        s = fread(&resSize, sizeof(uint32_t), 1, res->fp);
+        if (! s) {
+            delete(res);return NULL;
+        }
+        position += 4;
+        res->start = position;
+        res->position = position;
+        res->end = position + resSize;
+        printf("res size: %x ", resSize);
+        printf("start: %x ", res->start);
+        printf("end: %x\n", res->end);
+        if ( i < resourceNumber ) {
+            
+            position += resSize;
+            printf("new pos: %x\n", position);
+            fsetpos(res->fp, &position);
+        }
+    }
+    return res;
+    
+}
+size_t esp32_c3_OTA::getResourceSize(appResource tres) {
+    appResourceClass* res = (appResourceClass*)tres;
+    return res->end - res->start;
+}
+size_t esp32_c3_OTA::readAppResource(appResource tres, uint8_t* buffer, size_t size) {
+    appResourceClass* res = (appResourceClass*)tres;
+    size_t maxRead = res->end - res->position;
+    if (size > maxRead) size = maxRead;
+    if (size == 0) return 0;
+    size_t r = fread(buffer, size, 1, res->fp) * size;
+    res->position += r;
+    return r;
+}
+PocuterOTA::OTAERROR esp32_c3_OTA::seekAppResource(esp32_c3_OTA::appResource tres, size_t position) {
+    appResourceClass* res = (appResourceClass*)tres;
+    fpos_t fposition = position + res->start;
+    if (fposition >= res->end) return OTAERROR_APP_READ_ERROR;
+    fsetpos(res->fp, &fposition);
+    res->position = fposition;
+    
+    return OTAERROR_OK;
+}
+PocuterOTA::OTAERROR esp32_c3_OTA::closeAppResource(esp32_c3_OTA::appResource tres) {
+    appResourceClass* res = (appResourceClass*)tres;
+    if (! res) return OTAERROR_APP_READ_ERROR;
+    fclose(res->fp);
+    delete(res);
+    return OTAERROR_OK;
+    
+}
+            
 
 
 #endif

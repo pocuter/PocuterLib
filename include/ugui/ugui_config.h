@@ -1,3 +1,5 @@
+#include "include/PocuterLibConfig.h"
+#ifndef POCUTER_DISABLE_UGUI
 /* -------------------------------------------------------------------------------- */
 /* -- µGUI - Generic GUI module (C)Achim Döbler, 2015                            -- */
 /* -------------------------------------------------------------------------------- */
@@ -122,3 +124,4 @@ typedef struct
 #define DRIVER_PUT_STRING                             12
 */
 #endif
+#endif //POCUTER_DISABLE_UGUI

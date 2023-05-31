@@ -17,6 +17,7 @@
 struct PocuterSettings {
     uint32_t systemColor;
     int brightness;
+    int timeUntilStandby;
 };
 
 // ========================================

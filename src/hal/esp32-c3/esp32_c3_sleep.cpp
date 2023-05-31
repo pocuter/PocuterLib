@@ -8,11 +8,15 @@
 #include "include/hal/esp32-c3/esp32_c3_Expander.h"
 #include "include/hal/PocuterConfig.h"
 
+#include "include/hal/PocuterDeviceType.h"
+
 
 using namespace PocuterLib::HAL;
 
 TimerHandle_t esp32_c3_sleep::m_timer;
 esp32_c3_sleep::SLEEPTIMER_INTERRUPTS esp32_c3_sleep::s_sleepTimerInterruptCause = 0;
+esp32_c3_sleep* esp32_c3_sleep::m_instance = NULL;
+
 
 esp32_c3_sleep::esp32_c3_sleep(PocuterDisplay* display, PocuterPorts* ports, PocuterAccelerometer* accl) {
     m_sm = SLEEP_MODE_LIGHT;
@@ -22,6 +26,8 @@ esp32_c3_sleep::esp32_c3_sleep(PocuterDisplay* display, PocuterPorts* ports, Poc
     m_accl = accl;
     m_sleepEventHandler = NULL;
     m_inacTimerSec = 0;
+    m_instance = this;
+    m_shuttingDown = false;
     m_timer = xTimerCreate(
       "sleepTimer",
       pdMS_TO_TICKS(1000 * 300),
@@ -50,7 +56,7 @@ PocuterSleep::SLEEPERROR esp32_c3_sleep::setSleepMode(SLEEP_MODE sm) {
     return SLEEPERROR_OK;
 }
 PocuterSleep::SLEEPERROR esp32_c3_sleep::setWakeUpModes(WAKEUP_MODES wm) {
-    if (m_sm != SLEEP_MODE_LIGHT && (wm & WAKEUP_MODE_ANY_BUTTON)) return SLEEPERROR_MODE_NOT_POSSIBLE;
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCUTER_1 && m_sm != SLEEP_MODE_LIGHT && (wm & WAKEUP_MODE_ANY_BUTTON)) return SLEEPERROR_MODE_NOT_POSSIBLE;
     if (m_sm != SLEEP_MODE_LIGHT && (wm & WAKEUP_MODE_SHAKE)) return SLEEPERROR_MODE_NOT_POSSIBLE;
     if (m_sm != SLEEP_MODE_LIGHT && (wm & WAKEUP_MODE_WIFI)) return SLEEPERROR_MODE_NOT_POSSIBLE;
     if ((m_wakeUpModes & WAKEUP_MODE_USERPORT_0_LOW) && (m_wakeUpModes & WAKEUP_MODE_USERPORT_0_HIGH)) return SLEEPERROR_MODE_NOT_POSSIBLE;
@@ -69,10 +75,22 @@ void esp32_c3_sleep::resetSleepTimer(SLEEPTIMER_INTERRUPT cause) {
         xTimerReset(m_timer, portMAX_DELAY);
     }
 }
+void esp32_c3_sleep::shutDown(bool displayOnly) {
+    m_instance->m_shuttingDown = true;
+    if (displayOnly && m_instance->m_display != NULL) {
+#ifndef POCUTER_DISABLE_DISPLAY             
+              m_instance->m_display->doSleep(true);
+#endif     
+              return;
+    }
+    m_instance->setSleepMode(PocuterSleep::SLEEP_MODE_DEEP);
+    m_instance->doSleepNow();
+}
+
 PocuterSleep::SLEEPERROR esp32_c3_sleep::setInactivitySleep(uint32_t sec, SLEEPTIMER_INTERRUPTS cause, bool saveTimeout) {
     s_sleepTimerInterruptCause = cause;
     m_inacTimerSec = sec;
-    if (sec == 0 && xTimerIsTimerActive(m_timer)) {
+    if (sec == 0) { //  && xTimerIsTimerActive(m_timer)
         xTimerStop(m_timer, portMAX_DELAY);
     }
     if (sec > 0) {
@@ -110,8 +128,17 @@ PocuterSleep::SLEEPERROR esp32_c3_sleep::doSleepNowEx(bool fromTimer) {
     if (m_accl != NULL) m_accl->pauseInterruptHandler();
     esp32_c3_Expander::Instance()->pauseInterruptHandler();
     esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
-    
-    if (m_sm == SLEEP_MODE_DEEP && ((m_wakeUpModes & WAKEUP_MODE_USERPORT_0_LOW) || (m_wakeUpModes & WAKEUP_MODE_USERPORT_0_HIGH) || (m_wakeUpModes & WAKEUP_MODE_USERPORT_5_LOW) || (m_wakeUpModes & WAKEUP_MODE_USERPORT_5_HIGH))) {
+    if (m_sm == SLEEP_MODE_DEEP && PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCKETSTAR_2) {
+        gpio_set_direction(gpio_num_t(2), GPIO_MODE_INPUT);
+        gpio_deep_sleep_hold_dis();
+        esp_sleep_config_gpio_isolate();
+        esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
+        esp_deep_sleep_enable_gpio_wakeup(0b000100, ESP_GPIO_WAKEUP_GPIO_LOW);
+
+       
+        
+    }
+    if (m_sm == SLEEP_MODE_DEEP && ((m_wakeUpModes & WAKEUP_MODE_USERPORT_0_LOW) || (m_wakeUpModes & WAKEUP_MODE_USERPORT_0_HIGH) || (m_wakeUpModes & WAKEUP_MODE_USERPORT_5_LOW) || (m_wakeUpModes & WAKEUP_MODE_USERPORT_5_HIGH)) && PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCUTER_1) {
         uint64_t maskLow = 0;
         uint64_t maskHigh = 0;
         if (m_wakeUpModes & WAKEUP_MODE_USERPORT_0_LOW)  maskLow |= 0x10;
@@ -124,10 +151,16 @@ PocuterSleep::SLEEPERROR esp32_c3_sleep::doSleepNowEx(bool fromTimer) {
         .mode = GPIO_MODE_INPUT,
         };
         gpio_config(&config);
+        
+        gpio_deep_sleep_hold_dis();
+        
+        
         esp_err_t err = ESP_OK;
         if (maskLow) err = esp_deep_sleep_enable_gpio_wakeup(maskLow, ESP_GPIO_WAKEUP_GPIO_LOW);
         if (err == ESP_OK && maskHigh) err = esp_deep_sleep_enable_gpio_wakeup(maskHigh, ESP_GPIO_WAKEUP_GPIO_HIGH);
         if (err != ESP_OK) return SLEEPERROR_COULD_NOT_SET_GPIO_WAKEUP;
+        
+
         
     }
     
@@ -151,6 +184,9 @@ PocuterSleep::SLEEPERROR esp32_c3_sleep::doSleepNowEx(bool fromTimer) {
         if (err != ESP_OK) return SLEEPERROR_COULD_NOT_SET_GPIO_WAKEUP;
         
     }
+    
+    
+    
     if (m_wakeUpModes & WAKEUP_MODE_TIMER) {
        esp_err_t err = esp_sleep_enable_timer_wakeup(m_sleepTimerMs*1000);
        if (err != ESP_OK) return SLEEPERROR_COULD_NOT_SET_TIMER_WAKEUP;
@@ -167,14 +203,17 @@ PocuterSleep::SLEEPERROR esp32_c3_sleep::doSleepNowEx(bool fromTimer) {
     if (m_sm == SLEEP_MODE_DEEP) {
 #ifndef POCUTER_DISABLE_DISPLAY             
           if (m_display != NULL) {
-              m_display->doSleep();
+              m_display->doSleep(true);
           }
 #endif
         esp_deep_sleep_start();
         // he will never come to this point
     }
     if (m_sm == SLEEP_MODE_LIGHT) {
+#ifndef POCUTER_DISABLE_DISPLAY         
         m_display->doSleep();
+#endif
+       
         esp_light_sleep_start();
         
         if (m_wakeUpModes & WAKEUP_MODE_USERPORT_0_LOW || m_wakeUpModes & WAKEUP_MODE_USERPORT_0_HIGH) gpio_wakeup_disable(GPIO_NUM_4);
@@ -211,7 +250,9 @@ PocuterSleep::WAKEUP_CAUSE esp32_c3_sleep::getWakeUpCause() {
    if (c == ESP_SLEEP_WAKEUP_WIFI) return WAKEUP_CAUSE_WIFI;
    return  WAKEUP_CAUSE_POWER_ON;
 }
-
+bool esp32_c3_sleep::isShuttingDown(){
+    return m_shuttingDown;
+}
 
 
 #endif      

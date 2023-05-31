@@ -32,7 +32,7 @@ class PocuterSleep {
             WAKEUP_MODE_USERPORT_5_LOW = 0x02, /*!< available in deep sleep and light sleep   */
             WAKEUP_MODE_USERPORT_0_HIGH = 0x04,  /*!< available in deep sleep and light sleep   */
             WAKEUP_MODE_USERPORT_5_HIGH = 0x08,  /*!< available in deep sleep and light sleep   */
-            WAKEUP_MODE_ANY_BUTTON = 0x10,  /*!< available in light sleep only  */
+            WAKEUP_MODE_ANY_BUTTON = 0x10,  /*!< on pocuter 1 available in light sleep only  */
             WAKEUP_MODE_SHAKE = 0x20,  /*!< available in light sleep only  */
             WAKEUP_MODE_TIMER = 0x40, /*!< available in deep sleep and light sleep   */
             WAKEUP_MODE_WIFI = 0x80   /*!< available in light sleep only  */
@@ -151,8 +151,13 @@ class PocuterSleep {
         */
         virtual WAKEUP_CAUSE getWakeUpCause() = 0;
         
-        
-        
+          /**
+        * @brief system is shutting down
+        * @return
+        *     - true if the system is shutting down
+        * 
+        */
+        virtual bool isShuttingDown()  = 0;
         
 };
 

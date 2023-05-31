@@ -105,4 +105,114 @@ const uint8_t* PocuterServer::checkNewestAppVersion(uint64_t appId) {
     if (! haveDownload) return NULL;
     return m_buffer;
 }
+
+const uint8_t* PocuterServer::checkForAppInstallRequest(uint64_t& appId) {
+    uint8_t* chipID = m_HMAC->getChipID();
+    appId = 0;        
+    
+    char buf[64];
+    char* response = new char[1024];
+    snprintf(buf, 64, "https://si.psus.live/%s", (char*)chipID);
+    bool haveDownload = false;
+    if (m_pHTTP->getResponse((uint8_t*)buf, (uint8_t*)response, 1024, 3000, (const uint8_t*)globalSignRootCA) == PocuterHTTP::HTTPERROR_OK) {
+        json_t mem[32];
+        json_t const* json = json_create( response, mem, sizeof mem / sizeof *mem );
+        if ( json ) {
+            json_t const* url = json_getProperty( json, "u" );
+            if ( url  && JSON_TEXT == json_getType( url ) ){
+                strncpy((char*)m_buffer, json_getValue(url), 64);
+                json_t const* jappId = json_getProperty( json, "i" );
+                if ( jappId  && JSON_INTEGER == json_getType( jappId ) ){
+                    appId =  json_getInteger(jappId);
+                    haveDownload = true;
+                }
+            }
+            
+        }
+    }
+    delete[] response;
+    
+    if (! haveDownload) return NULL;
+    return m_buffer;
+}
+bool PocuterServer::appInstalledSuccessfully(uint64_t appId) {
+    uint8_t* chipID = m_HMAC->getChipID();
+    bool ok = false;
+    char buf[64];
+    char* response = new char[1024];
+    snprintf(buf, 64, "https://si.psus.live/%s/%" PRIu64 , (char*)chipID, appId);
+    if (m_pHTTP->getResponse((uint8_t*)buf, (uint8_t*)response, 1024, 3000, (const uint8_t*)globalSignRootCA) == PocuterHTTP::HTTPERROR_OK) {
+        json_t mem[32];
+        json_t const* json = json_create( response, mem, sizeof mem / sizeof *mem );
+        if ( json ) {
+            json_t const* state = json_getProperty( json, "state" );
+            if ( state  && JSON_TEXT == json_getType( state ) ){
+                if (0 == strncmp(json_getValue(state), "ok", 2)) ok = true;
+            }
+            
+        }
+    }
+    delete[] response;
+    return ok;
+    
+    
+}
+
+bool PocuterServer::getAppStoreList(AppStoreEntry *list, int *count, int offset) {
+    uint8_t* chipID = m_HMAC->getChipID();
+    char url[64];
+    char* response = new char[1024];
+    snprintf(url, 64, "https://dias.psus.live/%s/list/default/%d-%d", (char*)chipID, *count, offset);
+    
+    if (m_pHTTP->getResponse((uint8_t*)url, (uint8_t*)response, 1024, 3000, (const uint8_t*)globalSignRootCA) != PocuterHTTP::HTTPERROR_OK) {
+        delete[] response;
+        *count = 0;
+        return false;
+    }
+    json_t mem[64];
+    json_t const* json = json_create( response, mem, sizeof mem / sizeof *mem );
+    if (!json) {
+        delete[] response;
+        *count = 0;
+        return false;
+    }
+    
+    int appCount = 0;
+    const json_t *child = json_getChild(json);
+    
+    while (child != NULL && appCount < *count) {
+        AppStoreEntry *entry = &list[appCount];
+        
+        // entries should be empty
+        strcpy(entry->name, "");
+        strcpy(entry->author, "");
+        strcpy(entry->version, "");
+        
+        const json_t *id = json_getProperty(child, "id");
+        const json_t *name = json_getProperty(child, "n");
+        const json_t *author = json_getProperty(child, "a");
+        const json_t *version = json_getProperty(child, "v");
+        
+        if (id) {
+            entry->id = json_getInteger(id);
+            
+            if (name)
+                strncpy(entry->name, json_getValue(name), 64);
+            
+            if (author)
+                strncpy(entry->author, json_getValue(author), 64);
+            
+            if (version)
+                strncpy(entry->version, json_getValue(version), 16);
+        }
+        
+        appCount += 1;
+        child = json_getSibling(child);
+    }
+    delete[] response;
+    
+    *count = appCount;
+    return true;
+}
+
 #endif

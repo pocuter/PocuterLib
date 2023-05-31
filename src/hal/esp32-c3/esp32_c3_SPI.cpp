@@ -5,13 +5,17 @@
 #include <string.h>
 #include <driver/spi_common.h>
 #include <stdarg.h>
-
+#include "include/hal/PocuterDeviceType.h"
 
 using namespace PocuterLib::HAL;
 
 #define SPI_PIN_NUM_MISO    10
 #define SPI_PIN_NUM_MOSI    6
 #define SPI_PIN_NUM_CLK     5
+
+#define SPI_PIN_NUM_MISO_POCKET    4
+#define SPI_PIN_NUM_MOSI_POCKET    0
+#define SPI_PIN_NUM_CLK_POCKET     1
 
 #define LCD_SPI_CLOCK_RATE SPI_MASTER_FREQ_80M
 
@@ -48,20 +52,28 @@ void esp32_c3_SPI::init() {
     spi_device_interface_config_t devcfg;
     memset(&devcfg, 0, sizeof(devcfg));
     
-    
-    buscfg.miso_io_num = SPI_PIN_NUM_MISO;
-    buscfg.mosi_io_num = SPI_PIN_NUM_MOSI;
-    buscfg.sclk_io_num = SPI_PIN_NUM_CLK;
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCUTER_1) {
+        buscfg.miso_io_num = SPI_PIN_NUM_MISO;
+        buscfg.mosi_io_num = SPI_PIN_NUM_MOSI;
+        buscfg.sclk_io_num = SPI_PIN_NUM_CLK;
+    } else {
+        buscfg.miso_io_num = SPI_PIN_NUM_MISO_POCKET;
+        buscfg.mosi_io_num = SPI_PIN_NUM_MOSI_POCKET;
+        buscfg.sclk_io_num = SPI_PIN_NUM_CLK_POCKET;
+    }
     buscfg.quadwp_io_num=-1;
     buscfg.quadhd_io_num=-1;
     buscfg.max_transfer_sz = 4000;
     
     devcfg.clock_speed_hz = LCD_SPI_CLOCK_RATE;
     devcfg.mode = 0;                                //SPI mode 0
-    devcfg.spics_io_num = -1;                       //CS pin not in use (on expander)
-    devcfg.queue_size = 7;                          //We want to be able to queue 7 transactions at a time
-
     
+    if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCUTER_1) {
+        devcfg.spics_io_num = -1;                       //CS pin not in use (on expander)
+    } else {
+        devcfg.spics_io_num = 21;            
+    }
+    devcfg.queue_size = 7;                          //We want to be able to queue 7 transactions at a time
     devcfg.flags = 0; 
 
     //Initialize the SPI bus
@@ -98,22 +110,34 @@ void esp32_c3_SPI::spiTask(void *arg)
         if(xQueueReceive(m_spiQueueToDo, &t, portMAX_DELAY) == pdTRUE )
         {
             //TODO: I Really don't know why, but I have to create the first instance of the expander exactly here, have to invesigate, why
-            if (expander == NULL) expander = esp32_c3_Expander::Instance();  
+            if (expander == NULL && PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCUTER_1) expander = esp32_c3_Expander::Instance();  
             
-            TRANS_USER* user = ( TRANS_USER*) t->user;
-            spi_device_acquire_bus(m_spi, portMAX_DELAY);
-            expander->setPin(0,7,0);
-            if (lastTranactionDC != user->dc) {
-                expander->setPin(1,5,user->dc);
-                lastTranactionDC = user->dc;
-            }
-            
-            spi_device_transmit(m_spi, t);
-            expander->setPin(0,7,1);
-            spi_device_release_bus(m_spi);
-            if(xQueueSend(m_spiQueueFree, &t, portMAX_DELAY) != pdPASS)
-            {
-                abort();
+            if (PocuterDeviceType::deviceType == PocuterDeviceType::DEVICE_TYPE_POCUTER_1) {
+                TRANS_USER* user = ( TRANS_USER*) t->user;
+                spi_device_acquire_bus(m_spi, portMAX_DELAY);
+                expander->setPin(0,7,0);
+                if (lastTranactionDC != user->dc) {
+                    expander->setPin(1,5,user->dc);
+                    lastTranactionDC = user->dc;
+                }
+
+                spi_device_transmit(m_spi, t);
+                expander->setPin(0,7,1);
+                spi_device_release_bus(m_spi);
+                if(xQueueSend(m_spiQueueFree, &t, portMAX_DELAY) != pdPASS)
+                {
+                    abort();
+                }
+            } else {
+                TRANS_USER* user = ( TRANS_USER*) t->user;
+                spi_device_acquire_bus(m_spi, portMAX_DELAY);
+                gpio_set_level((gpio_num_t)20, user->dc);
+                spi_device_transmit(m_spi, t);
+                spi_device_release_bus(m_spi);
+                if(xQueueSend(m_spiQueueFree, &t, portMAX_DELAY) != pdPASS)
+                {
+                    abort();
+                }
             }
         }
       
@@ -134,7 +158,7 @@ spi_transaction_t* esp32_c3_SPI::spiGetTransaction()
 }
 void esp32_c3_SPI::waitEmptyMessageQueue()
 {
-    while(uxQueueMessagesWaiting(m_spiQueueFree)){
+    while(uxQueueMessagesWaiting(m_spiQueueFree) != SPI_TRANSACTION_COUNT){
         vTaskDelay(0);
     }
 }

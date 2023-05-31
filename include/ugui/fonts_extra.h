@@ -1,3 +1,5 @@
+#include "include/PocuterLibConfig.h"
+#ifndef POCUTER_DISABLE_UGUI
 #ifndef _FONTS_EXTRA_H_
 #define _FONTS_EXTRA_H_
 
@@ -18,3 +20,4 @@ extern const UG_FONT FONT_POCUTER_5X8;
 
 #endif
 
+#endif
